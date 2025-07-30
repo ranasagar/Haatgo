@@ -62,10 +62,8 @@ export default function LoginPage() {
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" passHref legacyBehavior>
-                  <a className="ml-auto inline-block text-sm underline">
+                <Link href="/forgot-password" className="ml-auto inline-block text-sm underline">
                     Forgot your password?
-                  </a>
                 </Link>
               </div>
               <Input 
@@ -83,10 +81,8 @@ export default function LoginPage() {
           </form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" passHref legacyBehavior>
-                <a className="underline">
+            <Link href="/signup" className="underline">
                 Sign up
-                </a>
             </Link>
           </div>
         </CardContent>

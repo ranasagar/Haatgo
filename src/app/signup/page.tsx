@@ -95,10 +95,8 @@ export default function SignupPage() {
           </form>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <Link href="/login" passHref legacyBehavior>
-              <a className="underline">
+            <Link href="/login" className="underline">
                 Login
-              </a>
             </Link>
           </div>
         </CardContent>
