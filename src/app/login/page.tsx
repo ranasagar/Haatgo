@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
@@ -19,13 +19,19 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (user) {
+      router.push('/admin');
+    }
+  }, [user, router]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await login(email, password);
       toast({ title: "Login Successful", description: "Welcome back!" });
-      router.push('/admin');
+      // The useEffect will handle the redirection now.
     } catch (error: any) {
       console.error(error);
       toast({
@@ -38,8 +44,9 @@ export default function LoginPage() {
     }
   };
 
+  // While user is being checked, we can show nothing or a loader.
+  // This prevents flashing the login page if the user is already logged in.
   if (user) {
-    // router.push('/admin') is handled by middleware, this prevents flashing the login page.
     return null;
   }
 

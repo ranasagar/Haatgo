@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
@@ -20,6 +20,12 @@ export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (user) {
+      router.push('/admin');
+    }
+  }, [user, router]);
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -33,7 +39,7 @@ export default function SignupPage() {
     try {
       await signup(email, password);
       toast({ title: "Signup Successful", description: "Your account has been created." });
-      router.push('/admin');
+      // The useEffect will handle the redirection now.
     } catch (error: any)
       {
       console.error(error);
@@ -47,8 +53,9 @@ export default function SignupPage() {
     }
   };
 
+  // While user is being checked, we can show nothing or a loader.
+  // This prevents flashing the login page if the user is already logged in.
   if (user) {
-    // router.push('/admin') is handled by middleware, this prevents flashing the login page.
     return null;
   }
 
