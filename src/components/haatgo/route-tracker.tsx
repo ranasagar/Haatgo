@@ -29,13 +29,11 @@ export function RouteTracker() {
     const minLon = Math.min(...lons);
     const maxLon = Math.max(...lons);
     
-    // Add some padding
     const latPad = (maxLat - minLat) * 0.2;
     const lonPad = (maxLon - minLon) * 0.2;
 
     const bbox = [minLon - lonPad, minLat - latPad, maxLon + lonPad, maxLat + latPad].join(',');
     
-    // Use blue for upcoming stops and green for passed stops
     const markers = routeStops.map(stop => {
         const color = stop.passed ? 'green' : 'blue';
         return `marker=${stop.lat},${stop.lon},${color}`;
