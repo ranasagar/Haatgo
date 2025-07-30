@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Facebook } from "lucide-react";
 
 type Comment = {
   id: number;
@@ -21,6 +23,11 @@ const initialComments: Comment[] = [
     { id: 1, author: "Sunita Rai", avatar: "https://placehold.co/100x100.png", message: "यो ज्याकेट को कति पर्छ?" },
     { id: 2, author: "Ramesh Thapa", avatar: "https://placehold.co/100x100.png", message: "Can you show the red shawl again?" },
 ];
+
+const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 7.5a4.5 4.5 0 0 1-4.5 4.5H12v6a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 4.5-4.5V7.5a4.5 4.5 0 1 1 9 0z"></path></svg>
+);
+
 
 export function LivestreamViewer({ isDialog = false }: { isDialog?: boolean }) {
   const [isLive, setIsLive] = useState(false);
@@ -53,26 +60,59 @@ export function LivestreamViewer({ isDialog = false }: { isDialog?: boolean }) {
     setComments(prev => prev.filter(c => c.id !== id));
   }
 
+  const renderFacebookTab = () => (
+    <div className="lg:col-span-2 bg-muted flex items-center justify-center relative rounded-tl-lg rounded-tr-lg lg:rounded-tr-none lg:rounded-bl-lg">
+        <Badge variant={isLive ? "default" : "destructive"} className={cn("transition-all absolute top-4 left-4 z-10", isLive ? "bg-green-600 hover:bg-green-700" : "")}>
+            {isLive ? <Wifi className="h-4 w-4 mr-2" /> : <WifiOff className="h-4 w-4 mr-2" />}
+            {isLive ? 'Online' : 'Offline'}
+        </Badge>
+        {isLive ? (
+            <div className="text-center text-muted-foreground">
+                <Video className="h-16 w-16 mx-auto text-primary" />
+                <p>Livestream is active.</p>
+            </div>
+        ) : (
+            <div className="text-center text-muted-foreground">
+                <Video className="h-16 w-16 mx-auto" />
+                <p>Livestream is currently offline.</p>
+            </div>
+        )}
+    </div>
+  );
+
+  const renderTikTokTab = () => (
+     <div className="lg:col-span-2 bg-muted flex items-center justify-center relative rounded-tl-lg rounded-tr-lg lg:rounded-tr-none lg:rounded-bl-lg">
+        <Badge variant={"destructive"} className="transition-all absolute top-4 left-4 z-10">
+            <WifiOff className="h-4 w-4 mr-2" /> Offline
+        </Badge>
+         <div className="text-center text-muted-foreground">
+            <Video className="h-16 w-16 mx-auto" />
+            <p>TikTok Livestream is currently offline.</p>
+        </div>
+    </div>
+  );
+
   if (isDialog) {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 h-[80vh]">
-            <div className="lg:col-span-2 bg-muted flex items-center justify-center relative rounded-tl-lg rounded-tr-lg lg:rounded-tr-none lg:rounded-bl-lg">
-                <Badge variant={isLive ? "default" : "destructive"} className={cn("transition-all absolute top-4 left-4 z-10", isLive ? "bg-green-600 hover:bg-green-700" : "")}>
-                    {isLive ? <Wifi className="h-4 w-4 mr-2" /> : <WifiOff className="h-4 w-4 mr-2" />}
-                    {isLive ? 'Online' : 'Offline'}
-                </Badge>
-                {isLive ? (
-                    <div className="text-center text-muted-foreground">
-                        <Video className="h-16 w-16 mx-auto text-primary" />
-                        <p>Livestream is active.</p>
-                    </div>
-                ) : (
-                    <div className="text-center text-muted-foreground">
-                        <Video className="h-16 w-16 mx-auto" />
-                        <p>Livestream is currently offline.</p>
-                    </div>
-                )}
-            </div>
+      <Tabs defaultValue="facebook" className="h-[80vh] flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-3 flex-shrink-0">
+          <div className="lg:col-span-2 p-4 flex justify-center">
+            <TabsList className="grid w-full max-w-xs grid-cols-2">
+              <TabsTrigger value="facebook"><Facebook className="mr-2 h-4 w-4" /> Facebook</TabsTrigger>
+              <TabsTrigger value="tiktok"><TikTokIcon className="mr-2 h-4 w-4" /> TikTok</TabsTrigger>
+            </TabsList>
+          </div>
+          <div className="hidden lg:block"></div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 flex-grow min-h-0">
+            <TabsContent value="facebook" className="lg:col-span-2 h-full m-0">
+              {renderFacebookTab()}
+            </TabsContent>
+            <TabsContent value="tiktok" className="lg:col-span-2 h-full m-0">
+              {renderTikTokTab()}
+            </TabsContent>
+
              <div className="lg:col-span-1 flex flex-col bg-background rounded-br-lg rounded-bl-lg lg:rounded-bl-none lg:rounded-tr-lg">
                 <CardHeader>
                     <CardTitle className="font-headline text-xl">Live Chat</CardTitle>
@@ -112,6 +152,7 @@ export function LivestreamViewer({ isDialog = false }: { isDialog?: boolean }) {
                 </CardFooter>
             </div>
         </div>
+      </Tabs>
     );
   }
 
