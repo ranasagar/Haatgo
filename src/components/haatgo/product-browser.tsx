@@ -29,7 +29,7 @@ export function ProductBrowser() {
               className="w-full"
             >
               <CarouselContent>
-                <TabsList className="mb-4">
+                <TabsList>
                   {categories.map((category) => (
                     <CarouselItem key={category} className="basis-auto">
                       <TabsTrigger value={category}>{category}</TabsTrigger>
@@ -42,7 +42,7 @@ export function ProductBrowser() {
             </Carousel>
           </div>
             {categories.map((category) => (
-                <TabsContent key={category} value={category}>
+                <TabsContent key={category} value={category} className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                         {(activeTab === 'All' ? allProducts : allProducts.filter(p => p.category === category)).map((product) => (
                             <ProductCard
