@@ -54,7 +54,7 @@ const defaultNewProduct: Product = {
   measurement: 'piece',
   description: "",
   category: "Food",
-  image: '',
+  image: 'https://storage.googleapis.com/haatgo-store-images/placeholder.png',
   dataAiHint: ''
 };
 
