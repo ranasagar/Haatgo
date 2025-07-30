@@ -23,7 +23,16 @@ type CartSheetProps = {
 export function CartSheet({ children }: CartSheetProps) {
   const { cart, removeFromCart, updateQuantity, clearCart, checkout } = useCart();
 
-  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantityInCart, 0);
+  const subtotal = cart.reduce((acc, item) => {
+    const priceToUse = 
+        item.tags?.includes('Cheap in Bulk') && 
+        item.bulkQuantity && 
+        item.bulkPrice && 
+        item.quantityInCart >= item.bulkQuantity 
+            ? item.bulkPrice 
+            : item.price;
+    return acc + priceToUse * item.quantityInCart;
+  }, 0);
 
   const handleCheckout = () => {
     checkout();

@@ -116,6 +116,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         };
 
         cart.forEach(item => {
+            const priceToUse =
+              item.tags?.includes('Cheap in Bulk') &&
+              item.bulkQuantity &&
+              item.bulkPrice &&
+              item.quantityInCart >= item.bulkQuantity
+                ? item.bulkPrice
+                : item.price;
+                
             const newOrder = {
                 id: `#${Math.floor(Math.random() * 9000) + 1000}`,
                 userId: user.uid,
@@ -125,7 +133,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 district: item.district,
                 status: 'Pending' as const,
                 date: new Date().toISOString().split('T')[0],
-                amount: item.price * item.quantityInCart
+                amount: priceToUse * item.quantityInCart
             };
             addOrder(newOrder);
 
