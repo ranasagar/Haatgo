@@ -257,8 +257,16 @@ export default function LivestreamPage() {
                     </CardHeader>
                     <CardContent className="grid gap-4">
                         <div className="grid gap-2">
-                        <Label htmlFor="title-tiktok">Stream Title</Label>
-                        <Input id="title-tiktok" placeholder="e.g., Flash Sale on TikTok!" />
+                            <Label htmlFor="title-tiktok">Stream Title</Label>
+                            <Input id="title-tiktok" placeholder="e.g., Flash Sale on TikTok!" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="description-tiktok">Description</Label>
+                            <Textarea id="description-tiktok" placeholder="Describe your TikTok livestream..." />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="tiktok-handle">TikTok Handle</Label>
+                            <Input id="tiktok-handle" defaultValue="haatgo_official" readOnly />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="stream-key-tiktok">TikTok Stream Key</Label>
@@ -269,6 +277,7 @@ export default function LivestreamPage() {
                          <Button className="w-full" onClick={() => handleGoLive('tiktok')} disabled={loading === 'tiktok'}>
                            {loading === 'tiktok' ? 'Starting...' : 'Go Live on TikTok'}
                          </Button>
+                         <Button variant="outline" className="w-full">Schedule Stream</Button>
                          <Button variant="link" size="sm" asChild>
                             <a href="https://www.tiktok.com/live/creators" target="_blank" rel="noopener noreferrer">
                                 <TikTokIcon className="h-4 w-4 mr-2" />
