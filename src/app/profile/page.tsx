@@ -14,11 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { MapPin } from "lucide-react"
 import { useUserProfile } from "@/context/user-profile-context"
-import dynamic from 'next/dynamic'
-
-const InteractiveMap = dynamic(() => import('@/components/haatgo/interactive-map'), { ssr: false });
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -144,11 +140,6 @@ export default function ProfilePage() {
     setLoadingAddress(false);
   }
 
-  const handlePositionChange = (position: { lat: number, lng: number }) => {
-    setLat(position.lat.toString());
-    setLon(position.lng.toString());
-  }
-
   return (
     <div className="space-y-6">
        <Card>
@@ -191,7 +182,7 @@ export default function ProfilePage() {
       <Card>
         <CardHeader>
             <CardTitle>Shipping Address</CardTitle>
-            <CardDescription>Update your primary shipping address. Drag the pin to set your location.</CardDescription>
+            <CardDescription>Update your primary shipping address.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
              <div className="grid gap-2">
@@ -207,12 +198,6 @@ export default function ProfilePage() {
                     <Label htmlFor="lon">Longitude</Label>
                     <Input id="lon" value={lon} onChange={(e) => setLon(e.target.value)} placeholder="e.g., 85.3240" />
                 </div>
-            </div>
-            <div className="relative rounded-lg overflow-hidden h-64 border">
-              <InteractiveMap 
-                position={{ lat: parseFloat(lat), lng: parseFloat(lon) }} 
-                onPositionChange={handlePositionChange}
-              />
             </div>
         </CardContent>
         <CardFooter className="border-t pt-6">
