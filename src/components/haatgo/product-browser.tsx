@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import type { Product } from "@/lib/data"
 import { useProducts } from "@/context/product-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -34,18 +34,20 @@ export function ProductBrowser({ categories, wishlist, onToggleWishlist }: Produ
               <TabsTrigger key={category} value={category}>{category}</TabsTrigger>
             ))}
           </TabsList>
-          <TabsContent value={activeTab}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  isWishlisted={wishlist.some(item => item.id === product.id)}
-                  onToggleWishlist={onToggleWishlist}
-                />
-              ))}
-            </div>
-          </TabsContent>
+            {categories.map((category) => (
+                <TabsContent key={category} value={category}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                        {(activeTab === 'All' ? allProducts : allProducts.filter(p => p.category === category)).map((product) => (
+                            <ProductCard
+                            key={product.id}
+                            product={product}
+                            isWishlisted={wishlist.some(item => item.id === product.id)}
+                            onToggleWishlist={onToggleWishlist}
+                            />
+                        ))}
+                    </div>
+                </TabsContent>
+            ))}
         </Tabs>
       </CardContent>
     </Card>
