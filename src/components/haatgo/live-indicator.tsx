@@ -13,11 +13,13 @@ export function LiveIndicator() {
   useEffect(() => {
     const checkStreamStatus = async () => {
       try {
+        // We simulate that the user IS LIVE for demonstration purposes
         const data = await fetchLivestream({ platform: 'facebook', identifier: 'haatgo' });
         setLivestreamData(data);
       } catch (error) {
         console.error("Failed to fetch livestream status:", error);
-        setLivestreamData(null);
+        // On error, we'll show an offline state.
+        setLivestreamData({ isLive: false });
       } finally {
         setLoading(false);
       }
@@ -29,9 +31,7 @@ export function LiveIndicator() {
     return <Skeleton className="h-96 w-full rounded-xl" />;
   }
 
-  if (livestreamData?.isLive) {
-    return <LivestreamViewer />;
-  }
-
-  return null;
+  // Always render the LivestreamViewer, and pass the status to it.
+  // The LivestreamViewer will handle displaying the correct online/offline state.
+  return <LivestreamViewer streamData={livestreamData} />;
 }

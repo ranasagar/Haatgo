@@ -11,6 +11,7 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Facebook } from "lucide-react";
+import type { LivestreamData } from '@/ai/flows/livestream-fetcher';
 
 type Comment = {
   id: number;
@@ -29,18 +30,12 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 
-export function LivestreamViewer({ isDialog = false }: { isDialog?: boolean }) {
-  const [isLive, setIsLive] = useState(false);
+export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: boolean; streamData?: LivestreamData | null }) {
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState('');
   const [isAdmin, setIsAdmin] = useState(true); // For demo: toggle to show/hide moderation
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsLive(prev => !prev);
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
+  const isLive = streamData?.isLive || false;
 
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +64,7 @@ export function LivestreamViewer({ isDialog = false }: { isDialog?: boolean }) {
         {isLive ? (
             <div className="text-center text-muted-foreground">
                 <Video className="h-16 w-16 mx-auto text-primary" />
-                <p>Livestream is active.</p>
+                <p className="font-semibold mt-2">{streamData?.title || "Livestream is active."}</p>
             </div>
         ) : (
             <div className="text-center text-muted-foreground">
@@ -156,7 +151,6 @@ export function LivestreamViewer({ isDialog = false }: { isDialog?: boolean }) {
     );
   }
 
-  // Original component rendering for non-dialog use (e.g. if you wanted it on another page)
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
       <Card className="shadow-lg rounded-xl lg:col-span-2">
@@ -174,7 +168,7 @@ export function LivestreamViewer({ isDialog = false }: { isDialog?: boolean }) {
             {isLive ? (
               <div className="text-center text-muted-foreground">
                 <Video className="h-16 w-16 mx-auto text-primary" />
-                <p>Livestream is active.</p>
+                <p className="font-semibold mt-2">{streamData?.title || "Livestream is active."}</p>
               </div>
             ) : (
               <div className="text-center text-muted-foreground">
