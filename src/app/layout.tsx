@@ -1,8 +1,10 @@
+
 import type {Metadata} from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { AppSettingsProvider } from '@/context/app-settings-context';
+import { AuthProvider } from '@/context/auth-context';
 
 export const metadata: Metadata = {
   title: 'HaatGo',
@@ -27,9 +29,11 @@ export default function RootLayout({
           "font-body"
         )}
       >
-        <AppSettingsProvider>
-          {children}
-        </AppSettingsProvider>
+        <AuthProvider>
+          <AppSettingsProvider>
+            {children}
+          </AppSettingsProvider>
+        </AuthProvider>
         <Toaster />
       </body>
     </html>

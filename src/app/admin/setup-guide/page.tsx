@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { FileText, Settings, Palette, Map, Package, Clapperboard, Wallet } from "lucide-react";
+import { FileText, Settings, Palette, Map, Package, Clapperboard, Wallet, KeyRound } from "lucide-react";
 
 export default function SetupGuidePage() {
   return (
@@ -18,11 +18,35 @@ export default function SetupGuidePage() {
       <CardContent>
         <Accordion type="single" collapsible className="w-full">
           
+          <AccordionItem value="item-0">
+            <AccordionTrigger>
+              <div className="flex items-center gap-3">
+                <KeyRound className="h-5 w-5 text-primary" />
+                <span>Step 1: Configure Firebase for Authentication</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="pl-8">
+              <p className="text-muted-foreground mb-2">
+                This application uses Firebase for user authentication. You must configure it first.
+              </p>
+              <ol className="list-decimal list-inside space-y-2">
+                <li>Go to the <a href="https://firebase.google.com/" target="_blank" rel="noopener noreferrer" className="underline">Firebase Console</a> and create a new project.</li>
+                <li>In your project, go to Project Settings and add a new Web App.</li>
+                <li>Copy the Firebase configuration object (firebaseConfig).</li>
+                <li>Open the <code className="bg-muted px-1 rounded-sm">.env</code> file in this project.</li>
+                <li>Paste your config values into the corresponding `NEXT_PUBLIC_FIREBASE_*` variables.</li>
+                <li>In the Firebase Console, navigate to "Authentication" under the "Build" section.</li>
+                <li>Enable the "Email/Password" sign-in provider.</li>
+                <li>Your app is now ready for user registration and login!</li>
+              </ol>
+            </AccordionContent>
+          </AccordionItem>
+          
           <AccordionItem value="item-1">
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Settings className="h-5 w-5 text-primary" />
-                <span>Step 1: Configure Basic Settings</span>
+                <span>Step 2: Configure Basic Settings</span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -43,7 +67,7 @@ export default function SetupGuidePage() {
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Package className="h-5 w-5 text-primary" />
-                <span>Step 2: Add Your Products</span>
+                <span>Step 3: Add Your Products</span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -64,7 +88,7 @@ export default function SetupGuidePage() {
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Map className="h-5 w-5 text-primary" />
-                <span>Step 3: Create a Seller Route</span>
+                <span>Step 4: Create a Seller Route</span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -86,7 +110,7 @@ export default function SetupGuidePage() {
             <AccordionTrigger>
                 <div className="flex items-center gap-3">
                     <Wallet className="h-5 w-5 text-primary" />
-                    <span>Step 4: Review Your Finances</span>
+                    <span>Step 5: Review Your Finances</span>
                 </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -107,7 +131,7 @@ export default function SetupGuidePage() {
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Clapperboard className="h-5 w-5 text-primary" />
-                <span>Step 5: Start a Livestream</span>
+                <span>Step 6: Start a Livestream</span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">

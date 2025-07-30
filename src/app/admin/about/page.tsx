@@ -1,8 +1,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Clapperboard, Map, Package, ShoppingCart, Sparkles, MessageSquare, Wallet } from "lucide-react";
+import { CheckCircle2, Clapperboard, Map, Package, ShoppingCart, Sparkles, MessageSquare, Wallet, Users } from "lucide-react";
 
 const features = [
+  {
+    icon: <Users className="h-6 w-6 text-primary" />,
+    title: "User Authentication",
+    description: "Secure login and registration system for users, powered by Firebase Authentication for robust security and ease of use."
+  },
   {
     icon: <Package className="h-6 w-6 text-primary" />,
     title: "Product Management",
@@ -76,6 +81,7 @@ export default function AboutPage() {
         <CardContent>
             <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /><strong>Next.js & React:</strong> For a fast, server-rendered user interface.</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /><strong>Firebase:</strong> For reliable and secure user authentication and data storage.</li>
                 <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /><strong>Tailwind CSS & ShadCN UI:</strong> For a beautiful, responsive, and customizable design system.</li>
                 <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /><strong>Genkit (Google AI):</strong> For cutting-edge generative AI features like product recommendations.</li>
                 <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /><strong>TypeScript:</strong> For robust, type-safe code that prevents errors.</li>

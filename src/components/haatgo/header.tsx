@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Truck, Radio, Heart, User, LayoutDashboard, LogOut } from "lucide-react"
+import { Truck, Radio, Heart, User, LayoutDashboard, LogOut, LogIn } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useAppSettings } from "@/context/app-settings-context";
+import { useAuth } from "@/context/auth-context"
 
 type AppHeaderProps = {
   wishlistCount: number;
@@ -23,6 +24,7 @@ type AppHeaderProps = {
 
 export function AppHeader({ wishlistCount }: AppHeaderProps) {
   const { settings } = useAppSettings();
+  const { user, logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
@@ -52,35 +54,46 @@ export function AppHeader({ wishlistCount }: AppHeaderProps) {
               </div>
             </Button>
           </SheetTrigger>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Avatar className="h-9 w-9 cursor-pointer">
-                    <AvatarImage src="https://placehold.co/100x100" alt="User Avatar" />
-                    <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                    <Link href="/profile">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                        <LayoutDashboard className="mr-2 h-4 w-4" />
-                        <span>Admin Panel</span>
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Sign Out</span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Avatar className="h-9 w-9 cursor-pointer">
+                      <AvatarImage src={user.photoURL || "https://placehold.co/100x100"} alt="User Avatar" />
+                      <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                      <Link href="/profile">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Profile</span>
+                      </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                      <Link href="/admin">
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          <span>Admin Panel</span>
+                      </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign Out</span>
+                  </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="flex items-center gap-2">
+                <Button asChild variant="ghost" size="sm">
+                    <Link href="/login">Login</Link>
+                </Button>
+                <Button asChild size="sm">
+                    <Link href="/signup">Sign Up</Link>
+                </Button>
+            </div>
+          )}
         </div>
       </div>
     </header>

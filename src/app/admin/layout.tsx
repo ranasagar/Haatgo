@@ -1,13 +1,23 @@
 
 "use client";
 
-import { Home, Package, ShoppingCart, Map, PanelLeft, Clapperboard, Truck, Settings, BookOpen, Info, Wallet } from "lucide-react";
+import { Home, Package, ShoppingCart, Map, PanelLeft, Clapperboard, Truck, Settings, BookOpen, Info, Wallet, LogOut } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAppSettings } from "@/context/app-settings-context";
+import { useAuth } from "@/context/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function AdminLayout({
   children,
@@ -15,6 +25,8 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const { settings } = useAppSettings();
+  const { user, logout } = useAuth();
+
   const navItems = [
     { href: "/admin", icon: Home, label: "Dashboard" },
     { href: "/admin/products", icon: Package, label: "Products" },
@@ -24,7 +36,6 @@ export default function AdminLayout({
     { href: "/admin/accounting", icon: Wallet, label: "Accounting" },
     { href: "/admin/setup-guide", icon: BookOpen, label: "Setup Guide" },
     { href: "/admin/about", icon: Info, label: "About" },
-    { href: "/admin/settings", icon: Settings, label: "Settings" },
   ];
 
   const AppLogo = () => (
@@ -65,6 +76,22 @@ export default function AdminLayout({
             ))}
           </TooltipProvider>
         </nav>
+        <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
+          <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/admin/settings"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-sidebar-foreground/80 transition-colors hover:text-sidebar-foreground md:h-8 md:w-8"
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span className="sr-only">Settings</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-sidebar text-sidebar-foreground border-sidebar-border">Settings</TooltipContent>
+              </Tooltip>
+          </TooltipProvider>
+        </nav>
       </aside>
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -77,9 +104,9 @@ export default function AdminLayout({
             </SheetTrigger>
             <SheetContent side="left" className="sm:max-w-xs bg-sidebar text-sidebar-foreground border-sidebar-border">
                <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
+                  <SheetTitle className="text-sidebar-foreground">Menu</SheetTitle>
                 </SheetHeader>
-              <nav className="grid gap-6 text-lg font-medium">
+              <nav className="grid gap-6 text-lg font-medium mt-4">
                 <Link
                    href="/"
                    className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
@@ -87,7 +114,7 @@ export default function AdminLayout({
                   <AppLogo />
                   <span className="sr-only">{settings.appName}</span>
                 </Link>
-                 {navItems.map((item) => (
+                 {[...navItems, { href: "/admin/settings", icon: Settings, label: "Settings" }].map((item) => (
                     <Link
                         key={item.label}
                         href={item.href}
@@ -100,6 +127,26 @@ export default function AdminLayout({
               </nav>
             </SheetContent>
           </Sheet>
+          <div className="ml-auto">
+            {user && (
+               <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                      <Avatar className="h-9 w-9 cursor-pointer">
+                          <AvatarImage src={user.photoURL || "https://placehold.co/100x100"} alt="User Avatar" />
+                          <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                          <Link href="/profile">Profile</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={logout}>Sign Out</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+            )}
+          </div>
         </header>
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           {children}
