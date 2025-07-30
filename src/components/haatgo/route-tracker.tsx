@@ -29,7 +29,7 @@ export function RouteTracker() {
 
     deliveries.forEach(d => {
         if (!allStops.find(s => s.lat === d.lat && s.lon === d.lon)) {
-            allStops.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery' });
+            allStops.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, eta: '' });
         }
     });
 
@@ -37,7 +37,7 @@ export function RouteTracker() {
     parcelStopNames.forEach(name => {
         const stop = initialRouteStops.find(s => s.name === name);
         if (stop && !allStops.find(s => s.name === name)) {
-            allStops.push({ ...stop, type: 'parcel' });
+            allStops.push({ ...stop, type: 'parcel', passed: false, eta: '' });
         } else if (stop) {
             const existing = allStops.find(s => s.name === name);
             if (existing && !existing.type) (existing as any).type = 'parcel';

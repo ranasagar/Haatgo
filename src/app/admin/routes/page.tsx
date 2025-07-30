@@ -46,6 +46,7 @@ import { cn } from "@/lib/utils";
 type Stop = {
     name: string;
     passed: boolean;
+    eta: string;
 };
 
 type Route = {
@@ -60,9 +61,9 @@ const initialRoutes: Route[] = [
         id: "1",
         name: "Chisapani - Sankhejung",
         stops: [
-            { name: "Chisapani Market", passed: false },
-            { name: "Bhedetar Junction", passed: false },
-            { name: "Sankhejung Village", passed: false },
+            { name: "Chisapani Market", passed: false, eta: "09:00 AM" },
+            { name: "Bhedetar Junction", passed: false, eta: "11:30 AM" },
+            { name: "Sankhejung Village", passed: false, eta: "02:00 PM" },
         ],
         date: "2024-07-25",
     },
@@ -70,7 +71,7 @@ const initialRoutes: Route[] = [
 
 const defaultNewRoute = {
     name: '',
-    stops: [''],
+    stops: [{ name: '', eta: '' }],
 };
 
 export default function RoutesPage() {
@@ -102,13 +103,13 @@ export default function RoutesPage() {
     const handleAddStop = () => {
         setNewRoute(prev => ({
             ...prev,
-            stops: [...prev.stops, '']
+            stops: [...prev.stops, { name: '', eta: '' }]
         }));
     };
 
-    const handleStopChange = (index: number, value: string) => {
+    const handleStopChange = (index: number, field: 'name' | 'eta', value: string) => {
         const updatedStops = [...newRoute.stops];
-        updatedStops[index] = value;
+        updatedStops[index] = { ...updatedStops[index], [field]: value };
         setNewRoute(prev => ({ ...prev, stops: updatedStops }));
     };
 
@@ -120,7 +121,9 @@ export default function RoutesPage() {
         const routeToAdd: Route = {
             id: (routes.length + 1).toString(),
             name: newRoute.name,
-            stops: newRoute.stops.filter(s => s.trim() !== '').map(s => ({ name: s, passed: false })),
+            stops: newRoute.stops
+                .filter(s => s.name.trim() !== '' && s.eta.trim() !== '')
+                .map(s => ({ ...s, passed: false })),
             date: new Date().toISOString().split('T')[0], // Today's date
         };
 
@@ -179,11 +182,11 @@ export default function RoutesPage() {
                   </span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>Add Route</DialogTitle>
                   <DialogDescription>
-                    Create a new seller route. Add stops one by one.
+                    Create a new seller route. Add stops and their estimated arrival times.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -194,11 +197,12 @@ export default function RoutesPage() {
                     <Input id="routeName" value={newRoute.name} onChange={handleRouteNameChange} placeholder="e.g. East Nepal Route" className="col-span-3" />
                   </div>
                   {newRoute.stops.map((stop, index) => (
-                    <div key={index} className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor={`stop-${index}`} className="text-right">
-                        Stop {index + 1}
-                      </Label>
-                      <Input id={`stop-${index}`} value={stop} onChange={(e) => handleStopChange(index, e.target.value)} placeholder="e.g. Chisapani Market" className="col-span-3" />
+                    <div key={index} className="grid grid-cols-1 gap-2">
+                      <Label>Stop {index + 1}</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                          <Input value={stop.name} onChange={(e) => handleStopChange(index, 'name', e.target.value)} placeholder="e.g. Chisapani Market" />
+                          <Input value={stop.eta} onChange={(e) => handleStopChange(index, 'eta', e.target.value)} placeholder="ETA (e.g. 9:00 AM)" />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -224,6 +228,7 @@ export default function RoutesPage() {
                   <TableRow>
                     <TableHead>Route Name</TableHead>
                     <TableHead>Stops</TableHead>
+                     <TableHead>ETAs</TableHead>
                     <TableHead className="hidden md:table-cell">
                       Date
                     </TableHead>
@@ -240,6 +245,9 @@ export default function RoutesPage() {
                         </TableCell>
                         <TableCell>
                         {route.stops.map(s => s.name).join(', ')}
+                        </TableCell>
+                         <TableCell>
+                        {route.stops.map(s => s.eta).join(', ')}
                         </TableCell>
                         <TableCell className="hidden md:table-cell">
                         {route.date}
