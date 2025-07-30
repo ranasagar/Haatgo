@@ -35,18 +35,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         // Add the logged-in admin user to the list if they are not already there
-        if (authUser && isAdmin && !users.some(u => u.id === authUser.uid)) {
-            const adminUser: User = {
-                id: authUser.uid,
-                name: authUser.displayName || 'Admin User',
-                email: authUser.email || 'admin@example.com',
-                role: 'Admin',
-                status: 'Active',
-                lastLogin: new Date().toISOString().split('T')[0]
-            };
-            setUsers(prev => [adminUser, ...prev]);
+        if (authUser && isAdmin) {
+            setUsers(prevUsers => {
+                if (prevUsers.some(u => u.id === authUser.uid)) {
+                    return prevUsers; // Admin already exists, do nothing
+                }
+                const adminUser: User = {
+                    id: authUser.uid,
+                    name: authUser.displayName || 'Admin User',
+                    email: authUser.email || 'admin@example.com',
+                    role: 'Admin',
+                    status: 'Active',
+                    lastLogin: new Date().toISOString().split('T')[0]
+                };
+                return [adminUser, ...prevUsers];
+            });
         }
-    }, [authUser, isAdmin, users]);
+    }, [authUser, isAdmin]);
 
 
     const addUser = (user: NewUser) => {
