@@ -17,7 +17,10 @@ export type Product = {
 export type Order = {
   id: string;
   userId: string | null;
-  product: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  district: string;
   status: 'Pending' | 'Confirmed' | 'On the Way' | 'Delivered';
   date: string;
   amount: number;
@@ -5436,7 +5439,7 @@ export const parcels: Parcel[] = [
 ];
 
 export const initialOrders: Order[] = [
-  { id: "#1005", userId: "user1", product: "Warm Fleece Jacket", status: "Delivered", date: "2023-06-27", amount: 1500.00 },
-  { id: "#1004", userId: "user2", product: "Stainless Steel Pot Set", status: "On the Way", date: "2023-06-26", amount: 2500.00 },
-  { id: "#1003", userId: "user1", product: "Basmati Rice (25kg)", status: "Confirmed", date: "2023-06-25", amount: 3200.00 },
+  { id: "#1005", userId: "user1", productId: "dolakha-4", productName: "Warm Fleece Jacket", quantity: 1, district: "Dolakha", status: "Delivered", date: "2023-06-27", amount: 1500.00 },
+  { id: "#1004", userId: "user2", productId: "12", productName: "Palpa Karuwa", quantity: 1, district: "Palpa", status: "On the Way", date: "2023-06-26", amount: 2500.00 },
+  { id: "#1003", userId: "user1", productId: "5", productName: "Jumla Marsi Rice", quantity: 1, district: "Jumla", status: "Confirmed", date: "2023-06-25", amount: 3200.00 },
 ];

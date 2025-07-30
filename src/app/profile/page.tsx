@@ -64,11 +64,13 @@ export default function ProfilePage() {
     setLoadingProfile(true);
     const displayName = `${firstName} ${lastName}`.trim();
     try {
-      await updateProfile(user, { displayName });
-      toast({
-        title: "Profile Updated",
-        description: "Your profile information has been saved.",
-      });
+      if(user) {
+        await updateProfile(user, { displayName });
+        toast({
+            title: "Profile Updated",
+            description: "Your profile information has been saved.",
+        });
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -139,6 +141,8 @@ export default function ProfilePage() {
     });
     setLoadingAddress(false);
   }
+
+  const userOrders = user ? orders.filter(o => o.userId === user.uid) : [];
 
   return (
     <div className="space-y-6">
@@ -241,7 +245,7 @@ export default function ProfilePage() {
           <CardDescription>View your past orders and their status.</CardDescription>
         </CardHeader>
         <CardContent>
-          {orders.length > 0 ? (
+          {userOrders.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -253,10 +257,10 @@ export default function ProfilePage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orders.map((order) => (
+                {userOrders.map((order) => (
                   <TableRow key={order.id}>
                     <TableCell className="font-medium">{order.id}</TableCell>
-                    <TableCell>{order.product}</TableCell>
+                    <TableCell>{order.productName} (x{order.quantity})</TableCell>
                     <TableCell>{order.date}</TableCell>
                     <TableCell>
                       <Badge variant="outline">{order.status}</Badge>

@@ -1,13 +1,16 @@
 
 "use client"
 
+import { useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Package, Truck, CheckCircle2, CircleDot, Info } from "lucide-react"
+import { Package, Truck, CheckCircle2, CircleDot, Info, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useOrders } from "@/context/order-context"
 import { useAuth } from "@/context/auth-context"
 import { ScrollArea } from "../ui/scroll-area"
 import { AnimatePresence, motion } from "framer-motion"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import type { Order } from "@/lib/data"
 
 const orderSteps = [
   { name: "Pending", icon: CircleDot },
@@ -16,15 +19,15 @@ const orderSteps = [
   { name: "Delivered", icon: Package },
 ]
 
-function SingleOrderTracker({ order }: { order: import("@/lib/data").Order }) {
+function SingleOrderTracker({ order }: { order: Order }) {
     const currentStepIndex = orderSteps.findIndex(step => step.name === order.status);
     const progressPercentage = currentStepIndex >= 0 ? (currentStepIndex / (orderSteps.length -1)) * 100 : 0;
 
     return (
-        <div className="p-4 border rounded-lg">
+        <div className="p-4 border rounded-lg bg-background">
             <div className="flex justify-between items-start mb-3">
                 <div>
-                    <p className="font-bold">{order.product}</p>
+                    <p className="font-bold">{order.productName} (x{order.quantity})</p>
                     <p className="text-sm text-muted-foreground">{order.id} &bull; {order.date}</p>
                 </div>
                  <p className="text-lg font-bold text-primary">रू{order.amount.toFixed(2)}</p>
@@ -70,6 +73,15 @@ export function OrderTracker() {
 
   const userOrders = user ? orders.filter(o => o.userId === user.uid) : [];
 
+  const groupedOrders = useMemo(() => {
+    return userOrders.reduce((acc, order) => {
+        (acc[order.district] = acc[order.district] || []).push(order);
+        return acc;
+    }, {} as Record<string, Order[]>);
+  }, [userOrders]);
+
+  const districts = Object.keys(groupedOrders);
+
   if (!user || userOrders.length === 0) {
     return (
         <Card className="shadow-lg rounded-xl overflow-hidden">
@@ -91,15 +103,27 @@ export function OrderTracker() {
     <Card className="shadow-lg rounded-xl overflow-hidden">
       <CardHeader>
         <CardTitle className="font-headline text-xl">Your Order Status</CardTitle>
-        <CardDescription>Tracking your recent orders.</CardDescription>
+        <CardDescription>Tracking your recent orders by district.</CardDescription>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-72">
-            <div className="space-y-4 pr-4">
-                {userOrders.map((order) => (
-                    <SingleOrderTracker key={order.id} order={order} />
+        <ScrollArea className="h-80">
+            <Accordion type="multiple" defaultValue={districts} className="space-y-4 pr-4">
+                 {districts.map(district => (
+                    <AccordionItem key={district} value={district} className="border-none">
+                        <AccordionTrigger className="bg-muted/50 hover:bg-muted/80 px-4 py-2 rounded-lg text-base font-bold">
+                           <div className="flex items-center gap-2">
+                             <MapPin className="h-5 w-5 text-primary" />
+                             Shipment from {district} ({groupedOrders[district].length} items)
+                           </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-4 space-y-4">
+                            {groupedOrders[district].map(order => (
+                                <SingleOrderTracker key={order.id} order={order} />
+                            ))}
+                        </AccordionContent>
+                    </AccordionItem>
                 ))}
-            </div>
+            </Accordion>
         </ScrollArea>
       </CardContent>
     </Card>

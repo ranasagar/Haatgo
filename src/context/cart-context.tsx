@@ -116,11 +116,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         };
 
         cart.forEach(item => {
-            // Create a new order for each item
             const newOrder = {
                 id: `#${Math.floor(Math.random() * 9000) + 1000}`,
                 userId: user.uid,
-                product: `${item.name} (x${item.quantityInCart})`,
+                productId: item.id,
+                productName: item.name,
+                quantity: item.quantityInCart,
+                district: item.district,
                 status: 'Pending' as const,
                 date: new Date().toISOString().split('T')[0],
                 amount: item.price * item.quantityInCart
