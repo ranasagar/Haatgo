@@ -19,18 +19,30 @@ const orderSteps = [
   { name: "Delivered", icon: Package },
 ]
 
-function SingleOrderTracker({ order }: { order: Order }) {
-    const currentStepIndex = orderSteps.findIndex(step => step.name === order.status);
+const statusHierarchy = orderSteps.map(s => s.name);
+
+type ConsolidatedShipment = {
+    district: string;
+    productDetails: string;
+    totalAmount: number;
+    earliestDate: string;
+    status: Order['status'];
+    orderIds: string;
+}
+
+function ShipmentTracker({ shipment }: { shipment: ConsolidatedShipment }) {
+    const currentStepIndex = statusHierarchy.indexOf(shipment.status);
     const progressPercentage = currentStepIndex >= 0 ? (currentStepIndex / (orderSteps.length -1)) * 100 : 0;
 
     return (
         <div className="p-4 border rounded-lg bg-background">
             <div className="flex justify-between items-start mb-3">
                 <div>
-                    <p className="font-bold">{order.productName} (x{order.quantity})</p>
-                    <p className="text-sm text-muted-foreground">{order.id} &bull; {order.date}</p>
+                    <p className="font-bold">{shipment.productDetails}</p>
+                    <p className="text-sm text-muted-foreground">Shipment from {shipment.district}</p>
+                     <p className="text-xs text-muted-foreground">Order Date: {shipment.earliestDate}</p>
                 </div>
-                 <p className="text-lg font-bold text-primary">रू{order.amount.toFixed(2)}</p>
+                 <p className="text-lg font-bold text-primary">रू{shipment.totalAmount.toFixed(2)}</p>
             </div>
             
              <div className="relative flex justify-between pt-2">
@@ -73,14 +85,34 @@ export function OrderTracker() {
 
   const userOrders = user ? orders.filter(o => o.userId === user.uid) : [];
 
-  const groupedOrders = useMemo(() => {
-    return userOrders.reduce((acc, order) => {
-        (acc[order.district] = acc[order.district] || []).push(order);
+  const consolidatedShipments = useMemo(() => {
+    const groupedByDistrict = userOrders.reduce((acc, order) => {
+        if (!acc[order.district]) {
+            acc[order.district] = [];
+        }
+        acc[order.district].push(order);
         return acc;
     }, {} as Record<string, Order[]>);
+
+    return Object.values(groupedByDistrict).map(districtOrders => {
+        const earliestOrder = districtOrders.reduce((earliest, current) => new Date(current.date) < new Date(earliest.date) ? current : earliest);
+        
+        const overallStatusIndex = Math.min(
+            ...districtOrders.map(o => statusHierarchy.indexOf(o.status))
+        );
+
+        const shipment: ConsolidatedShipment = {
+            district: earliestOrder.district,
+            productDetails: districtOrders.map(o => `${o.productName} (x${o.quantity})`).join(', '),
+            totalAmount: districtOrders.reduce((sum, o) => sum + o.amount, 0),
+            earliestDate: earliestOrder.date,
+            status: statusHierarchy[overallStatusIndex],
+            orderIds: districtOrders.map(o => o.id).join(', '),
+        };
+        return shipment;
+    });
   }, [userOrders]);
 
-  const districts = Object.keys(groupedOrders);
 
   if (!user || userOrders.length === 0) {
     return (
@@ -103,27 +135,22 @@ export function OrderTracker() {
     <Card className="shadow-lg rounded-xl overflow-hidden">
       <CardHeader>
         <CardTitle className="font-headline text-xl">Your Order Status</CardTitle>
-        <CardDescription>Tracking your recent orders by district.</CardDescription>
+        <CardDescription>Tracking your shipments by district.</CardDescription>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-80">
-            <Accordion type="multiple" defaultValue={districts} className="space-y-4 pr-4">
-                 {districts.map(district => (
-                    <AccordionItem key={district} value={district} className="border-none">
-                        <AccordionTrigger className="bg-muted/50 hover:bg-muted/80 px-4 py-2 rounded-lg text-base font-bold">
-                           <div className="flex items-center gap-2">
-                             <MapPin className="h-5 w-5 text-primary" />
-                             Shipment from {district} ({groupedOrders[district].length} items)
-                           </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-4 space-y-4">
-                            {groupedOrders[district].map(order => (
-                                <SingleOrderTracker key={order.id} order={order} />
-                            ))}
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
-            </Accordion>
+            <div className="space-y-4 pr-4">
+              {consolidatedShipments.length > 0 ? (
+                  consolidatedShipments.map(shipment => (
+                      <ShipmentTracker key={shipment.district} shipment={shipment} />
+                  ))
+              ) : (
+                  <div className="flex items-center justify-center text-center text-muted-foreground h-40 flex-col gap-2">
+                    <Info className="h-8 w-8" />
+                    <p className="font-semibold">No Active Orders</p>
+                  </div>
+              )}
+            </div>
         </ScrollArea>
       </CardContent>
     </Card>
