@@ -116,6 +116,12 @@ export default function ProductsPage() {
                     <Input id="price" defaultValue="रू0.00" className="col-span-3" />
                   </div>
                    <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="cost" className="text-right">
+                      Cost
+                    </Label>
+                    <Input id="cost" defaultValue="रू0.00" className="col-span-3" />
+                  </div>
+                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="description" className="text-right">
                       Description
                     </Label>
@@ -150,6 +156,9 @@ export default function ProductsPage() {
                       Price
                     </TableHead>
                     <TableHead className="hidden md:table-cell">
+                      Cost
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell">
                       Inventory
                     </TableHead>
                     <TableHead className="hidden md:table-cell">
@@ -180,6 +189,9 @@ export default function ProductsPage() {
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         रू{1000 + i * 100}.00
+                      </TableCell>
+                       <TableCell className="hidden md:table-cell">
+                        रू{700 + i * 100}.00
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         {25 + i * 5} in stock

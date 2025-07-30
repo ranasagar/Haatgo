@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { FileText, Settings, Palette, Map, Package, Clapperboard } from "lucide-react";
+import { FileText, Settings, Palette, Map, Package, Clapperboard, Wallet } from "lucide-react";
 
 export default function SetupGuidePage() {
   return (
@@ -53,7 +53,7 @@ export default function SetupGuidePage() {
               <ol className="list-decimal list-inside space-y-2">
                 <li>Go to the <code className="bg-muted px-1 rounded-sm">Products</code> page.</li>
                 <li>Click the <strong>Add Product</strong> button.</li>
-                <li>Fill in the product's name, price, and a description.</li>
+                <li>Fill in the product's name, price, description, and <strong>cost</strong>. The cost is used for profit tracking in the Accounting section.</li>
                 <li>Click <strong>Save changes</strong>. Repeat for all your products.</li>
                 <li>You can also edit or delete existing products from the list.</li>
               </ol>
@@ -81,12 +81,32 @@ export default function SetupGuidePage() {
               </ol>
             </AccordionContent>
           </AccordionItem>
-          
+
           <AccordionItem value="item-4">
+            <AccordionTrigger>
+                <div className="flex items-center gap-3">
+                    <Wallet className="h-5 w-5 text-primary" />
+                    <span>Step 4: Review Your Finances</span>
+                </div>
+            </AccordionTrigger>
+            <AccordionContent className="pl-8">
+                <p className="text-muted-foreground mb-2">
+                    Keep track of your business's financial health.
+                </p>
+                <ol className="list-decimal list-inside space-y-2">
+                    <li>Navigate to the <code className="bg-muted px-1 rounded-sm">Accounting</code> page.</li>
+                    <li>View your total revenue, costs, and gross profit at a glance.</li>
+                    <li>Analyze the sales overview chart to understand performance over time.</li>
+                    <li>Review the list of recent transactions for a detailed record of sales and expenses.</li>
+                </ol>
+            </AccordionContent>
+          </AccordionItem>
+          
+          <AccordionItem value="item-5">
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Clapperboard className="h-5 w-5 text-primary" />
-                <span>Step 4: Start a Livestream</span>
+                <span>Step 5: Start a Livestream</span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -103,7 +123,7 @@ export default function SetupGuidePage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="item-5">
+          <AccordionItem value="item-6">
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Palette className="h-5 w-5 text-primary" />

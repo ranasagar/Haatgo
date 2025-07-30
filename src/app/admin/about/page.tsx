@@ -1,17 +1,22 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Clapperboard, Map, Package, ShoppingCart, Sparkles, MessageSquare } from "lucide-react";
+import { CheckCircle2, Clapperboard, Map, Package, ShoppingCart, Sparkles, MessageSquare, Wallet } from "lucide-react";
 
 const features = [
   {
     icon: <Package className="h-6 w-6 text-primary" />,
     title: "Product Management",
-    description: "Easily add, edit, and manage all your products from a centralized dashboard. Keep track of inventory and pricing with a simple interface."
+    description: "Easily add, edit, and manage all your products from a centralized dashboard. Keep track of inventory, pricing, and costs with a simple interface."
   },
   {
     icon: <ShoppingCart className="h-6 w-6 text-primary" />,
     title: "Order Management",
     description: "View and process customer orders efficiently. Track order statuses from 'Pending' to 'Fulfilled' and manage sales performance."
+  },
+  {
+    icon: <Wallet className="h-6 w-6 text-primary" />,
+    title: "Accounting",
+    description: "Get a clear overview of your financials. Track total revenue, costs, and profits, and visualize sales trends with built-in charts."
   },
   {
     icon: <Map className="h-6 w-6 text-primary" />,
