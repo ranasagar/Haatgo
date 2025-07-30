@@ -12,16 +12,11 @@ type ProductBrowserProps = {
   categories: string[];
   wishlist: Product[];
   onToggleWishlist: (product: Product) => void;
-  onProductsChange: (products: Product[]) => void;
 };
 
-export function ProductBrowser({ categories, wishlist, onToggleWishlist, onProductsChange }: ProductBrowserProps) {
+export function ProductBrowser({ categories, wishlist, onToggleWishlist }: ProductBrowserProps) {
   const [activeTab, setActiveTab] = useState(categories[0]);
   const { products: allProducts } = useProducts();
-
-  useEffect(() => {
-    onProductsChange(allProducts);
-  }, [allProducts, onProductsChange]);
 
   const filteredProducts = activeTab === 'All'
     ? allProducts
