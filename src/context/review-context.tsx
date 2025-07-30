@@ -4,6 +4,7 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 export type Review = {
+    id: string;
     productId: string;
     userId: string;
     userName: string;
@@ -18,11 +19,12 @@ type NewReview = Omit<Review, 'id'>;
 
 type ReviewContextType = {
     reviews: Review[];
-    addReview: (review: NewReview) => void;
+    addReview: (review: Review) => void;
 };
 
 const initialReviews: Review[] = [
     {
+        id: 'review-1',
         productId: '1',
         userId: 'user1',
         userName: 'Sunita Rai',
@@ -33,6 +35,7 @@ const initialReviews: Review[] = [
         date: "2024-07-20"
     },
     {
+        id: 'review-2',
         productId: '3',
         userId: 'user2',
         userName: 'Ramesh Thapa',
@@ -49,7 +52,7 @@ const ReviewContext = createContext<ReviewContextType | undefined>(undefined);
 export const ReviewProvider = ({ children }: { children: ReactNode }) => {
     const [reviews, setReviews] = useState<Review[]>(initialReviews);
 
-    const addReview = (review: NewReview) => {
+    const addReview = (review: Review) => {
         setReviews(prev => [review, ...prev]);
     }
 

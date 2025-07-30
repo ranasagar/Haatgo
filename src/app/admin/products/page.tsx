@@ -49,6 +49,7 @@ import { cn } from "@/lib/utils";
 const defaultNewProduct: Product = {
   id: '',
   name: "New Product",
+  category: 'Food',
   price: 0,
   cost: 0,
   quantity: 10,
