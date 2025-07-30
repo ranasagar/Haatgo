@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState } from "react";
@@ -14,6 +15,7 @@ import { ProductBrowser } from "@/components/haatgo/product-browser";
 import { WishlistSheet } from "@/components/haatgo/wishlist-sheet";
 import { useToast } from "@/hooks/use-toast";
 import { MyOrders } from "@/components/haatgo/my-orders";
+import { FloatingChatButtons } from "@/components/haatgo/floating-chat-buttons";
 
 export default function Home() {
   const [wishlist, setWishlist] = useState<Product[]>([]);
@@ -58,6 +60,7 @@ export default function Home() {
             </div>
           </div>
         </main>
+        <FloatingChatButtons />
       </div>
     </WishlistSheet>
   );
