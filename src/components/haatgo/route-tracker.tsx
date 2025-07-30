@@ -5,15 +5,17 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin, Clock, Truck } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { routeStops as initialRouteStops } from "@/lib/data"
 
-const initialRouteStops = [
-  { name: "Chisapani Market", eta: "9:00 AM", passed: true, lat: 26.9833, lon: 87.1333 },
-  { name: "Bhedetar Junction", eta: "11:30 AM", passed: false, lat: 26.9167, lon: 87.3167 },
-  { name: "Sankhejung Village", eta: "2:00 PM", passed: false, lat: 27.0194, lon: 87.8044 },
-]
+const routeStopsWithTime = initialRouteStops.map((stop, index) => ({
+    ...stop,
+    eta: `${9 + index * 2}:${index === 1 ? '30' : '00'} ${index < 2 ? "AM" : "PM"}` ,
+    passed: index < 1,
+}));
+
 
 export function RouteTracker() {
-  const [routeStops, setRouteStops] = useState(initialRouteStops);
+  const [routeStops, setRouteStops] = useState(routeStopsWithTime);
   const [mapUrl, setMapUrl] = useState('');
 
   const nextStop = routeStops.find(stop => !stop.passed);

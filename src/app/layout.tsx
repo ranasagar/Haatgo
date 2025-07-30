@@ -7,6 +7,7 @@ import { AppSettingsProvider } from '@/context/app-settings-context';
 import { AuthProvider } from '@/context/auth-context';
 import { ProductProvider } from '@/context/product-context';
 import { DeliveryProvider } from '@/context/delivery-context';
+import { ParcelProvider } from '@/context/parcel-context';
 
 export const metadata: Metadata = {
   title: 'HaatGo',
@@ -35,7 +36,9 @@ export default function RootLayout({
           <AppSettingsProvider>
             <ProductProvider>
                 <DeliveryProvider>
+                  <ParcelProvider>
                     {children}
+                  </ParcelProvider>
                 </DeliveryProvider>
             </ProductProvider>
           </AppSettingsProvider>

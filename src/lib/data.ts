@@ -23,6 +23,19 @@ export type Delivery = {
   driver: string;
 };
 
+export type Parcel = {
+  id: string;
+  fromStop: string;
+  toStop: string;
+  senderName: string;
+  senderPhone: string;
+  receiverName: string;
+  receiverPhone: string;
+  description: string;
+  status: 'Pending' | 'On the Way' | 'Ready for Pickup' | 'Completed';
+};
+
+
 export const categories = ['All', 'Food', 'Clothing', 'Utensils', 'Electronics', 'Farming'];
 
 export const products: Product[] = [
@@ -204,4 +217,24 @@ export const deliveries: Delivery[] = [
         status: "Pending",
         driver: "Sita Devi"
     }
+];
+
+export const routeStops = [
+  { name: "Chisapani Market", lat: 26.9833, lon: 87.1333 },
+  { name: "Bhedetar Junction", lat: 26.9167, lon: 87.3167 },
+  { name: "Sankhejung Village", lat: 27.0194, lon: 87.8044 },
+];
+
+export const parcels: Parcel[] = [
+    {
+        id: "P1",
+        fromStop: "Chisapani Market",
+        toStop: "Sankhejung Village",
+        senderName: "Bikash",
+        senderPhone: "9812345678",
+        receiverName: "Srijana",
+        receiverPhone: "9887654321",
+        description: "Important Documents",
+        status: "On the Way"
+    },
 ];
