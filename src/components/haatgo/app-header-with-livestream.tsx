@@ -1,7 +1,6 @@
 
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,19 +9,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { LivestreamViewer } from "./livestream-viewer";
+import { Button } from "@/components/ui/button";
 import { Radio } from "lucide-react";
+import { LivestreamViewer } from "./livestream-viewer";
+import { AppHeader } from "./header";
 
-// This component is now only used for the mobile view sticky button
-export function LivestreamDialog() {
+
+export function AppHeaderWithLivestream() {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button className="font-bold w-full text-lg py-6">
-          <Radio className="mr-2 h-5 w-5" />
-          Watch Live Now
-        </Button>
-      </DialogTrigger>
+      <AppHeader
+        livestreamTrigger={
+          <DialogTrigger asChild>
+            <Button className="font-bold">
+              <Radio className="mr-2 h-5 w-5" />
+              Watch Live
+            </Button>
+          </DialogTrigger>
+        }
+      />
       <DialogContent className="max-w-6xl p-0 border-0">
          <DialogHeader className="sr-only">
           <DialogTitle>Livestream</DialogTitle>

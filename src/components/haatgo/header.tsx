@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Truck, Heart, User, LayoutDashboard, LogOut, LogIn, ShoppingCart } from "lucide-react"
+import { Truck, User, LayoutDashboard, LogOut, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -17,10 +17,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useAppSettings } from "@/context/app-settings-context";
 import { useAuth } from "@/context/auth-context"
-import { LivestreamDialog } from "./livestream-dialog"
 import { useCart } from "@/context/cart-context"
 
-export function AppHeader() {
+type AppHeaderProps = {
+    livestreamTrigger?: React.ReactNode;
+}
+
+export function AppHeader({ livestreamTrigger }: AppHeaderProps) {
   const { settings } = useAppSettings();
   const { user, logout, isAdmin } = useAuth();
   const { cart } = useCart();
@@ -40,7 +43,7 @@ export function AppHeader() {
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
           <div className="hidden sm:block">
-            <LivestreamDialog />
+            {livestreamTrigger}
           </div>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Open Cart">
