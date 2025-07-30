@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { FileText, Settings, Palette, Map, Package, Clapperboard, Wallet, KeyRound } from "lucide-react";
+import { FileText, Settings, Palette, Map, Package, Clapperboard, Wallet, KeyRound, Truck } from "lucide-react";
 
 export default function SetupGuidePage() {
   return (
@@ -108,9 +108,29 @@ export default function SetupGuidePage() {
 
           <AccordionItem value="item-4">
             <AccordionTrigger>
+              <div className="flex items-center gap-3">
+                <Truck className="h-5 w-5 text-primary" />
+                <span>Step 5: Manage Deliveries</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="pl-8">
+              <p className="text-muted-foreground mb-2">
+                Track and update the status of your customer deliveries.
+              </p>
+              <ol className="list-decimal list-inside space-y-2">
+                <li>Navigate to the <code className="bg-muted px-1 rounded-sm">Deliveries</code> page.</li>
+                <li>View all your active deliveries on the map.</li>
+                <li>The table lists all deliveries with their status.</li>
+                <li>Use the actions menu on each row to update a delivery's status from "Pending" to "Out for Delivery" or "Completed".</li>
+              </ol>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="item-5">
+            <AccordionTrigger>
                 <div className="flex items-center gap-3">
                     <Wallet className="h-5 w-5 text-primary" />
-                    <span>Step 5: Review Your Finances</span>
+                    <span>Step 6: Review Your Finances</span>
                 </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -127,11 +147,11 @@ export default function SetupGuidePage() {
             </AccordionContent>
           </AccordionItem>
           
-          <AccordionItem value="item-5">
+          <AccordionItem value="item-6">
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Clapperboard className="h-5 w-5 text-primary" />
-                <span>Step 6: Start a Livestream</span>
+                <span>Step 7: Start a Livestream</span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -148,7 +168,7 @@ export default function SetupGuidePage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="item-6">
+          <AccordionItem value="item-7">
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Palette className="h-5 w-5 text-primary" />

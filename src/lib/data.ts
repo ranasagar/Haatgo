@@ -12,6 +12,17 @@ export type Product = {
   dataAiHint: string;
 };
 
+export type Delivery = {
+  id: string;
+  orderId: string;
+  customerName: string;
+  address: string;
+  lat: number;
+  lon: number;
+  status: 'Pending' | 'Out for Delivery' | 'Completed';
+  driver: string;
+};
+
 export const categories = ['All', 'Food', 'Clothing', 'Utensils', 'Electronics', 'Farming'];
 
 export const products: Product[] = [
@@ -23,6 +34,7 @@ export const products: Product[] = [
     cost: 2800,
     quantity: 15,
     measurement: '25kg bag',
+    description: "Premium quality long-grain Basmati rice, perfect for biryani and pulao.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'sack rice',
   },
@@ -34,6 +46,7 @@ export const products: Product[] = [
     cost: 950,
     quantity: 30,
     measurement: '5L bottle',
+    description: "Light and healthy sunflower oil, ideal for everyday cooking and frying.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'oil bottle',
   },
@@ -45,6 +58,7 @@ export const products: Product[] = [
     cost: 1100,
     quantity: 20,
     measurement: 'piece',
+    description: "Cozy and comfortable fleece jacket to keep you warm during chilly weather.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'fleece jacket',
   },
@@ -56,6 +70,7 @@ export const products: Product[] = [
     cost: 2000,
     quantity: 5,
     measurement: 'set',
+    description: "A complete set of durable stainless steel pots for all your cooking needs.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'cooking pots',
   },
@@ -67,6 +82,7 @@ export const products: Product[] = [
     cost: 500,
     quantity: 25,
     measurement: 'piece',
+    description: "Eco-friendly solar-powered lamp, provides bright light during power outages.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'solar lamp',
   },
@@ -78,6 +94,7 @@ export const products: Product[] = [
     cost: 400,
     quantity: 0,
     measurement: 'piece',
+    description: "Heavy-duty shovel designed for farming and gardening tasks.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'metal shovel',
   },
@@ -89,6 +106,7 @@ export const products: Product[] = [
     cost: 600,
     quantity: 50,
     measurement: 'box',
+    description: "A box of delicious and convenient instant noodles for a quick meal.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'instant noodles',
   },
@@ -100,6 +118,7 @@ export const products: Product[] = [
     cost: 650,
     quantity: 18,
     measurement: 'piece',
+    description: "Elegant and warm woolen shawl, perfect for cool evenings.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'woolen shawl',
   },
@@ -111,6 +130,7 @@ export const products: Product[] = [
     cost: 2900,
     quantity: 8,
     measurement: '5L',
+    description: "A 5-liter pressure cooker that saves time and energy in the kitchen.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'pressure cooker',
   },
@@ -122,6 +142,7 @@ export const products: Product[] = [
     cost: 900,
     quantity: 12,
     measurement: 'piece',
+    description: "A compact and portable radio with AM/FM reception.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'portable radio',
   },
@@ -133,6 +154,7 @@ export const products: Product[] = [
     cost: 700,
     quantity: 22,
     measurement: '10kg bag',
+    description: "Enrich your soil with this high-quality organic fertilizer for healthier plants.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'fertilizer bag',
   },
@@ -144,7 +166,42 @@ export const products: Product[] = [
     cost: 220,
     quantity: 40,
     measurement: 'pack',
+    description: "A ready-to-cook lentil soup mix, nutritious and easy to prepare.",
     image: 'https://placehold.co/400x300',
     dataAiHint: 'lentils bag',
   },
+];
+
+
+export const deliveries: Delivery[] = [
+    {
+        id: "1",
+        orderId: "#1004",
+        customerName: "Ramesh Thapa",
+        address: "Bhedetar, Dhankuta",
+        lat: 26.9167,
+        lon: 87.3167,
+        status: "Out for Delivery",
+        driver: "Ram Kumar"
+    },
+    {
+        id: "2",
+        orderId: "#1005",
+        customerName: "Sunita Rai",
+        address: "Chisapani, Ilam",
+        lat: 26.9833,
+        lon: 87.1333,
+        status: "Completed",
+        driver: "Ram Kumar"
+    },
+    {
+        id: "3",
+        orderId: "#1003",
+        customerName: "Gita Gurung",
+        address: "Sankhejung, Ilam",
+        lat: 27.0194,
+        lon: 87.8044,
+        status: "Pending",
+        driver: "Sita Devi"
+    }
 ];

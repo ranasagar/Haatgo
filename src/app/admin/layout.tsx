@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Home, Package, ShoppingCart, Map, PanelLeft, Clapperboard, Truck, Settings, BookOpen, Info, Wallet, LogOut, User as UserIcon } from "lucide-react";
+import { Home, Package, ShoppingCart, Map, PanelLeft, Clapperboard, Truck, Settings, BookOpen, Info, Wallet, LogOut, User as UserIcon, Store } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ export default function AdminLayout({
     { href: "/admin/products", icon: Package, label: "Products" },
     { href: "/admin/orders", icon: ShoppingCart, label: "Orders" },
     { href: "/admin/routes", icon: Map, label: "Routes" },
+    { href: "/admin/deliveries", icon: Truck, label: "Deliveries" },
     { href: "/admin/livestream", icon: Clapperboard, label: "Livestream" },
     { href: "/admin/accounting", icon: Wallet, label: "Accounting" },
     { href: "/admin/setup-guide", icon: BookOpen, label: "Setup Guide" },
@@ -43,7 +44,7 @@ export default function AdminLayout({
       {settings.appLogo ? (
         <Image src={settings.appLogo} alt={settings.appName} width={24} height={24} className="transition-all group-hover:scale-110" />
       ) : (
-        <Truck className="h-5 w-5 transition-all group-hover:scale-110" />
+        <Store className="h-5 w-5 transition-all group-hover:scale-110" />
       )}
     </>
   );

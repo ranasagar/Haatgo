@@ -1,0 +1,158 @@
+
+"use client"
+
+import * as React from "react"
+import { MoreHorizontal, Truck } from "lucide-react"
+
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { useDeliveries } from "@/context/delivery-context"
+import type { Delivery } from "@/lib/data"
+import { cn } from "@/lib/utils"
+
+export default function DeliveriesPage() {
+    const { deliveries, setDeliveries } = useDeliveries();
+    const [mapUrl, setMapUrl] = React.useState('');
+
+    const generateMapUrl = React.useCallback(() => {
+        if (deliveries.length === 0) return;
+
+        const lats = deliveries.map(d => d.lat);
+        const lons = deliveries.map(d => d.lon);
+        const minLat = Math.min(...lats);
+        const maxLat = Math.max(...lats);
+        const minLon = Math.min(...lons);
+        const maxLon = Math.max(...lons);
+        
+        const latPad = (maxLat - minLat) * 0.2 || 0.1;
+        const lonPad = (maxLon - minLon) * 0.2 || 0.1;
+
+        const bbox = [minLon - lonPad, minLat - latPad, maxLon + lonPad, maxLat + latPad].join(',');
+        
+        const markers = deliveries.map(delivery => {
+            const color = delivery.status === 'Completed' ? 'green' : (delivery.status === 'Out for Delivery' ? 'blue' : 'orange');
+            return `marker=${delivery.lat},${delivery.lon},${color}`;
+        }).join('&');
+        
+        const url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${markers}`;
+        
+        setMapUrl(url);
+    }, [deliveries]);
+
+    React.useEffect(() => {
+        generateMapUrl();
+    }, [generateMapUrl]);
+
+    const handleUpdateStatus = (id: string, status: Delivery['status']) => {
+        setDeliveries(prev => prev.map(d => d.id === id ? {...d, status} : d));
+    };
+
+
+  return (
+    <div className="grid flex-1 items-start gap-4 md:gap-8">
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Truck /> Delivery Overview</CardTitle>
+                <CardDescription>
+                    A map showing all delivery locations. Orange is pending, Blue is out for delivery, Green is completed.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="relative rounded-lg overflow-hidden h-96">
+                {mapUrl && (
+                    <iframe
+                    className="w-full h-full border-0 rounded-lg"
+                    src={mapUrl}
+                    title="Deliveries Map"
+                    key={mapUrl}
+                    ></iframe>
+                )}
+                </div>
+            </CardContent>
+        </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Manage Deliveries</CardTitle>
+          <CardDescription>
+            View and update the status of all deliveries.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order ID</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Address</TableHead>
+                <TableHead>Driver</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {deliveries.map((delivery) => (
+                <TableRow key={delivery.id}>
+                  <TableCell className="font-medium">{delivery.orderId}</TableCell>
+                  <TableCell>{delivery.customerName}</TableCell>
+                  <TableCell className="hidden md:table-cell">{delivery.address}</TableCell>
+                   <TableCell className="hidden md:table-cell">{delivery.driver}</TableCell>
+                  <TableCell>
+                    <Badge variant={
+                        delivery.status === 'Completed' ? 'default' : delivery.status === 'Out for Delivery' ? 'secondary' : 'outline'
+                    } className={cn({
+                        "bg-green-600 hover:bg-green-700 text-white": delivery.status === 'Completed',
+                        "bg-blue-500 hover:bg-blue-600 text-white": delivery.status === 'Out for Delivery',
+                    })}>
+                      {delivery.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button aria-haspopup="true" size="icon" variant="ghost">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Update Status</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => handleUpdateStatus(delivery.id, 'Pending')}>Pending</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleUpdateStatus(delivery.id, 'Out for Delivery')}>Out for Delivery</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleUpdateStatus(delivery.id, 'Completed')}>Completed</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
