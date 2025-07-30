@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useState, useEffect, ReactNode } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Truck, User, LayoutDashboard, LogOut, ShoppingCart } from "lucide-react"
@@ -19,10 +20,19 @@ import { useAppSettings } from "@/context/app-settings-context";
 import { useAuth } from "@/context/auth-context"
 import { useCart } from "@/context/cart-context"
 
-export function AppHeader() {
+type AppHeaderProps = {
+  livestreamTrigger?: ReactNode;
+}
+
+export function AppHeader({ livestreamTrigger }: AppHeaderProps) {
   const { settings } = useAppSettings();
   const { user, logout, isAdmin } = useAuth();
   const { cart } = useCart();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantityInCart, 0);
 
@@ -38,11 +48,12 @@ export function AppHeader() {
           <h1 className="text-2xl font-headline font-bold text-foreground">{settings.appName}</h1>
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
+          {livestreamTrigger}
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Open Cart">
               <div className="relative">
                 <ShoppingCart className="h-6 w-6 text-foreground" />
-                {cartItemCount > 0 && (
+                {mounted && cartItemCount > 0 && (
                   <span className="absolute -top-1 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                     {cartItemCount}
                   </span>
@@ -50,7 +61,7 @@ export function AppHeader() {
               </div>
             </Button>
           </SheetTrigger>
-          {user ? (
+          {mounted && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                   <Avatar className="h-9 w-9 cursor-pointer">
@@ -82,7 +93,7 @@ export function AppHeader() {
                   </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
+          ) : mounted && !user ? (
             <div className="flex items-center gap-2">
                 <Button asChild variant="ghost" size="sm">
                     <Link href="/login">Login</Link>
@@ -91,6 +102,8 @@ export function AppHeader() {
                     <Link href="/signup">Sign Up</Link>
                 </Button>
             </div>
+          ) : (
+            <div className="h-9 w-28 animate-pulse rounded-md bg-muted" /> // Skeleton loader
           )}
         </div>
       </div>
