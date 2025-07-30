@@ -1,4 +1,4 @@
-import { Home, Package, ShoppingCart, Map, PanelLeft } from "lucide-react";
+import { Home, Package, ShoppingCart, Map, PanelLeft, Clapperboard } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -14,6 +14,7 @@ export default function AdminLayout({
     { href: "/admin/products", icon: Package, label: "Products" },
     { href: "/admin/orders", icon: ShoppingCart, label: "Orders" },
     { href: "/admin/routes", icon: Map, label: "Routes" },
+    { href: "/admin/livestream", icon: Clapperboard, label: "Livestream" },
   ];
 
   return (
