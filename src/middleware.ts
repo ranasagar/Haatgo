@@ -39,6 +39,11 @@ export function middleware(request: NextRequest) {
      return NextResponse.redirect(new URL('/', request.url))
   }
   
+  // Allow dynamic product routes
+  if (pathname.startsWith('/products/')) {
+    return NextResponse.next();
+  }
+
   // Handle 404 by redirecting to homepage
   if (!knownRoutes.has(pathname)) {
     return NextResponse.redirect(new URL('/', request.url));
