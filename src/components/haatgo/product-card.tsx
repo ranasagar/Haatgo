@@ -61,7 +61,10 @@ export function ProductCard({ product, isWishlisted, onToggleWishlist, className
             <p className="text-muted-foreground text-sm">{product.category}</p>
             {product.quantity > 0 && <p className="text-sm text-muted-foreground">{product.quantity} left</p>}
           </div>
-          <p className="font-bold text-primary text-lg mt-2">रू {product.price.toLocaleString()}</p>
+          <p className="font-bold text-primary text-lg mt-2">
+            रू {product.price.toLocaleString()}
+            <span className="text-sm font-medium text-muted-foreground"> / {product.measurement}</span>
+          </p>
         </div>
       </CardContent>
     </Card>

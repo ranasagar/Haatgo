@@ -45,13 +45,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { products as initialProducts, Product } from "@/lib/data";
 
-const defaultNewProduct = {
+const defaultNewProduct: Product = {
+  id: '',
   name: "New Product",
   price: 0,
   cost: 0,
   quantity: 10,
+  measurement: 'piece',
   description: "",
   category: "Food",
+  image: '',
+  dataAiHint: ''
 };
 
 export default function ProductsPage() {
@@ -79,7 +83,7 @@ export default function ProductsPage() {
       const newProduct: Product = {
         ...selectedProduct,
         id: (products.length + 1).toString(),
-        image: "https://placehold.co/400x300.png", // placeholder
+        image: "https://placehold.co/400x300", // placeholder
         dataAiHint: selectedProduct.name.toLowerCase().split(' ').slice(0, 2).join(' '),
       };
       setProducts([...products, newProduct]);
@@ -267,6 +271,12 @@ export default function ProductsPage() {
                 </Label>
                 <Input id="quantity" type="number" value={selectedProduct.quantity} onChange={handleInputChange} className="col-span-3" />
               </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="measurement" className="text-right">
+                  Measurement
+                </Label>
+                <Input id="measurement" value={selectedProduct.measurement} onChange={handleInputChange} placeholder="e.g., kg, piece, L" className="col-span-3" />
+              </div>
                <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="description" className="text-right">
                   Description
@@ -282,4 +292,3 @@ export default function ProductsPage() {
     </>
   );
 }
-
