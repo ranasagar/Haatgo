@@ -16,19 +16,24 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app: FirebaseApp;
-let auth: Auth;
+let app: FirebaseApp | undefined;
+let auth: Auth | undefined;
 
-if (typeof window !== "undefined" && !getApps().length) {
-    try {
-        app = initializeApp(firebaseConfig);
+// Check if the API key is provided before initializing
+if (firebaseConfig.apiKey) {
+    if (typeof window !== "undefined" && !getApps().length) {
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+        } catch (e) {
+            console.error("Firebase initialization error", e);
+        }
+    } else if (getApps().length) {
+        app = getApp();
         auth = getAuth(app);
-    } catch (e) {
-        console.error("Firebase initialization error", e);
     }
-} else if (getApps().length) {
-    app = getApp();
-    auth = getAuth(app);
+} else {
+    console.warn("Firebase API key is not provided. Firebase will not be initialized.");
 }
 
 
