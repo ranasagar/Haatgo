@@ -13,6 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchLivestream, type LivestreamData } from "@/ai/flows/livestream-fetcher";
 import { Badge } from "@/components/ui/badge";
+import { useAppSettings } from "@/context/app-settings-context";
 
 type Comment = {
   id: number;
@@ -38,6 +39,7 @@ export default function LivestreamPage() {
   const [fbStreamData, setFbStreamData] = useState<LivestreamData | null>(null);
   const [tkStreamData, setTkStreamData] = useState<LivestreamData | null>(null);
   const [loading, setLoading] = useState<'facebook' | 'tiktok' | null>(null);
+  const { settings } = useAppSettings();
 
   const handleDeleteComment = (id: number) => {
     setComments(prev => prev.filter(c => c.id !== id));
@@ -46,7 +48,7 @@ export default function LivestreamPage() {
   const handleGoLive = async (platform: 'facebook' | 'tiktok') => {
     setLoading(platform);
     try {
-        const identifier = platform === 'facebook' ? 'haatgo' : 'haatgo_official';
+        const identifier = platform === 'facebook' ? settings.facebook : settings.tiktok;
         const result = await fetchLivestream({ platform, identifier });
         if(platform === 'facebook') setFbStreamData(result);
         if(platform === 'tiktok') setTkStreamData(result);
@@ -172,7 +174,7 @@ export default function LivestreamPage() {
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="facebook-page">Facebook Page</Label>
-                            <Input id="facebook-page" defaultValue="haatgo" readOnly />
+                            <Input id="facebook-page" value={settings.facebook} readOnly />
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-col gap-2">
@@ -266,7 +268,7 @@ export default function LivestreamPage() {
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="tiktok-handle">TikTok Handle</Label>
-                            <Input id="tiktok-handle" defaultValue="haatgo_official" readOnly />
+                            <Input id="tiktok-handle" value={settings.tiktok} readOnly />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="stream-key-tiktok">TikTok Stream Key</Label>

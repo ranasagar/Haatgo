@@ -10,6 +10,7 @@ type AppSettings = {
     viber: string;
     instagram: string;
     facebook: string;
+    tiktok: string;
     vatRate: number;
 };
 
@@ -25,6 +26,7 @@ const defaultSettings: AppSettings = {
     viber: '+9779800000000',
     instagram: 'haatgo',
     facebook: 'haatgo',
+    tiktok: 'haatgo_official',
     vatRate: 13
 };
 

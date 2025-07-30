@@ -75,7 +75,7 @@ export default function SettingsPage() {
 
 
                  <div className="border-t pt-6 grid gap-6">
-                    <h3 className="font-semibold text-lg">Contact Links</h3>
+                    <h3 className="font-semibold text-lg">Contact & Social Links</h3>
                     <div className="grid gap-2">
                         <Label htmlFor="whatsapp">WhatsApp Number</Label>
                         <Input id="whatsapp" value={settings.whatsapp} onChange={handleInputChange} placeholder="e.g., +9779800000000" />
@@ -92,9 +92,14 @@ export default function SettingsPage() {
                          <p className="text-sm text-muted-foreground">This will generate a <code>https://ig.me/m/</code> link.</p>
                     </div>
                      <div className="grid gap-2">
-                        <Label htmlFor="facebook">Facebook Page Username/ID</Label>
+                        <Label htmlFor="facebook">Facebook Page Username</Label>
                         <Input id="facebook" value={settings.facebook} onChange={handleInputChange} placeholder="e.g., yourpage" />
                         <p className="text-sm text-muted-foreground">This will generate a <code>https://m.me/</code> link.</p>
+                    </div>
+                     <div className="grid gap-2">
+                        <Label htmlFor="tiktok">TikTok Username</Label>
+                        <Input id="tiktok" value={settings.tiktok} onChange={handleInputChange} placeholder="e.g., your_handle" />
+                        <p className="text-sm text-muted-foreground">Used for the livestream link. Do not include '@'.</p>
                     </div>
                 </div>
             </CardContent>

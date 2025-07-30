@@ -1,17 +1,18 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Video, Wifi, WifiOff, Send, Trash2 } from 'lucide-react';
+import { Video, Wifi, WifiOff, Send, Trash2, Facebook, ThumbsUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Facebook } from "lucide-react";
 import type { LivestreamData } from '@/ai/flows/livestream-fetcher';
+import { useAppSettings } from '@/context/app-settings-context';
 
 type Comment = {
   id: number;
@@ -34,6 +35,7 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState('');
   const [isAdmin, setIsAdmin] = useState(true); // For demo: toggle to show/hide moderation
+  const { settings } = useAppSettings();
 
   const isLive = streamData?.isLive || false;
 
@@ -54,6 +56,20 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
   const handleDeleteComment = (id: number) => {
     setComments(prev => prev.filter(c => c.id !== id));
   }
+  
+  const SocialLink = ({ platform, username }: { platform: 'facebook' | 'tiktok', username: string }) => {
+    const Icon = platform === 'facebook' ? Facebook : TikTokIcon;
+    const url = platform === 'facebook' ? `https://facebook.com/${username}` : `https://tiktok.com/@${username}`;
+    
+    return (
+        <Button asChild size="sm" variant="outline" className="bg-background/20 hover:bg-background/40 border-white/50 text-white">
+            <Link href={url} target="_blank" rel="noopener noreferrer">
+                <Icon className="h-4 w-4 mr-2" />
+                {platform.charAt(0).toUpperCase() + platform.slice(1)}
+            </Link>
+        </Button>
+    )
+  }
 
   const renderFacebookTab = () => (
     <div className="lg:col-span-2 bg-muted flex items-center justify-center relative rounded-tl-lg rounded-tr-lg lg:rounded-tr-none lg:rounded-bl-lg">
@@ -62,9 +78,19 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
             {isLive ? 'Online' : 'Offline'}
         </Badge>
         {isLive ? (
-            <div className="text-center text-muted-foreground">
-                <Video className="h-16 w-16 mx-auto text-primary" />
-                <p className="font-semibold mt-2">{streamData?.title || "Livestream is active."}</p>
+            <div className="text-center text-foreground p-4 rounded-lg relative overflow-hidden">
+                <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                    <Video className="h-16 w-16 mx-auto text-primary mb-4" />
+                    <p className="font-semibold text-white mt-2">{streamData?.title || "Livestream is active."}</p>
+                    <div className="mt-4 border-t border-white/20 pt-4">
+                        <p className="text-sm font-bold text-white mb-2 flex items-center justify-center gap-2"><ThumbsUp className="h-4 w-4"/> Like & Follow us on:</p>
+                        <div className="flex justify-center gap-2">
+                           <SocialLink platform="facebook" username={settings.facebook} />
+                           <SocialLink platform="tiktok" username={settings.tiktok} />
+                        </div>
+                    </div>
+                </div>
             </div>
         ) : (
             <div className="text-center text-muted-foreground">
@@ -153,7 +179,7 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-      <Card className="shadow-lg rounded-xl lg:col-span-2">
+      <Card className="shadow-lg rounded-xl lg:col-span-2 overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-headline text-xl">
             Live Broadcast
@@ -164,12 +190,22 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
           </Badge>
         </CardHeader>
         <CardContent>
-          <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+          <div className="aspect-video bg-muted rounded-lg flex items-center justify-center relative">
             {isLive ? (
-              <div className="text-center text-muted-foreground">
-                <Video className="h-16 w-16 mx-auto text-primary" />
-                <p className="font-semibold mt-2">{streamData?.title || "Livestream is active."}</p>
-              </div>
+                 <div className="text-center text-foreground p-4 rounded-lg relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+                    <div className="relative z-10">
+                        <Video className="h-16 w-16 mx-auto text-primary mb-4" />
+                        <p className="font-semibold text-white mt-2">{streamData?.title || "Livestream is active."}</p>
+                         <div className="mt-4 border-t border-white/20 pt-4">
+                            <p className="text-sm font-bold text-white mb-2 flex items-center justify-center gap-2"><ThumbsUp className="h-4 w-4"/> Like & Follow us on:</p>
+                            <div className="flex justify-center gap-2">
+                               <SocialLink platform="facebook" username={settings.facebook} />
+                               <SocialLink platform="tiktok" username={settings.tiktok} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             ) : (
               <div className="text-center text-muted-foreground">
                 <Video className="h-16 w-16 mx-auto" />
