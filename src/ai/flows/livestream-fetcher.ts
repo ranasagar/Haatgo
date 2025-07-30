@@ -11,13 +11,13 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export const LivestreamInputSchema = z.object({
+const LivestreamInputSchema = z.object({
   platform: z.enum(['facebook', 'tiktok']).describe('The social media platform.'),
   identifier: z.string().describe('The user handle or page name to check.'),
 });
 export type LivestreamInput = z.infer<typeof LivestreamInputSchema>;
 
-export const LivestreamDataSchema = z.object({
+const LivestreamDataSchema = z.object({
   isLive: z.boolean().describe('Whether the stream is currently live.'),
   streamUrl: z.string().optional().describe('The URL of the livestream feed.'),
   title: z.string().optional().describe('The title of the livestream.'),

@@ -11,7 +11,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export const OrderNotificationInputSchema = z.object({
+const OrderNotificationInputSchema = z.object({
   customerName: z.string().describe("The customer's name."),
   contact: z.string().describe("The customer's WhatsApp number."),
   productName: z.string().describe("The name of the product."),
@@ -20,7 +20,7 @@ export const OrderNotificationInputSchema = z.object({
 });
 export type OrderNotificationInput = z.infer<typeof OrderNotificationInputSchema>;
 
-export const OrderNotificationOutputSchema = z.object({
+const OrderNotificationOutputSchema = z.object({
   success: z.boolean().describe('Whether the notification was sent successfully.'),
   message: z.string().describe('The notification message that was sent.'),
 });
