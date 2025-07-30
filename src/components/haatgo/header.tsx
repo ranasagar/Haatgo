@@ -19,11 +19,7 @@ import { useAppSettings } from "@/context/app-settings-context";
 import { useAuth } from "@/context/auth-context"
 import { useCart } from "@/context/cart-context"
 
-type AppHeaderProps = {
-    livestreamTrigger?: React.ReactNode;
-}
-
-export function AppHeader({ livestreamTrigger }: AppHeaderProps) {
+export function AppHeader() {
   const { settings } = useAppSettings();
   const { user, logout, isAdmin } = useAuth();
   const { cart } = useCart();
@@ -42,9 +38,6 @@ export function AppHeader({ livestreamTrigger }: AppHeaderProps) {
           <h1 className="text-2xl font-headline font-bold text-foreground">{settings.appName}</h1>
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
-          <div className="hidden sm:block">
-            {livestreamTrigger}
-          </div>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Open Cart">
               <div className="relative">

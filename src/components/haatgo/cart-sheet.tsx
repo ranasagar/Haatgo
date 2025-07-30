@@ -32,7 +32,7 @@ export function CartSheet({ children }: CartSheetProps) {
   return (
     <Sheet>
       {children}
-      <SheetContent className="flex flex-col sm:max-w-md md:max-w-lg lg:max-w-xl">
+      <SheetContent className="flex flex-col w-full sm:max-w-md md:max-w-lg lg:max-w-xl">
         <SheetHeader className="px-6">
           <SheetTitle className="font-headline text-2xl">Your Cart</SheetTitle>
           <SheetDescription>

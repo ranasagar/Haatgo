@@ -13,14 +13,13 @@ import {
 import { LivestreamViewer } from "./livestream-viewer";
 import { Radio } from "lucide-react";
 
-// This component is now only used for the mobile view sticky button
 export function LivestreamDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="font-bold w-full text-lg py-6">
+        <Button className="font-bold text-lg py-6">
           <Radio className="mr-2 h-5 w-5" />
-          Watch Live Now
+          Watch Live
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-6xl p-0 border-0">
