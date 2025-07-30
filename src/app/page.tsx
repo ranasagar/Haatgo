@@ -22,7 +22,7 @@ export default function Home() {
         <AppHeader />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col gap-6 lg:gap-8">
-            <div className="flex justify-center py-2 z-30">
+            <div className="sticky top-16 bg-background/95 backdrop-blur-sm py-2 z-30 flex justify-center -mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 mb-4 border-b">
               <LivestreamDialog />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
