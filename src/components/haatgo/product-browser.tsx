@@ -28,15 +28,17 @@ export function ProductBrowser() {
               }}
               className="w-full"
             >
-              <CarouselContent className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
-                  {categories.map((category) => (
-                    <CarouselItem key={category} className="pl-1 first:pl-0">
-                      <TabsTrigger value={category}>{category}</TabsTrigger>
-                    </CarouselItem>
-                  ))}
-              </CarouselContent>
-              <CarouselPrevious className="absolute left-0 -translate-x-1/2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary" />
-              <CarouselNext className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary" />
+              <TabsList>
+                <CarouselContent>
+                    {categories.map((category) => (
+                      <CarouselItem key={category} className="basis-auto">
+                        <TabsTrigger value={category}>{category}</TabsTrigger>
+                      </CarouselItem>
+                    ))}
+                </CarouselContent>
+              </TabsList>
+              <CarouselPrevious className="absolute left-0 -translate-x-1/2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary disabled:opacity-0" />
+              <CarouselNext className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary disabled:opacity-0" />
             </Carousel>
           </div>
             {categories.map((category) => (
