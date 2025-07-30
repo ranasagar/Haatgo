@@ -70,7 +70,7 @@ export default function SettingsPage() {
                      <div className="grid gap-2">
                         <Label htmlFor="viber">Viber Number</Label>
                         <Input id="viber" value={settings.viber} onChange={handleInputChange} placeholder="e.g., +9779800000000" />
-                         <p className="text-sm text-muted-foreground">Include country code. This will generate a code>viber://chat?number=</code> link.</p>
+                         <p className="text-sm text-muted-foreground">Include country code. This will generate a <code>viber://chat?number=</code> link.</p>
                     </div>
                      <div className="grid gap-2">
                         <Label htmlFor="instagram">Instagram Username</Label>

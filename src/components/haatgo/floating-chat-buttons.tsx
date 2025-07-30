@@ -29,11 +29,14 @@ export function FloatingChatButtons() {
     const { settings } = useAppSettings();
 
     const chatLinks = [
-        { id: 'whatsapp', href: `https://wa.me/${settings.whatsapp.replace('+', '')}`, label: 'Chat on WhatsApp', icon: WhatsAppIcon, color: "bg-[#25D366] hover:bg-[#128C7E]" },
-        { id: 'viber', href: `viber://chat?number=%2B${settings.viber.replace('+', '')}`, label: 'Chat on Viber', icon: ViberIcon, color: "bg-[#7360F2] hover:bg-[#5f48ea]" },
+        { id: 'whatsapp', href: `https://wa.me/${settings.whatsapp.replace(/\+/g, '')}`, label: 'Chat on WhatsApp', icon: WhatsAppIcon, color: "bg-[#25D366] hover:bg-[#128C7E]" },
+        { id: 'viber', href: `viber://chat?number=%2B${settings.viber.replace(/\+/g, '')}`, label: 'Chat on Viber', icon: ViberIcon, color: "bg-[#7360F2] hover:bg-[#5f48ea]" },
         { id: 'instagram', href: `https://ig.me/m/${settings.instagram}`, label: 'Message on Instagram', icon: InstagramIcon, color: "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:opacity-90" },
         { id: 'facebook', href: `https://m.me/${settings.facebook}`, label: 'Message on Messenger', icon: FacebookMessengerIcon, color: "bg-[#00B2FF] hover:bg-[#0084ff]" },
-    ];
+    ].filter(link => {
+        if (!settings[link.id as keyof typeof settings]) return false;
+        return true;
+    });
 
 
     return (
