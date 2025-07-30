@@ -1,9 +1,19 @@
+
 "use client"
 
-import { Truck, Radio, Heart, User } from "lucide-react"
+import Link from "next/link"
+import { Truck, Radio, Heart, User, LayoutDashboard, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 type AppHeaderProps = {
   wishlistCount: number;
@@ -34,10 +44,33 @@ export function AppHeader({ wishlistCount }: AppHeaderProps) {
               </div>
             </Button>
           </SheetTrigger>
-          <Avatar className="h-9 w-9">
-            <AvatarImage src="https://placehold.co/100x100" alt="User Avatar" />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Avatar className="h-9 w-9 cursor-pointer">
+                    <AvatarImage src="https://placehold.co/100x100" alt="User Avatar" />
+                    <AvatarFallback>U</AvatarFallback>
+                </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                    <Link href="/admin">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <span>Admin Panel</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign Out</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
