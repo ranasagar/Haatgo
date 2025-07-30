@@ -42,9 +42,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Product } from "@/lib/data";
+import { Product, productTags } from "@/lib/data";
 import { useProducts } from "@/context/product-context";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 
 const defaultNewProduct: Product = {
   id: '',
@@ -58,7 +60,10 @@ const defaultNewProduct: Product = {
   district: "Kathmandu",
   description: "",
   image: 'https://storage.googleapis.com/haatgo-store-images/placeholder.png',
-  dataAiHint: ''
+  dataAiHint: '',
+  tags: [],
+  bulkPrice: 0,
+  bulkQuantity: 0,
 };
 
 export default function ProductsPage() {
@@ -98,8 +103,18 @@ export default function ProductsPage() {
     const { id, value } = e.target;
     setSelectedProduct(prev => ({
         ...prev,
-        [id]: id === 'price' || id === 'cost' || id === 'quantity' ? parseFloat(value) || 0 : value
+        [id]: id === 'price' || id === 'cost' || id === 'quantity' || id === 'bulkPrice' || id === 'bulkQuantity' ? parseFloat(value) || 0 : value
     }));
+  }
+
+  const handleTagChange = (tag: typeof productTags[number]) => {
+    setSelectedProduct(prev => {
+        const currentTags = prev.tags || [];
+        const newTags = currentTags.includes(tag) 
+            ? currentTags.filter(t => t !== tag)
+            : [...currentTags, tag];
+        return {...prev, tags: newTags};
+    });
   }
 
   const toggleProductStatus = (productId: string) => {
@@ -255,7 +270,7 @@ export default function ProductsPage() {
         </TabsContent>
       </Tabs>
       <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>{isEditing ? 'Edit Product' : 'Add Product'}</DialogTitle>
               <DialogDescription>
@@ -289,7 +304,7 @@ export default function ProductsPage() {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="measurement" className="text-right">
-                  Measurement
+                  Unit
                 </Label>
                 <Input id="measurement" value={selectedProduct.measurement} onChange={handleInputChange} placeholder="e.g., kg, piece, L" className="col-span-3" />
               </div>
@@ -299,6 +314,44 @@ export default function ProductsPage() {
                 </Label>
                 <Textarea id="description" value={selectedProduct.description || ''} onChange={handleInputChange} placeholder="Product description" className="col-span-3" />
               </div>
+               <Separator />
+               <div className="grid grid-cols-4 items-start gap-4">
+                  <Label className="text-right pt-2">Tags</Label>
+                  <div className="col-span-3 grid grid-cols-2 gap-2">
+                    {(productTags.filter(t => t !== 'All Tags') as Exclude<typeof productTags[number], 'All Tags'>[]).map(tag => (
+                        <div key={tag} className="flex items-center space-x-2">
+                           <Checkbox 
+                                id={`tag-${tag}`} 
+                                checked={selectedProduct.tags?.includes(tag)}
+                                onCheckedChange={() => handleTagChange(tag)}
+                            />
+                           <label
+                            htmlFor={`tag-${tag}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                           >
+                            {tag}
+                           </label>
+                        </div>
+                    ))}
+                  </div>
+               </div>
+               {selectedProduct.tags?.includes('Cheap in Bulk') && (
+                <>
+                  <Separator />
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="bulkQuantity" className="text-right">
+                      Bulk Quantity
+                    </Label>
+                    <Input id="bulkQuantity" type="number" value={selectedProduct.bulkQuantity || ''} onChange={handleInputChange} className="col-span-3" placeholder="e.g., 5" />
+                  </div>
+                   <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="bulkPrice" className="text-right">
+                      Bulk Price
+                    </Label>
+                    <Input id="bulkPrice" type="number" value={selectedProduct.bulkPrice || ''} onChange={handleInputChange} className="col-span-3" placeholder="e.g., 280" />
+                  </div>
+                </>
+               )}
             </div>
             <DialogFooter>
               <Button type="submit" onClick={handleSave}>Save changes</Button>

@@ -14,27 +14,30 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ProductCard } from "./product-card"
-import { categories, districts } from "@/lib/data"
-import { MapPin } from "lucide-react";
+import { categories, districts, productTags } from "@/lib/data"
+import { MapPin, Tag } from "lucide-react";
 
 export function ProductBrowser() {
   const [activeTab, setActiveTab] = useState(categories[0]);
   const [activeDistrict, setActiveDistrict] = useState(districts[0]);
+  const [activeTag, setActiveTag] = useState<(typeof productTags)[number]>(productTags[0]);
   const { products: allProducts } = useProducts();
   
   const filteredProducts = allProducts.filter(product => {
     const categoryMatch = activeTab === 'All' || product.category === activeTab;
     const districtMatch = activeDistrict === 'All Districts' || product.district === activeDistrict;
+    const tagMatch = activeTag === 'All Tags' || (product.tags && product.tags.includes(activeTag));
     const statusMatch = product.status === 'active';
-    return categoryMatch && districtMatch && statusMatch;
+    return categoryMatch && districtMatch && tagMatch && statusMatch;
   });
 
   const soldOutProducts = allProducts.filter(product => {
     const categoryMatch = activeTab === 'All' || product.category === activeTab;
     const districtMatch = activeDistrict === 'All Districts' || product.district === activeDistrict;
+    const tagMatch = activeTag === 'All Tags' || (product.tags && product.tags.includes(activeTag));
     const statusMatch = product.status === 'active';
     const soldOutMatch = product.quantity === 0;
-    return categoryMatch && districtMatch && statusMatch && soldOutMatch;
+    return categoryMatch && districtMatch && tagMatch && statusMatch && soldOutMatch;
   });
 
   const availableProducts = filteredProducts.filter(p => p.quantity > 0);
@@ -55,6 +58,17 @@ export function ProductBrowser() {
                 <SelectContent>
                     {districts.map(district => (
                         <SelectItem key={district} value={district}>{district}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+             <Select value={activeTag} onValueChange={setActiveTag}>
+                <SelectTrigger className="w-full sm:w-[200px]">
+                    <Tag className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder="Filter by Tag" />
+                </SelectTrigger>
+                <SelectContent>
+                    {productTags.map(tag => (
+                        <SelectItem key={tag} value={tag}>{tag}</SelectItem>
                     ))}
                 </SelectContent>
             </Select>

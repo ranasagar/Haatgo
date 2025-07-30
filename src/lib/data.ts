@@ -12,6 +12,9 @@ export type Product = {
   description?: string;
   image: string;
   dataAiHint: string;
+  tags?: ('Featured' | 'Best Seller' | 'On Sale' | 'Cheap in Bulk')[];
+  bulkPrice?: number;
+  bulkQuantity?: number;
 };
 
 export type Order = {
@@ -52,6 +55,8 @@ export type Parcel = {
 
 export const categories = ['All', 'Food', 'Clothing', 'Utensils', 'Handicrafts', 'Electronics', 'Farming'];
 
+export const productTags = ['All Tags', 'Featured', 'Best Seller', 'On Sale', 'Cheap in Bulk'] as const;
+
 export const districts = [
     "All Districts", "Achham", "Arghakhanchi", "Baglung", "Baitadi", "Bajhang", "Bajura", "Banke", "Bara", "Bardiya", "Bhaktapur", "Bhojpur", "Chitwan", "Dadeldhura", "Dailekh", "Dang", "Darchula", "Dhading", "Dhankuta", "Dhanusa", "Dolakha", "Dolpa", "Doti", "Gorkha", "Gulmi", "Humla", "Ilam", "Jajarkot", "Jhapa", "Jumla", "Kailali", "Kalikot", "Kanchanpur", "Kapilvastu", "Kaski", "Kathmandu", "Kavrepalanchok", "Khotang", "Lalitpur", "Lamjung", "Mahottari", "Makwanpur", "Manang", "Morang", "Mugu", "Mustang", "Myagdi", "Nawalparasi", "Nuwakot", "Okhaldhunga", "Palpa", "Panchthar", "Parbat", "Parsa", "Pyuthan", "Ramechhap", "Rasuwa", "Rautahat", "Rolpa", "Rukum", "Rupandehi", "Salyan", "Sankhuwasabha", "Saptari", "Sarlahi", "Sindhuli", "Sindhupalchowk", "Siraha", "Solukhumbu", "Sunsari", "Surkhet", "Syangja", "Tanahun", "Taplejung", "Terhathum", "Udayapur"
 ];
@@ -71,6 +76,7 @@ export const products: Product[] = [
     description: "Savor the authentic taste of the Himalayas with this premium orthodox tea from the rolling hills of Ilam. Known for its delicate floral aroma and muscatel flavor, it's a perfect cup for any time of day.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'tea leaves',
+    tags: ['Featured', 'Best Seller'],
   },
   {
     id: 'ilam-2',
@@ -113,6 +119,7 @@ export const products: Product[] = [
     description: "A tangy and spicy pickle made from fermented bamboo shoots (Tama). A quintessential Nepali condiment that adds a unique flavor to meals.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'pickle jar',
+    tags: ['On Sale'],
   },
   {
     id: 'ilam-5',
@@ -142,6 +149,7 @@ export const products: Product[] = [
     description: "Grown in the high-altitude orchards of Mustang, these apples are renowned for their crisp texture and exceptional sweetness. A healthy and delicious treat, perfect for eating fresh or baking.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'red apples',
+    tags: ['Best Seller'],
   },
   {
     id: 'mustang-2',
@@ -156,6 +164,9 @@ export const products: Product[] = [
     description: "Stone-ground buckwheat flour (Phapar) from the arid fields of Mustang. Nutritious, gluten-free, and perfect for making traditional pancakes and bread.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'buckwheat flour',
+    tags: ['Cheap in Bulk'],
+    bulkPrice: 300,
+    bulkQuantity: 5,
   },
   {
     id: 'mustang-3',

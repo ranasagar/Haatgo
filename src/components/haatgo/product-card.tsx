@@ -3,7 +3,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Info, ShoppingCart } from "lucide-react"
+import { Info, ShoppingCart, Star, Sparkles } from "lucide-react"
 import type { Product } from "@/lib/data"
 import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
@@ -20,6 +20,13 @@ import { useCart } from "@/context/cart-context"
 type ProductCardProps = {
   product: Product;
   className?: string;
+};
+
+const tagColors: { [key: string]: string } = {
+  'Featured': 'bg-yellow-400 text-yellow-900',
+  'Best Seller': 'bg-blue-400 text-blue-900',
+  'On Sale': 'bg-red-500 text-white',
+  'Cheap in Bulk': 'bg-green-500 text-white',
 };
 
 export function ProductCard({ product, className }: ProductCardProps) {
@@ -42,6 +49,15 @@ export function ProductCard({ product, className }: ProductCardProps) {
               />
             </Link>
             {isSoldOut && <Badge variant="destructive" className="absolute top-2 left-2">Sold Out</Badge>}
+             <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
+                {product.tags?.map(tag => (
+                    <Badge key={tag} className={cn("text-xs", tagColors[tag])}>
+                       {tag === 'Featured' && <Star className="h-3 w-3 mr-1" />}
+                       {tag === 'On Sale' && <Sparkles className="h-3 w-3 mr-1" />}
+                        {tag}
+                    </Badge>
+                ))}
+            </div>
           </div>
           <div className="p-4 flex flex-col flex-grow">
             <div className="flex items-start justify-between gap-2">
@@ -63,9 +79,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </div>
             <div className="flex justify-between items-center mt-1">
               <p className="text-sm text-muted-foreground">{product.category}</p>
-              {!isSoldOut && product.quantity <= 5 && <p className="text-sm text-yellow-600 font-semibold">{product.quantity} left</p>}
+              {!isSoldOut && product.quantity <= 10 && <p className="text-sm text-yellow-600 font-semibold">{product.quantity} left</p>}
             </div>
              <div className="flex-grow" />
+             {product.tags?.includes('Cheap in Bulk') && product.bulkPrice && product.bulkQuantity && (
+                <div className="mt-2 text-xs text-green-700 font-bold bg-green-100 p-2 rounded-md">
+                    Buy {product.bulkQuantity} or more for रू{product.bulkPrice.toLocaleString()} each!
+                </div>
+             )}
             <div className="flex justify-between items-end mt-4">
                <p className="font-bold text-primary text-lg">
                 रू {product.price.toLocaleString()}
@@ -86,5 +107,3 @@ export function ProductCard({ product, className }: ProductCardProps) {
     </TooltipProvider>
   );
 }
-
-    
