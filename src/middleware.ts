@@ -2,23 +2,11 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const knownRoutes = new Set([
+const publicRoutes = new Set([
   '/',
   '/login',
   '/signup',
   '/forgot-password',
-  '/profile',
-  '/admin',
-  '/admin/products',
-  '/admin/orders',
-  '/admin/routes',
-  '/admin/deliveries',
-  '/admin/parcels',
-  '/admin/livestream',
-  '/admin/accounting',
-  '/admin/settings',
-  '/admin/setup-guide',
-  '/admin/about',
 ]);
 
 // This function can be marked `async` if using `await` inside
@@ -26,16 +14,16 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('firebaseIdToken');
   const { pathname } = request.nextUrl;
 
+  const isProtectedRoute = pathname.startsWith('/admin') || pathname.startsWith('/profile');
+  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/forgot-password');
+
   // Handle protected routes
-  const protectedPaths = ['/admin', '/profile'];
-  const isProtectedPath = protectedPaths.some(p => pathname.startsWith(p));
-  
-  if (isProtectedPath && !token) {
+  if (isProtectedRoute && !token) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
   
   // Handle auth pages for logged-in users
-  if ((pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password') && token) {
+  if (isAuthRoute && token) {
      return NextResponse.redirect(new URL('/', request.url))
   }
   
@@ -44,10 +32,20 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Handle 404 by redirecting to homepage
-  if (!knownRoutes.has(pathname)) {
-    return NextResponse.redirect(new URL('/', request.url));
+  // Handle other known public routes
+  if (publicRoutes.has(pathname)) {
+    return NextResponse.next();
   }
+
+  // Allow all admin routes if authenticated
+  if (pathname.startsWith('/admin') && token) {
+    return NextResponse.next();
+  }
+  
+  // If a route is not explicitly public or a dynamic product page,
+  // and it's not an admin route being accessed by an authenticated user,
+  // we can consider it unknown. For now, let's be more permissive to avoid incorrect redirects.
+  // The protected route logic above should handle security.
   
   return NextResponse.next()
 }
