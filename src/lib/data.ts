@@ -48,7 +48,7 @@ export const products: Product[] = [
     quantity: 15,
     measurement: '25kg bag',
     description: "Premium quality long-grain Basmati rice, perfect for biryani and pulao.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/rice-bag.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'sack rice',
   },
   {
@@ -60,7 +60,7 @@ export const products: Product[] = [
     quantity: 30,
     measurement: '5L bottle',
     description: "Light and healthy sunflower oil, ideal for everyday cooking and frying.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/sunflower-oil.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'oil bottle',
   },
   {
@@ -72,7 +72,7 @@ export const products: Product[] = [
     quantity: 20,
     measurement: 'piece',
     description: "Cozy and comfortable fleece jacket to keep you warm during chilly weather.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/fleece-jacket.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'fleece jacket',
   },
   {
@@ -84,7 +84,7 @@ export const products: Product[] = [
     quantity: 5,
     measurement: 'set',
     description: "A complete set of durable stainless steel pots for all your cooking needs.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/pot-set.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'cooking pots',
   },
   {
@@ -96,7 +96,7 @@ export const products: Product[] = [
     quantity: 25,
     measurement: 'piece',
     description: "Eco-friendly solar-powered lamp, provides bright light during power outages.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/solar-lamp.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'solar lamp',
   },
   {
@@ -108,7 +108,7 @@ export const products: Product[] = [
     quantity: 0,
     measurement: 'piece',
     description: "Heavy-duty shovel designed for farming and gardening tasks.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/shovel.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'metal shovel',
   },
   {
@@ -120,7 +120,7 @@ export const products: Product[] = [
     quantity: 50,
     measurement: 'box',
     description: "A box of delicious and convenient instant noodles for a quick meal.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/instant-noodles.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'instant noodles',
   },
   {
@@ -132,7 +132,7 @@ export const products: Product[] = [
     quantity: 18,
     measurement: 'piece',
     description: "Elegant and warm woolen shawl, perfect for cool evenings.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/shawl.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'woolen shawl',
   },
   {
@@ -144,7 +144,7 @@ export const products: Product[] = [
     quantity: 8,
     measurement: '5L',
     description: "A 5-liter pressure cooker that saves time and energy in the kitchen.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/pressure-cooker.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'pressure cooker',
   },
   {
@@ -156,7 +156,7 @@ export const products: Product[] = [
     quantity: 12,
     measurement: 'piece',
     description: "A compact and portable radio with AM/FM reception.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/radio.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'portable radio',
   },
     {
@@ -168,7 +168,7 @@ export const products: Product[] = [
     quantity: 22,
     measurement: '10kg bag',
     description: "Enrich your soil with this high-quality organic fertilizer for healthier plants.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/fertilizer.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'fertilizer bag',
   },
   {
@@ -180,7 +180,7 @@ export const products: Product[] = [
     quantity: 40,
     measurement: 'pack',
     description: "A ready-to-cook lentil soup mix, nutritious and easy to prepare.",
-    image: 'https://storage.googleapis.com/haatgo-store-images/lentils.png',
+    image: 'https://placehold.co/400x300.png',
     dataAiHint: 'lentils bag',
   },
 ];
