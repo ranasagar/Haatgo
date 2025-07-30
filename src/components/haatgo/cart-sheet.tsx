@@ -23,28 +23,47 @@ type CartSheetProps = {
 export function CartSheet({ children }: CartSheetProps) {
   const { cart, removeFromCart, updateQuantity, clearCart, checkout } = useCart();
 
-  const getPrice = (item: any) => {
+  const getPriceInfo = (item: any) => {
+      const originalPrice = item.price;
+      let effectivePrice = originalPrice;
+      let discountApplied = false;
+      let discountType = '';
+
       const isBulk = item.tags?.includes('Cheap in Bulk') && 
                      item.bulkQuantity && 
                      item.bulkPrice && 
                      item.quantityInCart >= item.bulkQuantity;
       
       if (isBulk && item.bulkPrice) {
-          return item.bulkPrice;
-      }
-      
-      const isOnSale = item.tags?.includes('On Sale');
-      if (isOnSale) {
-          return item.price * 0.85; // 15% discount
+          effectivePrice = item.bulkPrice;
+          discountApplied = true;
+          discountType = 'Bulk';
+      } else {
+          const isOnSale = item.tags?.includes('On Sale');
+          if (isOnSale) {
+              effectivePrice = item.price * 0.85; // 15% discount
+              discountApplied = true;
+              discountType = 'Sale';
+          }
       }
 
-      return item.price;
+      const discountPerItem = originalPrice - effectivePrice;
+      return { originalPrice, effectivePrice, discountPerItem, discountApplied, discountType };
   }
 
   const subtotal = cart.reduce((acc, item) => {
-    const priceToUse = getPrice(item);
-    return acc + priceToUse * item.quantityInCart;
+    return acc + item.price * item.quantityInCart;
   }, 0);
+
+  const totalDiscount = cart.reduce((acc, item) => {
+    const { discountPerItem } = getPriceInfo(item);
+    return acc + discountPerItem * item.quantityInCart;
+  }, 0);
+
+  const priceAfterDiscount = subtotal - totalDiscount;
+  const vatAmount = priceAfterDiscount * 0.13;
+  const grandTotal = priceAfterDiscount + vatAmount;
+
 
   const handleCheckout = () => {
     checkout();
@@ -71,9 +90,7 @@ export function CartSheet({ children }: CartSheetProps) {
           <div className="flex-grow overflow-y-auto -mx-6 px-6">
             <ul className="space-y-4 py-4">
               {cart.map((product) => {
-                const price = getPrice(product);
-                const isBulk = product.tags?.includes('Cheap in Bulk') && product.bulkQuantity && product.bulkPrice && product.quantityInCart >= product.bulkQuantity;
-                const isOnSale = product.tags?.includes('On Sale') && !isBulk;
+                const { originalPrice, effectivePrice, discountApplied } = getPriceInfo(product);
 
                 return (
                     <li key={product.id} className="flex items-center gap-4">
@@ -88,9 +105,9 @@ export function CartSheet({ children }: CartSheetProps) {
                         <div className="flex-grow">
                             <p className="font-semibold truncate">{product.name}</p>
                             <div className="flex items-baseline gap-2">
-                                <p className="text-sm text-primary font-bold">रू {price.toLocaleString()}</p>
-                                {isOnSale && (
-                                    <p className="text-xs text-muted-foreground line-through">रू {product.price.toLocaleString()}</p>
+                                <p className="text-sm text-primary font-bold">रू {effectivePrice.toLocaleString()}</p>
+                                {discountApplied && (
+                                    <p className="text-xs text-muted-foreground line-through">रू {originalPrice.toLocaleString()}</p>
                                 )}
                             </div>
                             <div className="flex items-center gap-2 mt-1">
@@ -115,10 +132,25 @@ export function CartSheet({ children }: CartSheetProps) {
           </div>
         )}
         {cart.length > 0 && (
-          <SheetFooter className="flex-col gap-4 border-t pt-4 px-6">
-            <div className="flex justify-between font-semibold text-lg">
-                <span>Subtotal</span>
-                <span>रू {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <SheetFooter className="flex-col gap-2 border-t pt-4 px-6">
+            <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span>रू {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+                 <div className="flex justify-between text-green-600">
+                    <span>Discount</span>
+                    <span>- रू {totalDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+                 <div className="flex justify-between">
+                    <span>VAT (13%)</span>
+                    <span>+ रू {vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+            </div>
+            <Separator />
+            <div className="flex justify-between font-bold text-lg">
+                <span>Total</span>
+                <span>रू {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             <SheetClose asChild>
                 <Button className="w-full font-bold" onClick={handleCheckout}>Proceed to Checkout</Button>
