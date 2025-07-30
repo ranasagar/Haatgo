@@ -24,11 +24,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         if (!auth) {
+            console.warn("Firebase is not configured. Authentication will be disabled.");
             setLoading(false);
             return;
         }
+        
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
+            setLoading(false);
+        }, (error) => {
+            console.error("Auth state change error:", error);
+            setUser(null);
             setLoading(false);
         });
 
@@ -36,23 +42,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const login = (email: string, pass: string) => {
-        if (!auth) return Promise.reject(new Error("Firebase not configured."));
+        if (!auth) return Promise.reject(new Error("Firebase not configured. Please check your .env file."));
         return signInWithEmailAndPassword(auth, email, pass);
     };
 
     const signup = (email: string, pass: string) => {
-        if (!auth) return Promise.reject(new Error("Firebase not configured."));
+        if (!auth) return Promise.reject(new Error("Firebase not configured. Please check your .env file."));
         return createUserWithEmailAndPassword(auth, email, pass);
     };
 
     const logout = async () => {
-        if (!auth) return Promise.reject(new Error("Firebase not configured."));
+        if (!auth) return Promise.reject(new Error("Firebase not configured. Please check your .env file."));
         await firebaseSignOut(auth);
         router.push('/login');
     };
     
     const resetPassword = (email: string) => {
-        if (!auth) return Promise.reject(new Error("Firebase not configured."));
+        if (!auth) return Promise.reject(new Error("Firebase not configured. Please check your .env file."));
         return sendPasswordResetEmail(auth, email);
     }
 
@@ -67,7 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 };
