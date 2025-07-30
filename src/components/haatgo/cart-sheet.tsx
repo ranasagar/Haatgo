@@ -70,36 +70,47 @@ export function CartSheet({ children }: CartSheetProps) {
         ) : (
           <div className="flex-grow overflow-y-auto -mx-6 px-6">
             <ul className="space-y-4 py-4">
-              {cart.map((product) => (
-                <li key={product.id} className="flex items-center gap-4">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    width={64}
-                    height={64}
-                    className="rounded-md object-cover h-16 w-16"
-                    data-ai-hint={product.dataAiHint}
-                  />
-                  <div className="flex-grow">
-                    <p className="font-semibold truncate">{product.name}</p>
-                    <p className="text-sm text-primary font-bold">रू {getPrice(product).toLocaleString()}</p>
-                     <div className="flex items-center gap-2 mt-1">
-                      <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(product.id, product.quantityInCart - 1)}><Minus className="h-3 w-3" /></Button>
-                      <span className="text-sm font-medium w-4 text-center">{product.quantityInCart}</span>
-                      <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(product.id, product.quantityInCart + 1)}><Plus className="h-3 w-3" /></Button>
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-destructive h-8 w-8"
-                    onClick={() => removeFromCart(product.id)}
-                    aria-label="Remove from cart"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </li>
-              ))}
+              {cart.map((product) => {
+                const price = getPrice(product);
+                const isBulk = product.tags?.includes('Cheap in Bulk') && product.bulkQuantity && product.bulkPrice && product.quantityInCart >= product.bulkQuantity;
+                const isOnSale = product.tags?.includes('On Sale') && !isBulk;
+
+                return (
+                    <li key={product.id} className="flex items-center gap-4">
+                        <Image
+                            src={product.image}
+                            alt={product.name}
+                            width={64}
+                            height={64}
+                            className="rounded-md object-cover h-16 w-16"
+                            data-ai-hint={product.dataAiHint}
+                        />
+                        <div className="flex-grow">
+                            <p className="font-semibold truncate">{product.name}</p>
+                            <div className="flex items-baseline gap-2">
+                                <p className="text-sm text-primary font-bold">रू {price.toLocaleString()}</p>
+                                {isOnSale && (
+                                    <p className="text-xs text-muted-foreground line-through">रू {product.price.toLocaleString()}</p>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2 mt-1">
+                                <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(product.id, product.quantityInCart - 1)}><Minus className="h-3 w-3" /></Button>
+                                <span className="text-sm font-medium w-4 text-center">{product.quantityInCart}</span>
+                                <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(product.id, product.quantityInCart + 1)}><Plus className="h-3 w-3" /></Button>
+                            </div>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-destructive h-8 w-8"
+                            onClick={() => removeFromCart(product.id)}
+                            aria-label="Remove from cart"
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    </li>
+                )
+              })}
             </ul>
           </div>
         )}
