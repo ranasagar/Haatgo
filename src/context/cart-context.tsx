@@ -6,6 +6,7 @@ import type { Product } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { useOrders } from './order-context';
 import { useProducts } from './product-context';
+import { useAuth } from './auth-context';
 
 export type CartItem = Product & {
     quantityInCart: number;
@@ -27,6 +28,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const { toast } = useToast();
     const { addOrder } = useOrders();
     const { products, updateProductQuantity } = useProducts();
+    const { user } = useAuth();
 
     const addToCart = (product: Product) => {
         const liveProduct = products.find(p => p.id === product.id);
@@ -103,6 +105,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const checkout = () => {
+        if (!user) {
+            toast({ title: "Please login to place an order.", variant: "destructive"});
+            return;
+        }
+
         if (cart.length === 0) {
             toast({ title: "Your cart is empty.", variant: "destructive"});
             return;
@@ -112,6 +119,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             // Create a new order for each item
             const newOrder = {
                 id: `#${Math.floor(Math.random() * 9000) + 1000}`,
+                userId: user.uid,
                 product: `${item.name} (x${item.quantityInCart})`,
                 status: 'Pending' as const,
                 date: new Date().toISOString().split('T')[0],

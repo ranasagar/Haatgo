@@ -16,6 +16,7 @@ export type Product = {
 
 export type Order = {
   id: string;
+  userId: string | null;
   product: string;
   status: 'Pending' | 'Confirmed' | 'On the Way' | 'Delivered';
   date: string;
@@ -3827,7 +3828,7 @@ export const products: Product[] = [
     quantity: 30,
     measurement: 'per kg',
     status: 'active',
-    description: "Large cardamom (alaichi) from Panchthar, a highly prized spice with a strong, smoky aroma.",
+    description: "Large black cardamom (alaichi) from Panchthar, a highly prized spice with a strong, smoky aroma.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'cardamom pods',
   },
@@ -4721,7 +4722,7 @@ export const products: Product[] = [
     quantity: 100,
     measurement: 'earthen pot',
     status: 'active',
-    description: "Thick and creamy curd set in traditional earthenware, a specialty of the region.",
+    description: "Thick, creamy curd set in traditional earthenware, a specialty of the region.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'curd pot',
   },
@@ -5435,7 +5436,7 @@ export const parcels: Parcel[] = [
 ];
 
 export const initialOrders: Order[] = [
-  { id: "#1005", product: "Warm Fleece Jacket", status: "Delivered", date: "2023-06-27", amount: 1500.00 },
-  { id: "#1004", product: "Stainless Steel Pot Set", status: "On the Way", date: "2023-06-26", amount: 2500.00 },
-  { id: "#1003", product: "Basmati Rice (25kg)", status: "Confirmed", date: "2023-06-25", amount: 3200.00 },
+  { id: "#1005", userId: "user1", product: "Warm Fleece Jacket", status: "Delivered", date: "2023-06-27", amount: 1500.00 },
+  { id: "#1004", userId: "user2", product: "Stainless Steel Pot Set", status: "On the Way", date: "2023-06-26", amount: 2500.00 },
+  { id: "#1003", userId: "user1", product: "Basmati Rice (25kg)", status: "Confirmed", date: "2023-06-25", amount: 3200.00 },
 ];
