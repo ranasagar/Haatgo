@@ -2,19 +2,13 @@
 "use client"
 
 import { useState } from "react"
-import type { Product } from "@/lib/data"
 import { useProducts } from "@/context/product-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProductCard } from "./product-card"
+import { categories } from "@/lib/data"
 
-type ProductBrowserProps = {
-  categories: string[];
-  wishlist: Product[];
-  onToggleWishlist: (product: Product) => void;
-};
-
-export function ProductBrowser({ categories, wishlist, onToggleWishlist }: ProductBrowserProps) {
+export function ProductBrowser() {
   const [activeTab, setActiveTab] = useState(categories[0]);
   const { products: allProducts } = useProducts();
 
@@ -39,10 +33,8 @@ export function ProductBrowser({ categories, wishlist, onToggleWishlist }: Produ
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                         {(activeTab === 'All' ? allProducts : allProducts.filter(p => p.category === category)).map((product) => (
                             <ProductCard
-                            key={product.id}
-                            product={product}
-                            isWishlisted={wishlist.some(item => item.id === product.id)}
-                            onToggleWishlist={onToggleWishlist}
+                              key={product.id}
+                              product={product}
                             />
                         ))}
                     </div>

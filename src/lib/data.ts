@@ -12,6 +12,14 @@ export type Product = {
   dataAiHint: string;
 };
 
+export type Order = {
+  id: string;
+  product: string;
+  status: 'Pending' | 'Confirmed' | 'On the Way' | 'Delivered';
+  date: string;
+  amount: number;
+}
+
 export type Delivery = {
   id: string;
   orderId: string;
@@ -237,4 +245,10 @@ export const parcels: Parcel[] = [
         description: "Important Documents",
         status: "On the Way"
     },
+];
+
+export const initialOrders: Order[] = [
+  { id: "#1005", product: "Warm Fleece Jacket", status: "Delivered", date: "2023-06-27", amount: 1500.00 },
+  { id: "#1004", product: "Stainless Steel Pot Set", status: "On the Way", date: "2023-06-26", amount: 2500.00 },
+  { id: "#1003", product: "Basmati Rice (25kg)", status: "Confirmed", date: "2023-06-25", amount: 3200.00 },
 ];

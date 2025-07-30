@@ -5,14 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-
-const userOrders = [
-  { id: "#1005", product: "Warm Fleece Jacket", status: "Delivered", date: "2023-06-27" },
-  { id: "#1004", product: "Stainless Steel Pot Set", status: "On the Way", date: "2023-06-26" },
-  { id: "#1003", product: "Basmati Rice (25kg)", status: "Confirmed", date: "2023-06-25" },
-  { id: "#1002", product: "Solar Powered Lamp", status: "Delivered", date: "2023-06-24" },
-  { id: "#1001", product: "Durable Farm Shovel", status: "Delivered", date: "2023-06-23" },
-];
+import { useOrders } from "@/context/order-context"
+import { ShoppingBag } from "lucide-react"
 
 const statusColors: { [key: string]: string } = {
     "Delivered": "bg-green-100 text-green-800 border-green-200",
@@ -22,27 +16,37 @@ const statusColors: { [key: string]: string } = {
 }
 
 export function MyOrders() {
+  const { orders } = useOrders();
+
   return (
     <Card className="shadow-lg rounded-xl">
       <CardHeader>
         <CardTitle className="font-headline text-xl">My Orders</CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-60">
-            <ul className="space-y-4">
-                {userOrders.map(order => (
-                    <li key={order.id} className="flex items-center justify-between">
-                        <div>
-                            <p className="font-semibold">{order.product}</p>
-                            <p className="text-sm text-muted-foreground">{order.id} - {order.date}</p>
-                        </div>
-                        <Badge variant="outline" className={cn("text-xs font-bold", statusColors[order.status])}>
-                            {order.status}
-                        </Badge>
-                    </li>
-                ))}
-            </ul>
-        </ScrollArea>
+        {orders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-60 text-center text-muted-foreground">
+            <ShoppingBag className="h-12 w-12 mb-4" />
+            <p className="font-semibold">No orders yet</p>
+            <p className="text-sm">Your past orders will appear here.</p>
+          </div>
+        ) : (
+            <ScrollArea className="h-60">
+                <ul className="space-y-4">
+                    {orders.map(order => (
+                        <li key={order.id} className="flex items-center justify-between">
+                            <div>
+                                <p className="font-semibold">{order.product}</p>
+                                <p className="text-sm text-muted-foreground">{order.id} - {order.date}</p>
+                            </div>
+                            <Badge variant="outline" className={cn("text-xs font-bold", statusColors[order.status])}>
+                                {order.status}
+                            </Badge>
+                        </li>
+                    ))}
+                </ul>
+            </ScrollArea>
+        )}
       </CardContent>
     </Card>
   )

@@ -12,11 +12,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 type RecommendationsProps = {
   allProducts: Product[];
-  wishlist: Product[];
-  onToggleWishlist: (product: Product) => void;
 };
 
-export function Recommendations({ allProducts, wishlist, onToggleWishlist }: RecommendationsProps) {
+export function Recommendations({ allProducts }: RecommendationsProps) {
   const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -103,8 +101,6 @@ export function Recommendations({ allProducts, wishlist, onToggleWishlist }: Rec
               <CarouselItem key={product.id} className="sm:basis-1/2 lg:basis-1/3">
                 <ProductCard
                   product={product}
-                  isWishlisted={wishlist.some(item => item.id === product.id)}
-                  onToggleWishlist={onToggleWishlist}
                 />
               </CarouselItem>
             ))}

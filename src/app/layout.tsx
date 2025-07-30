@@ -8,6 +8,8 @@ import { AuthProvider } from '@/context/auth-context';
 import { ProductProvider } from '@/context/product-context';
 import { DeliveryProvider } from '@/context/delivery-context';
 import { ParcelProvider } from '@/context/parcel-context';
+import { CartProvider } from '@/context/cart-context';
+import { OrderProvider } from '@/context/order-context';
 
 export const metadata: Metadata = {
   title: 'HaatGo',
@@ -35,11 +37,15 @@ export default function RootLayout({
         <AuthProvider>
           <AppSettingsProvider>
             <ProductProvider>
-                <DeliveryProvider>
-                  <ParcelProvider>
-                    {children}
-                  </ParcelProvider>
-                </DeliveryProvider>
+              <DeliveryProvider>
+                <ParcelProvider>
+                  <OrderProvider>
+                    <CartProvider>
+                      {children}
+                    </CartProvider>
+                  </OrderProvider>
+                </ParcelProvider>
+              </DeliveryProvider>
             </ProductProvider>
           </AppSettingsProvider>
         </AuthProvider>

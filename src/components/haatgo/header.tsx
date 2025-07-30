@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Truck, Radio, Heart, User, LayoutDashboard, LogOut, LogIn } from "lucide-react"
+import { Truck, Heart, User, LayoutDashboard, LogOut, LogIn, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -17,14 +17,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useAppSettings } from "@/context/app-settings-context";
 import { useAuth } from "@/context/auth-context"
+import { LivestreamDialog } from "./livestream-dialog"
+import { useCart } from "@/context/cart-context"
 
-type AppHeaderProps = {
-  wishlistCount: number;
-};
-
-export function AppHeader({ wishlistCount }: AppHeaderProps) {
+export function AppHeader() {
   const { settings } = useAppSettings();
   const { user, logout } = useAuth();
+  const { cart } = useCart();
+
+  const cartItemCount = cart.reduce((sum, item) => sum + item.quantityInCart, 0);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
@@ -38,13 +39,16 @@ export function AppHeader({ wishlistCount }: AppHeaderProps) {
           <h1 className="text-2xl font-headline font-bold text-foreground">{settings.appName}</h1>
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden sm:block">
+            <LivestreamDialog />
+          </div>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Open Wishlist">
+            <Button variant="ghost" size="icon" aria-label="Open Cart">
               <div className="relative">
-                <Heart className="h-6 w-6 text-foreground" />
-                {wishlistCount > 0 && (
+                <ShoppingCart className="h-6 w-6 text-foreground" />
+                {cartItemCount > 0 && (
                   <span className="absolute -top-1 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                    {wishlistCount}
+                    {cartItemCount}
                   </span>
                 )}
               </div>
