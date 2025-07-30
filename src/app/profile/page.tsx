@@ -15,10 +15,15 @@ import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { MapPin } from "lucide-react"
+import { useUserProfile } from "@/context/user-profile-context"
+import dynamic from 'next/dynamic'
+
+const InteractiveMap = dynamic(() => import('@/components/haatgo/interactive-map'), { ssr: false });
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
   const { orders } = useOrders();
+  const { profile, setProfile } = useUserProfile();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -29,9 +34,9 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
-  const [address, setAddress] = useState('');
-  const [lat, setLat] = useState('27.7172');
-  const [lon, setLon] = useState('85.3240');
+  const [address, setAddress] = useState(profile.address);
+  const [lat, setLat] = useState(profile.lat);
+  const [lon, setLon] = useState(profile.lon);
   
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
@@ -44,6 +49,12 @@ export default function ProfilePage() {
       setLastName(nameParts.slice(1).join(' ') || '');
     }
   }, [user]);
+
+  useEffect(() => {
+    setAddress(profile.address);
+    setLat(profile.lat);
+    setLon(profile.lon);
+  }, [profile]);
 
   if (!user) {
     // This should be handled by middleware, but as a fallback:
@@ -125,8 +136,7 @@ export default function ProfilePage() {
         setLoadingAddress(false);
         return;
     }
-    // In a real app, this would save to a database.
-    console.log("Saving address:", { address, lat, lon });
+    setProfile({ address, lat, lon });
     toast({
         title: "Address Updated",
         description: "Your address has been successfully saved.",
@@ -134,8 +144,10 @@ export default function ProfilePage() {
     setLoadingAddress(false);
   }
 
-  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${parseFloat(lon)-0.01},${parseFloat(lat)-0.01},${parseFloat(lon)+0.01},${parseFloat(lat)+0.01}&layer=mapnik&marker=${lat},${lon}`;
-
+  const handlePositionChange = (position: { lat: number, lng: number }) => {
+    setLat(position.lat.toString());
+    setLon(position.lng.toString());
+  }
 
   return (
     <div className="space-y-6">
@@ -179,7 +191,7 @@ export default function ProfilePage() {
       <Card>
         <CardHeader>
             <CardTitle>Shipping Address</CardTitle>
-            <CardDescription>Update your primary shipping address. This is required for deliveries.</CardDescription>
+            <CardDescription>Update your primary shipping address. Drag the pin to set your location.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
              <div className="grid gap-2">
@@ -197,20 +209,11 @@ export default function ProfilePage() {
                 </div>
             </div>
             <div className="relative rounded-lg overflow-hidden h-64 border">
-                <iframe
-                    className="w-full h-full border-0"
-                    src={mapUrl}
-                    title="Address Map"
-                    key={mapUrl}
-                ></iframe>
+              <InteractiveMap 
+                position={{ lat: parseFloat(lat), lng: parseFloat(lon) }} 
+                onPositionChange={handlePositionChange}
+              />
             </div>
-            <Button asChild variant="outline">
-                <a href={`https://www.openstreetmap.org/#map=14/${lat}/${lon}`} target="_blank" rel="noopener noreferrer">
-                    <MapPin className="mr-2 h-4 w-4" />
-                    Pinpoint on Map
-                </a>
-            </Button>
-             <p className="text-sm text-muted-foreground">Click "Pinpoint on Map", find your location, right-click, select "Show address", and copy the coordinates here.</p>
         </CardContent>
         <CardFooter className="border-t pt-6">
             <Button onClick={handleAddressUpdate} disabled={loadingAddress}>
