@@ -32,6 +32,8 @@ const tagColors: { [key: string]: string } = {
 export function ProductCard({ product, className }: ProductCardProps) {
   const { addToCart } = useCart();
   const isSoldOut = product.quantity === 0;
+  const isOnSale = product.tags?.includes('On Sale');
+  const salePrice = isOnSale ? product.price * 0.85 : product.price;
 
   return (
     <TooltipProvider>
@@ -88,10 +90,24 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 </div>
              )}
             <div className="flex justify-between items-end mt-4">
-               <p className="font-bold text-primary text-lg">
-                रू {product.price.toLocaleString()}
-                <span className="text-sm font-medium text-muted-foreground"> / {product.measurement}</span>
-              </p>
+               <div className="flex flex-col">
+                  {isOnSale ? (
+                    <>
+                      <p className="font-bold text-primary text-lg">
+                        रू {salePrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        <span className="text-sm font-medium text-muted-foreground"> / {product.measurement}</span>
+                      </p>
+                      <p className="text-sm text-muted-foreground line-through">
+                        रू {product.price.toLocaleString()}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="font-bold text-primary text-lg">
+                      रू {product.price.toLocaleString()}
+                      <span className="text-sm font-medium text-muted-foreground"> / {product.measurement}</span>
+                    </p>
+                  )}
+               </div>
               <Button 
                 size="sm" 
                 onClick={() => addToCart(product)} 

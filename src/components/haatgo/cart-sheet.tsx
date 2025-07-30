@@ -23,14 +23,26 @@ type CartSheetProps = {
 export function CartSheet({ children }: CartSheetProps) {
   const { cart, removeFromCart, updateQuantity, clearCart, checkout } = useCart();
 
+  const getPrice = (item: any) => {
+      const isBulk = item.tags?.includes('Cheap in Bulk') && 
+                     item.bulkQuantity && 
+                     item.bulkPrice && 
+                     item.quantityInCart >= item.bulkQuantity;
+      
+      if (isBulk && item.bulkPrice) {
+          return item.bulkPrice;
+      }
+      
+      const isOnSale = item.tags?.includes('On Sale');
+      if (isOnSale) {
+          return item.price * 0.85; // 15% discount
+      }
+
+      return item.price;
+  }
+
   const subtotal = cart.reduce((acc, item) => {
-    const priceToUse = 
-        item.tags?.includes('Cheap in Bulk') && 
-        item.bulkQuantity && 
-        item.bulkPrice && 
-        item.quantityInCart >= item.bulkQuantity 
-            ? item.bulkPrice 
-            : item.price;
+    const priceToUse = getPrice(item);
     return acc + priceToUse * item.quantityInCart;
   }, 0);
 
@@ -70,7 +82,7 @@ export function CartSheet({ children }: CartSheetProps) {
                   />
                   <div className="flex-grow">
                     <p className="font-semibold truncate">{product.name}</p>
-                    <p className="text-sm text-primary font-bold">रू {product.price.toLocaleString()}</p>
+                    <p className="text-sm text-primary font-bold">रू {getPrice(product).toLocaleString()}</p>
                      <div className="flex items-center gap-2 mt-1">
                       <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(product.id, product.quantityInCart - 1)}><Minus className="h-3 w-3" /></Button>
                       <span className="text-sm font-medium w-4 text-center">{product.quantityInCart}</span>

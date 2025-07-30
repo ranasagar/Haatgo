@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { Star, ShoppingCart, Upload, X } from "lucide-react"
+import { Star, ShoppingCart, Upload, X, Sparkles } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -38,6 +38,13 @@ function StarRating({ rating, setRating, interactive = false }: { rating: number
     </div>
   )
 }
+
+const tagColors: { [key: string]: string } = {
+  'Featured': 'bg-yellow-400 text-yellow-900',
+  'Best Seller': 'bg-blue-400 text-blue-900',
+  'On Sale': 'bg-red-500 text-white',
+  'Cheap in Bulk': 'bg-green-500 text-white',
+};
 
 function ReviewForm({ productId }: { productId: string }) {
     const { user } = useAuth();
@@ -156,6 +163,10 @@ export default function ProductDetailPage() {
   const averageRating = productReviews.length > 0
     ? productReviews.reduce((sum, r) => sum + r.rating, 0) / productReviews.length
     : 0;
+  
+  const isOnSale = product?.tags?.includes('On Sale');
+  const salePrice = isOnSale && product ? product.price * 0.85 : product?.price;
+
 
   if (!product) {
     return notFound()
@@ -195,13 +206,24 @@ export default function ProductDetailPage() {
                 </div>
                 <div className="p-4 flex flex-col h-full">
                     <div className="space-y-3">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 flex-wrap">
                             <h1 className="text-3xl font-bold font-headline">{product.name}</h1>
                             {getStockBadge()}
                         </div>
-                        <div className="flex items-center gap-2">
-                           <StarRating rating={averageRating} />
-                           <span className="text-muted-foreground text-sm">({productReviews.length} reviews)</span>
+                        <div className="flex items-center gap-4 flex-wrap">
+                           <div className="flex items-center gap-2">
+                             <StarRating rating={averageRating} />
+                             <span className="text-muted-foreground text-sm">({productReviews.length} reviews)</span>
+                           </div>
+                           <div className="flex items-center gap-2">
+                                {product.tags?.map(tag => (
+                                    <Badge key={tag} className={cn("text-xs", tagColors[tag])}>
+                                    {tag === 'Featured' && <Star className="h-3 w-3 mr-1" />}
+                                    {tag === 'On Sale' && <Sparkles className="h-3 w-3 mr-1" />}
+                                        {tag}
+                                    </Badge>
+                                ))}
+                           </div>
                         </div>
                          <p className="text-sm text-muted-foreground">{product.category}</p>
                          <p className="text-foreground/80 text-base leading-relaxed">{product.description}</p>
@@ -210,10 +232,23 @@ export default function ProductDetailPage() {
                     <div className="flex-grow" />
 
                     <div className="mt-6">
-                       <p className="font-bold text-primary text-4xl mb-4">
-                        रू {product.price.toLocaleString()}
-                        <span className="text-lg font-medium text-muted-foreground"> / {product.measurement}</span>
-                       </p>
+                       {isOnSale ? (
+                         <div className="mb-4">
+                           <p className="font-bold text-primary text-4xl">
+                             रू {salePrice?.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                             <span className="text-lg font-medium text-muted-foreground"> / {product.measurement}</span>
+                           </p>
+                           <p className="text-xl text-muted-foreground line-through">
+                             रू {product.price.toLocaleString()}
+                           </p>
+                         </div>
+                       ) : (
+                         <p className="font-bold text-primary text-4xl mb-4">
+                           रू {product.price.toLocaleString()}
+                           <span className="text-lg font-medium text-muted-foreground"> / {product.measurement}</span>
+                         </p>
+                       )}
+                       
                        <Button 
                          size="lg" 
                          className="w-full font-bold"

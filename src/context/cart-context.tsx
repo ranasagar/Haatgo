@@ -104,6 +104,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         });
     }
 
+    const getPrice = (item: CartItem) => {
+        const isBulk = item.tags?.includes('Cheap in Bulk') && 
+                       item.bulkQuantity && 
+                       item.bulkPrice && 
+                       item.quantityInCart >= item.bulkQuantity;
+        
+        if (isBulk && item.bulkPrice) {
+            return item.bulkPrice;
+        }
+        
+        const isOnSale = item.tags?.includes('On Sale');
+        if (isOnSale) {
+            return item.price * 0.85; // 15% discount
+        }
+
+        return item.price;
+    }
+
     const checkout = () => {
         if (!user) {
             toast({ title: "Please login to place an order.", variant: "destructive"});
@@ -116,13 +134,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         };
 
         cart.forEach(item => {
-            const priceToUse =
-              item.tags?.includes('Cheap in Bulk') &&
-              item.bulkQuantity &&
-              item.bulkPrice &&
-              item.quantityInCart >= item.bulkQuantity
-                ? item.bulkPrice
-                : item.price;
+            const priceToUse = getPrice(item);
                 
             const newOrder = {
                 id: `#${Math.floor(Math.random() * 9000) + 1000}`,
