@@ -48,7 +48,21 @@ const productRecommendationsFlow = ai.defineFlow(
     outputSchema: ProductRecommendationsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      return output!;
+    } catch (error) {
+       console.error("AI recommendations failed, using fallback:", error);
+       // Return a default list of popular items as a fallback
+       return {
+         recommendations: [
+            "Basmati Rice",
+            "Warm Fleece Jacket",
+            "Solar Powered Lamp",
+            "Stainless Steel Pot Set",
+            "Sunflower Oil",
+         ]
+       };
+    }
   }
 );
