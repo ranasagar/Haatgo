@@ -47,7 +47,9 @@ export default function Home() {
         <AppHeader wishlistCount={wishlist.length} />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col gap-6 lg:gap-8">
-            <LivestreamDialog />
+            <div className="sticky top-20 bg-background/90 backdrop-blur-sm py-2 z-30 -mx-4 px-4">
+               <LivestreamDialog />
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
               <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
                 <RouteTracker />
