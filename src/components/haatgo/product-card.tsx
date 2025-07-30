@@ -1,3 +1,4 @@
+
 "use client"
 
 import Image from "next/image"
@@ -6,6 +7,7 @@ import type { Product } from "@/lib/data"
 import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 type ProductCardProps = {
   product: Product;
@@ -15,6 +17,16 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product, isWishlisted, onToggleWishlist, className }: ProductCardProps) {
+  const getStockBadge = () => {
+    if (product.quantity === 0) {
+      return <Badge variant="destructive" className="absolute top-2 left-2">Sold Out</Badge>;
+    }
+    if (product.quantity <= 5) {
+      return <Badge variant="secondary" className="absolute top-2 left-2 bg-yellow-400 text-yellow-900">Low Stock</Badge>;
+    }
+    return null;
+  };
+  
   return (
     <Card className={cn("overflow-hidden rounded-lg group transition-all hover:shadow-md", className)}>
       <CardContent className="p-0">
@@ -27,6 +39,7 @@ export function ProductCard({ product, isWishlisted, onToggleWishlist, className
             className="object-cover w-full h-48 transition-transform duration-300 group-hover:scale-105"
             data-ai-hint={product.dataAiHint}
           />
+          {getStockBadge()}
           <Button
             size="icon"
             variant="ghost"
@@ -44,7 +57,10 @@ export function ProductCard({ product, isWishlisted, onToggleWishlist, className
         </div>
         <div className="p-4">
           <h3 className="font-headline font-semibold text-lg truncate">{product.name}</h3>
-          <p className="text-muted-foreground text-sm">{product.category}</p>
+          <div className="flex justify-between items-center mt-1">
+            <p className="text-muted-foreground text-sm">{product.category}</p>
+            {product.quantity > 0 && <p className="text-sm text-muted-foreground">{product.quantity} left</p>}
+          </div>
           <p className="font-bold text-primary text-lg mt-2">रू {product.price.toLocaleString()}</p>
         </div>
       </CardContent>
