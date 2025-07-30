@@ -35,11 +35,25 @@ export function RouteTracker() {
     const bbox = [minLon - lonPad, minLat - latPad, maxLon + lonPad, maxLat + latPad].join(',');
     
     const markers = routeStops.map(stop => {
-        const color = stop.passed ? 'green' : 'blue';
+        const color = stop.passed ? 'green' : 'orange';
         return `marker=${stop.lat},${stop.lon},${color}`;
     }).join('&');
+    
+    const routePath = routeStops.map(stop => `${stop.lon},${stop.lat}`).join(';');
+    const url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=route&route=${routePath}&${markers}`;
+    
+    // A bit of a hack to make the route line visible, as embed API is limited.
+    // We are essentially adding a custom style to the parent document.
+    // This is not ideal but works for this specific use-case.
+    const styledUrl = `data:text/html;charset=utf-8,
+      <style>
+        .ol-overlaycontainer-stopevent { display: none; }
+        path.ol-geography { stroke: hsl(var(--primary)); stroke-width: 4px; }
+      </style>
+      <iframe width="100%" height="100%" frameborder="0" src="${url}"></iframe>
+    `;
 
-    return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${markers}`;
+    return styledUrl;
   }
 
   return (
