@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             setUser(user);
-            setIsAdmin(user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
+            setIsAdmin(!!user && user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
             if (user) {
                 const token = await user.getIdToken();
                 Cookies.set('firebaseIdToken', token, { expires: 1 }); // expires in 1 day
