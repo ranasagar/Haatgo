@@ -38,12 +38,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { products as initialProducts, Product } from "@/lib/data";
+import { Product } from "@/lib/data";
+import { useProducts } from "@/context/product-context";
 
 const defaultNewProduct: Product = {
   id: '',
@@ -59,7 +59,7 @@ const defaultNewProduct: Product = {
 };
 
 export default function ProductsPage() {
-  const [products, setProducts] = React.useState<Product[]>(initialProducts);
+  const { products, setProducts } = useProducts();
   const [open, setOpen] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState<Product>(defaultNewProduct);

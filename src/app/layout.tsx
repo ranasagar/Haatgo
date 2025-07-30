@@ -5,6 +5,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { AppSettingsProvider } from '@/context/app-settings-context';
 import { AuthProvider } from '@/context/auth-context';
+import { ProductProvider } from '@/context/product-context';
 
 export const metadata: Metadata = {
   title: 'HaatGo',
@@ -31,7 +32,9 @@ export default function RootLayout({
       >
         <AuthProvider>
           <AppSettingsProvider>
-            {children}
+            <ProductProvider>
+              {children}
+            </ProductProvider>
           </AppSettingsProvider>
         </AuthProvider>
         <Toaster />
