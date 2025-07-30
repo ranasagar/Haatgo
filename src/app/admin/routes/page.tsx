@@ -68,11 +68,17 @@ const initialRoutes: Route[] = [
     },
 ];
 
+const defaultNewRoute = {
+    name: '',
+    stops: [''],
+};
 
 export default function RoutesPage() {
     const [open, setOpen] = React.useState(false);
     const [routes, setRoutes] = React.useState<Route[]>(initialRoutes);
     const [selectedRoute, setSelectedRoute] = React.useState<Route | null>(null);
+    const [newRoute, setNewRoute] = React.useState(defaultNewRoute);
+
 
     const handleToggleStop = (stopName: string) => {
         if (selectedRoute) {
@@ -92,6 +98,39 @@ export default function RoutesPage() {
     const closeManageDialog = () => {
         setSelectedRoute(null);
     }
+
+    const handleAddStop = () => {
+        setNewRoute(prev => ({
+            ...prev,
+            stops: [...prev.stops, '']
+        }));
+    };
+
+    const handleStopChange = (index: number, value: string) => {
+        const updatedStops = [...newRoute.stops];
+        updatedStops[index] = value;
+        setNewRoute(prev => ({ ...prev, stops: updatedStops }));
+    };
+
+    const handleRouteNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewRoute(prev => ({...prev, name: e.target.value}));
+    }
+
+    const handleSaveRoute = () => {
+        const routeToAdd: Route = {
+            id: (routes.length + 1).toString(),
+            name: newRoute.name,
+            stops: newRoute.stops.filter(s => s.trim() !== '').map(s => ({ name: s, passed: false })),
+            date: new Date().toISOString().split('T')[0], // Today's date
+        };
+
+        if (routeToAdd.name && routeToAdd.stops.length > 0) {
+            setRoutes(prev => [...prev, routeToAdd]);
+            setNewRoute(defaultNewRoute);
+            setOpen(false);
+        }
+    }
+
 
   return (
     <>
@@ -152,18 +191,20 @@ export default function RoutesPage() {
                     <Label htmlFor="routeName" className="text-right">
                       Route Name
                     </Label>
-                    <Input id="routeName" defaultValue="East Nepal Route" className="col-span-3" />
+                    <Input id="routeName" value={newRoute.name} onChange={handleRouteNameChange} placeholder="e.g. East Nepal Route" className="col-span-3" />
                   </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="stop" className="text-right">
-                      Stop 1
-                    </Label>
-                    <Input id="stop" defaultValue="Chisapani Market" className="col-span-3" />
-                  </div>
+                  {newRoute.stops.map((stop, index) => (
+                    <div key={index} className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor={`stop-${index}`} className="text-right">
+                        Stop {index + 1}
+                      </Label>
+                      <Input id={`stop-${index}`} value={stop} onChange={(e) => handleStopChange(index, e.target.value)} placeholder="e.g. Chisapani Market" className="col-span-3" />
+                    </div>
+                  ))}
                 </div>
                 <DialogFooter>
-                   <Button type="button" variant="outline">Add Another Stop</Button>
-                  <Button type="submit" onClick={() => setOpen(false)}>Save Route</Button>
+                   <Button type="button" variant="outline" onClick={handleAddStop}>Add Another Stop</Button>
+                  <Button type="submit" onClick={handleSaveRoute}>Save Route</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -230,7 +271,7 @@ export default function RoutesPage() {
             </CardContent>
             <CardFooter>
               <div className="text-xs text-muted-foreground">
-                Showing <strong>1-1</strong> of <strong>3</strong> routes
+                Showing <strong>1-{routes.length}</strong> of <strong>{routes.length}</strong> routes
               </div>
             </CardFooter>
           </Card>
