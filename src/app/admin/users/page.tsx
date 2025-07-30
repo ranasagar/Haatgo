@@ -58,6 +58,7 @@ import type { User } from "@/context/user-context"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/context/auth-context"
 
 const defaultNewUser: User = {
   id: '',
@@ -70,6 +71,7 @@ const defaultNewUser: User = {
 
 export default function UsersPage() {
   const { users, setUsers, addUser, updateUser } = useUsers()
+  const { resetPassword } = useAuth();
   const { toast } = useToast()
   const [open, setOpen] = React.useState(false)
   const [isEditing, setIsEditing] = React.useState(false)
@@ -134,6 +136,23 @@ export default function UsersPage() {
         description: `${user.name} is now ${newStatus.toLowerCase()}.`
     })
   }
+
+  const handlePasswordReset = async (email: string) => {
+    try {
+      await resetPassword(email);
+      toast({
+        title: "Password Reset Email Sent",
+        description: `A reset link has been sent to ${email}.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Failed to Send Email",
+        description: error.message || "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    }
+  };
+
 
   return (
     <>
@@ -221,6 +240,9 @@ export default function UsersPage() {
                         <DropdownMenuItem onClick={() => openEditDialog(user)}>Edit</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => toggleUserStatus(user)}>
                           {user.status === 'Active' ? 'Deactivate' : 'Activate'}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handlePasswordReset(user.email)}>
+                          Send Password Reset
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
