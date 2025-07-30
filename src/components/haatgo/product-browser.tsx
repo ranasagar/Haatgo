@@ -20,25 +20,25 @@ export function ProductBrowser() {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue={categories[0]} onValueChange={setActiveTab} className="w-full">
-          <div className="relative">
-            <Carousel
+          <div className="w-full">
+             <Carousel
               opts={{
                 align: "start",
                 dragFree: true,
               }}
-              className="w-full"
+              className="w-full px-10"
             >
-              <TabsList>
-                <CarouselContent>
-                    {categories.map((category) => (
-                      <CarouselItem key={category} className="basis-auto">
-                        <TabsTrigger value={category}>{category}</TabsTrigger>
-                      </CarouselItem>
-                    ))}
-                </CarouselContent>
-              </TabsList>
-              <CarouselPrevious className="absolute left-0 -translate-x-1/2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary disabled:opacity-0" />
-              <CarouselNext className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary disabled:opacity-0" />
+              <CarouselContent>
+                <TabsList className="bg-transparent p-0 m-0">
+                  {categories.map((category) => (
+                    <CarouselItem key={category} className="basis-auto pl-2">
+                      <TabsTrigger value={category}>{category}</TabsTrigger>
+                    </CarouselItem>
+                  ))}
+                </TabsList>
+              </CarouselContent>
+              <CarouselPrevious className="h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary disabled:opacity-0" />
+              <CarouselNext className="h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary disabled:opacity-0" />
             </Carousel>
           </div>
             {categories.map((category) => (
