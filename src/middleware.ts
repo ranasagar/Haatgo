@@ -2,11 +2,31 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+const knownRoutes = new Set([
+  '/',
+  '/login',
+  '/signup',
+  '/forgot-password',
+  '/profile',
+  '/admin',
+  '/admin/products',
+  '/admin/orders',
+  '/admin/routes',
+  '/admin/deliveries',
+  '/admin/parcels',
+  '/admin/livestream',
+  '/admin/accounting',
+  '/admin/settings',
+  '/admin/setup-guide',
+  '/admin/about',
+]);
+
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('firebaseIdToken');
   const { pathname } = request.nextUrl;
 
+  // Handle protected routes
   const protectedPaths = ['/admin', '/profile'];
   const isProtectedPath = protectedPaths.some(p => pathname.startsWith(p));
   
@@ -14,8 +34,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
   
+  // Handle auth pages for logged-in users
   if ((pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password') && token) {
-     return NextResponse.redirect(new URL('/admin', request.url))
+     return NextResponse.redirect(new URL('/', request.url))
+  }
+  
+  // Handle 404 by redirecting to homepage
+  if (!knownRoutes.has(pathname)) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
   
   return NextResponse.next()
