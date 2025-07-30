@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('firebaseIdToken');
   const { pathname } = request.nextUrl;
 
-  const protectedPaths = ['/admin'];
+  const protectedPaths = ['/admin', '/profile'];
   const isProtectedPath = protectedPaths.some(p => pathname.startsWith(p));
   
   if (isProtectedPath && !token) {
@@ -15,18 +15,7 @@ export function middleware(request: NextRequest) {
   }
   
   if ((pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password') && token) {
-     return NextResponse.redirect(new URL('/', request.url))
-  }
-
-  // Allow logged-in users to visit the customer-facing homepage
-  if (pathname === '/' && token) {
-      // If you want to default to admin, redirect here. Otherwise, let it pass.
-      // return NextResponse.redirect(new URL('/admin', request.url));
-  }
-  
-  // Also protect the profile page for all users (not just admins)
-  if (pathname.startsWith('/profile') && !token) {
-    return NextResponse.redirect(new URL('/login', request.url))
+     return NextResponse.redirect(new URL('/admin', request.url))
   }
   
   return NextResponse.next()

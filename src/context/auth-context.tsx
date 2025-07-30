@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return;
         };
         await firebaseSignOut(auth);
+        Cookies.remove('firebaseIdToken');
         router.push('/login');
     };
     

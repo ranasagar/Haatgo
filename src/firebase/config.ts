@@ -16,11 +16,18 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app: FirebaseApp | null = null;
-let auth: Auth | null = null;
+let app: FirebaseApp;
+let auth: Auth;
 
-if (firebaseConfig.apiKey) {
-    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+if (typeof window !== "undefined" && !getApps().length) {
+    try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+    } catch (e) {
+        console.error("Firebase initialization error", e);
+    }
+} else if (getApps().length) {
+    app = getApp();
     auth = getAuth(app);
 }
 
