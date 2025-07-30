@@ -5,6 +5,7 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 type AppSettings = {
     appName: string;
+    appLogo?: string;
     whatsapp: string;
     viber: string;
     instagram: string;
@@ -18,6 +19,7 @@ type AppSettingsContextType = {
 
 const defaultSettings: AppSettings = {
     appName: 'HaatGo',
+    appLogo: '',
     whatsapp: '+9779800000000',
     viber: '+9779800000000',
     instagram: 'haatgo',

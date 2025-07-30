@@ -3,6 +3,7 @@
 
 import { Home, Package, ShoppingCart, Map, PanelLeft, Clapperboard, Truck, Settings } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -23,6 +24,16 @@ export default function AdminLayout({
     { href: "/admin/settings", icon: Settings, label: "Settings" },
   ];
 
+  const AppLogo = () => (
+    <>
+      {settings.appLogo ? (
+        <Image src={settings.appLogo} alt={settings.appName} width={24} height={24} className="transition-all group-hover:scale-110" />
+      ) : (
+        <Truck className="h-5 w-5 transition-all group-hover:scale-110" />
+      )}
+    </>
+  );
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-sidebar sm:flex">
@@ -31,7 +42,7 @@ export default function AdminLayout({
             href="/"
             className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
           >
-           <Truck className="h-5 w-5 transition-all group-hover:scale-110" />
+           <AppLogo />
             <span className="sr-only">{settings.appName}</span>
           </Link>
           <TooltipProvider>
@@ -70,7 +81,7 @@ export default function AdminLayout({
                    href="/"
                    className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
                 >
-                  <Truck className="h-5 w-5 transition-all group-hover:scale-110" />
+                  <AppLogo />
                   <span className="sr-only">{settings.appName}</span>
                 </Link>
                  {navItems.map((item) => (

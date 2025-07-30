@@ -1,6 +1,7 @@
 
 "use client"
 
+import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,18 @@ export default function SettingsPage() {
         const { id, value } = e.target;
         setSettings(prev => ({...prev, [id]: value}));
     }
+
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setSettings(prev => ({...prev, appLogo: reader.result as string}));
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
 
     const handleSave = () => {
         // In a real app, you would save these to a database.
@@ -34,11 +47,20 @@ export default function SettingsPage() {
                 <CardDescription>Manage general application settings and contact links.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6">
-                <div className="grid gap-2">
+                 <div className="grid gap-2">
                     <Label htmlFor="appName">Application Name</Label>
                     <Input id="appName" value={settings.appName} onChange={handleInputChange} placeholder="e.g., HaatGo" />
                     <p className="text-sm text-muted-foreground">This name will appear throughout the application.</p>
                 </div>
+                 <div className="grid gap-2">
+                    <Label htmlFor="appLogo">Application Logo</Label>
+                    {settings.appLogo && (
+                        <Image src={settings.appLogo} alt="App Logo Preview" width={64} height={64} className="rounded-md border p-1" />
+                    )}
+                    <Input id="appLogoInput" type="file" onChange={handleLogoChange} accept="image/*" className="file:text-primary file:font-semibold"/>
+                    <p className="text-sm text-muted-foreground">Recommended size: 64x64px. Will replace the default truck icon.</p>
+                </div>
+
                  <div className="border-t pt-6 grid gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="whatsapp">WhatsApp Number</Label>
@@ -48,7 +70,7 @@ export default function SettingsPage() {
                      <div className="grid gap-2">
                         <Label htmlFor="viber">Viber Number</Label>
                         <Input id="viber" value={settings.viber} onChange={handleInputChange} placeholder="e.g., +9779800000000" />
-                         <p className="text-sm text-muted-foreground">Include country code. This will generate a <code>viber://chat?number=</code> link.</p>
+                         <p className="text-sm text-muted-foreground">Include country code. This will generate a code>viber://chat?number=</code> link.</p>
                     </div>
                      <div className="grid gap-2">
                         <Label htmlFor="instagram">Instagram Username</Label>
