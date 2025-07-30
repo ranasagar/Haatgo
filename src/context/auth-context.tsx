@@ -6,6 +6,7 @@ import { onAuthStateChanged, User, signOut as firebaseSignOut, createUserWithEma
 import { auth } from '@/firebase/config';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { LoadingAnimation } from '@/components/haatgo/loading-animation';
 
 type AuthContextType = {
     user: User | null;
@@ -82,7 +83,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     if (loading) {
-        return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+        return <LoadingAnimation />;
     }
 
     return (
