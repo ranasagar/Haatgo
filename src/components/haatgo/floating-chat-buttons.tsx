@@ -1,9 +1,11 @@
 
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { MessageSquare } from "lucide-react"
+import { MessageSquare, X } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 // NOTE: Using inline SVGs as lucide-react doesn't have brand icons.
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -23,66 +25,55 @@ const FacebookMessengerIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 // In a real app, these would come from a database, managed in the admin panel.
-const chatLinks = {
-    whatsapp: 'https://wa.me/9779800000000',
-    viber: 'viber://chat?number=%2B9779800000000',
-    instagram: 'https://ig.me/m/haatgo',
-    facebook: 'https://m.me/haatgo'
-}
+const chatLinks = [
+    { id: 'whatsapp', href: 'https://wa.me/9779800000000', label: 'Chat on WhatsApp', icon: WhatsAppIcon, color: "bg-[#25D366] hover:bg-[#128C7E]" },
+    { id: 'viber', href: 'viber://chat?number=%2B9779800000000', label: 'Chat on Viber', icon: ViberIcon, color: "bg-[#7360F2] hover:bg-[#5f48ea]" },
+    { id: 'instagram', href: 'https://ig.me/m/haatgo', label: 'Message on Instagram', icon: InstagramIcon, color: "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:opacity-90" },
+    { id: 'facebook', href: 'https://m.me/haatgo', label: 'Message on Messenger', icon: FacebookMessengerIcon, color: "bg-[#00B2FF] hover:bg-[#0084ff]" },
+];
 
 export function FloatingChatButtons() {
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
-             <TooltipProvider>
+        <TooltipProvider>
+            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+                <div className={cn("flex flex-col items-center gap-3 transition-all duration-300", isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none")}>
+                    {chatLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                             <Tooltip key={link.id}>
+                                <TooltipTrigger asChild>
+                                    <Button asChild size="icon" className={cn("rounded-full h-12 w-12 text-white", link.color)}>
+                                       <a href={link.href} target="_blank" rel="noopener noreferrer" aria-label={link.label}>
+                                         <Icon className="h-6 w-6" />
+                                       </a>
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="left">
+                                    <p>{link.label}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        )
+                    })}
+                </div>
+                
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Button asChild size="icon" className="rounded-full h-12 w-12 bg-[#25D366] hover:bg-[#128C7E] text-white">
-                           <a href={chatLinks.whatsapp} target="_blank" rel="noopener noreferrer">
-                             <WhatsAppIcon className="h-6 w-6" />
-                           </a>
+                        <Button
+                            size="icon"
+                            className="rounded-full h-16 w-16 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+                            onClick={() => setIsOpen(!isOpen)}
+                            aria-expanded={isOpen}
+                        >
+                           {isOpen ? <X className="h-8 w-8" /> : <MessageSquare className="h-8 w-8" />}
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent side="left">
-                        <p>Chat on WhatsApp</p>
+                        <p>{isOpen ? "Close" : "Contact Us"}</p>
                     </TooltipContent>
                 </Tooltip>
-                 <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button asChild size="icon" className="rounded-full h-12 w-12 bg-[#7360F2] hover:bg-[#5f48ea] text-white">
-                            <a href={chatLinks.viber} target="_blank" rel="noopener noreferrer">
-                                <ViberIcon className="h-6 w-6" />
-                            </a>
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="left">
-                        <p>Chat on Viber</p>
-                    </TooltipContent>
-                </Tooltip>
-                 <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button asChild size="icon" className="rounded-full h-12 w-12 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:opacity-90 text-white">
-                           <a href={chatLinks.instagram} target="_blank" rel="noopener noreferrer">
-                             <InstagramIcon className="h-6 w-6" />
-                           </a>
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="left">
-                        <p>Message on Instagram</p>
-                    </TooltipContent>
-                </Tooltip>
-                 <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button asChild size="icon" className="rounded-full h-12 w-12 bg-[#00B2FF] hover:bg-[#0084ff] text-white">
-                           <a href={chatLinks.facebook} target="_blank" rel="noopener noreferrer">
-                             <FacebookMessengerIcon className="h-6 w-6" />
-                           </a>
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="left">
-                        <p>Message on Messenger</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        </div>
+            </div>
+        </TooltipProvider>
     )
 }
