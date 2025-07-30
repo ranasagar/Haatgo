@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('firebaseIdToken');
   const { pathname } = request.nextUrl;
@@ -13,13 +14,19 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
   
-  if ((pathname === '/login' || pathname === '/signup') && token) {
+  if ((pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password') && token) {
      return NextResponse.redirect(new URL('/admin', request.url))
   }
 
+  // Redirect root to /admin if logged in, otherwise show customer view
+  if (pathname === '/' && token) {
+      return NextResponse.redirect(new URL('/admin', request.url));
+  }
+  
   return NextResponse.next()
 }
 
+// See "Matching Paths" below to learn more
 export const config = {
   matcher: [
     /*
@@ -28,9 +35,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - / (the homepage)
      */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
-    '/',
   ],
 }

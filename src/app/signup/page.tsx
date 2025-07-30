@@ -16,7 +16,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
+  const { signup, user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -34,7 +34,8 @@ export default function SignupPage() {
       await signup(email, password);
       toast({ title: "Signup Successful", description: "Your account has been created." });
       router.push('/admin');
-    } catch (error: any) {
+    } catch (error: any)
+      {
       console.error(error);
       toast({
         title: "Signup Failed",
@@ -45,6 +46,11 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
+
+  if (user) {
+    // router.push('/admin') is handled by middleware, this prevents flashing the login page.
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted/40">

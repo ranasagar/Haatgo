@@ -5,6 +5,7 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { onAuthStateChanged, User, signOut as firebaseSignOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/firebase/config';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 type AuthContextType = {
     user: User | null;
@@ -24,17 +25,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         if (!auth) {
-            console.warn("Firebase is not configured. Authentication will be disabled.");
             setLoading(false);
             return;
         }
         
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             setUser(user);
+            if (user) {
+                const token = await user.getIdToken();
+                Cookies.set('firebaseIdToken', token, { expires: 1 }); // expires in 1 day
+            } else {
+                Cookies.remove('firebaseIdToken');
+            }
             setLoading(false);
         }, (error) => {
             console.error("Auth state change error:", error);
             setUser(null);
+            Cookies.remove('firebaseIdToken');
             setLoading(false);
         });
 
@@ -52,7 +59,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const logout = async () => {
-        if (!auth) return Promise.reject(new Error("Firebase not configured. Please check your .env file."));
+        if (!auth) {
+            console.error("Firebase not configured.");
+            return;
+        };
         await firebaseSignOut(auth);
         router.push('/login');
     };
@@ -70,6 +80,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         resetPassword,
     };
+
+    if (loading) {
+        return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    }
 
     return (
         <AuthContext.Provider value={value}>

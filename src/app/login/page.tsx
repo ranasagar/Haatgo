@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -37,6 +37,11 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  if (user) {
+    // router.push('/admin') is handled by middleware, this prevents flashing the login page.
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted/40">
