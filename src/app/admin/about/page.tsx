@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Clapperboard, Map, Package, ShoppingCart, Sparkles, MessageSquare, Wallet, Users } from "lucide-react";
+import { CheckCircle2, Clapperboard, Map, Package, ShoppingCart, Sparkles, MessageSquare, Wallet, Users, Truck, Send } from "lucide-react";
 
 const features = [
   {
@@ -73,6 +73,43 @@ export default function AboutPage() {
         </CardContent>
       </Card>
       
+      <Card>
+        <CardHeader>
+          <CardTitle>Feature Breakdown: Delivery vs. Parcel</CardTitle>
+          <CardDescription>Understanding the two main logistics features of the application.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-6 md:grid-cols-2">
+            <div className="flex flex-col gap-2 p-4 border rounded-lg">
+                <div className="flex items-center gap-3">
+                    <Truck className="h-6 w-6 text-primary" />
+                    <h3 className="text-lg font-semibold">Deliveries (B2C)</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                    This feature handles the delivery of **products sold from your store** to a customer's specific home address. It's a classic Business-to-Consumer model.
+                </p>
+                <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1 mt-2">
+                    <li><strong>Purpose:</strong> Fulfill customer orders.</li>
+                    <li><strong>Origin:</strong> Your inventory.</li>
+                    <li><strong>Destination:</strong> Customer's home address.</li>
+                </ul>
+            </div>
+             <div className="flex flex-col gap-2 p-4 border rounded-lg">
+                <div className="flex items-center gap-3">
+                    <Send className="h-6 w-6 text-primary" />
+                    <h3 className="text-lg font-semibold">Parcels (C2C)</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                    This feature provides a **courier service** for your users. They can send their own personal packages from one of your designated route stops to another.
+                </p>
+                 <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1 mt-2">
+                    <li><strong>Purpose:</strong> User-to-user package sending.</li>
+                    <li><strong>Origin:</strong> A predefined route stop.</li>
+                    <li><strong>Destination:</strong> Another predefined route stop.</li>
+                </ul>
+            </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Technology Stack</CardTitle>
