@@ -97,7 +97,8 @@ export default function SetupGuidePage() {
                     <li>Navigate to the <code className="bg-muted px-1 rounded-sm">Accounting</code> page.</li>
                     <li>View your total revenue, costs, and gross profit at a glance.</li>
                     <li>Analyze the sales overview chart to understand performance over time.</li>
-                    <li>Review the list of recent transactions for a detailed record of sales and expenses.</li>
+                    <li>Click <strong>Add Transaction</strong> to manually record sales or expenses that happen outside of product sales (e.g., fuel costs, supplier payments).</li>
+                    <li>Review the list of recent transactions for a detailed record of all financial activities.</li>
                 </ol>
             </AccordionContent>
           </AccordionItem>
