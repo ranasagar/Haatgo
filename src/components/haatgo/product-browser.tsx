@@ -110,5 +110,3 @@ export function ProductBrowser() {
     </Card>
   );
 }
-
-    
