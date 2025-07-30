@@ -10,6 +10,7 @@ type AppSettings = {
     viber: string;
     instagram: string;
     facebook: string;
+    vatRate: number;
 };
 
 type AppSettingsContextType = {
@@ -23,7 +24,8 @@ const defaultSettings: AppSettings = {
     whatsapp: '+9779800000000',
     viber: '+9779800000000',
     instagram: 'haatgo',
-    facebook: 'haatgo'
+    facebook: 'haatgo',
+    vatRate: 13
 };
 
 const AppSettingsContext = createContext<AppSettingsContextType | undefined>(undefined);

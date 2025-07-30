@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useCart } from "@/context/cart-context"
+import { useAppSettings } from "@/context/app-settings-context"
 
 type CartSheetProps = {
   children: React.ReactNode;
@@ -22,6 +23,7 @@ type CartSheetProps = {
 
 export function CartSheet({ children }: CartSheetProps) {
   const { cart, removeFromCart, updateQuantity, clearCart, checkout } = useCart();
+  const { settings } = useAppSettings();
 
   const getPriceInfo = (item: any) => {
       const originalPrice = item.price;
@@ -61,7 +63,7 @@ export function CartSheet({ children }: CartSheetProps) {
   }, 0);
 
   const priceAfterDiscount = subtotal - totalDiscount;
-  const vatAmount = priceAfterDiscount * 0.13;
+  const vatAmount = priceAfterDiscount * (settings.vatRate / 100);
   const grandTotal = priceAfterDiscount + vatAmount;
 
 
@@ -143,7 +145,7 @@ export function CartSheet({ children }: CartSheetProps) {
                     <span>- रू {totalDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                  <div className="flex justify-between">
-                    <span>VAT (13%)</span>
+                    <span>VAT ({settings.vatRate}%)</span>
                     <span>+ रू {vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
             </div>

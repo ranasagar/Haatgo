@@ -8,14 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAppSettings } from "@/context/app-settings-context";
+import { Separator } from "@/components/ui/separator";
 
 export default function SettingsPage() {
     const { toast } = useToast();
     const { settings, setSettings } = useAppSettings();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
-        setSettings(prev => ({...prev, [id]: value}));
+        const { id, value, type } = e.target;
+        setSettings(prev => ({
+            ...prev, 
+            [id]: type === 'number' ? parseFloat(value) || 0 : value
+        }));
     }
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +48,7 @@ export default function SettingsPage() {
         <Card>
             <CardHeader>
                 <CardTitle>Application Settings</CardTitle>
-                <CardDescription>Manage general application settings and contact links.</CardDescription>
+                <CardDescription>Manage general application settings, finances, and contact links.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6">
                  <div className="grid gap-2">
@@ -61,7 +65,17 @@ export default function SettingsPage() {
                     <p className="text-sm text-muted-foreground">Recommended size: 64x64px. Will replace the default truck icon.</p>
                 </div>
 
+                <Separator />
+                <h3 className="font-semibold text-lg">Financial Settings</h3>
+                <div className="grid gap-2">
+                    <Label htmlFor="vatRate">VAT Rate (%)</Label>
+                    <Input id="vatRate" type="number" value={settings.vatRate} onChange={handleInputChange} placeholder="e.g., 13" />
+                    <p className="text-sm text-muted-foreground">The Value Added Tax rate to be applied at checkout.</p>
+                </div>
+
+
                  <div className="border-t pt-6 grid gap-6">
+                    <h3 className="font-semibold text-lg">Contact Links</h3>
                     <div className="grid gap-2">
                         <Label htmlFor="whatsapp">WhatsApp Number</Label>
                         <Input id="whatsapp" value={settings.whatsapp} onChange={handleInputChange} placeholder="e.g., +9779800000000" />
