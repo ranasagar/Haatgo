@@ -58,6 +58,7 @@ export function RouteTracker() {
 
   useEffect(() => {
     generateMapUrl();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeStops]);
 
   const handleStopClick = (lat: number, lon: number) => {
@@ -72,12 +73,14 @@ export function RouteTracker() {
       </CardHeader>
       <CardContent>
         <div className="relative rounded-lg overflow-hidden mb-4">
-          <iframe
-            className="w-full h-64 border-0 rounded-lg"
-            src={mapUrl}
-            title="Route Map"
-            key={mapUrl} // Re-render iframe when URL changes
-          ></iframe>
+          {mapUrl && (
+            <iframe
+              className="w-full h-64 border-0 rounded-lg"
+              src={mapUrl}
+              title="Route Map"
+              key={mapUrl} // Re-render iframe when URL changes
+            ></iframe>
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
           <div className="absolute bottom-2 left-4 text-white">
              {nextStop ? (
