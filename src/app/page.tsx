@@ -23,23 +23,22 @@ export default function Home() {
   const { products } = useProducts();
 
   const handleToggleWishlist = useCallback((product: Product) => {
-    setWishlist((prev) => {
-      const isWishlisted = prev.some((item) => item.id === product.id);
-      if (isWishlisted) {
-        toast({
-          title: "Removed from Wishlist",
-          description: `${product.name} has been removed from your wishlist.`,
-        });
-        return prev.filter((item) => item.id !== product.id);
-      } else {
-        toast({
-          title: "Added to Wishlist!",
-          description: `${product.name} has been added to your wishlist.`,
-        });
-        return [...prev, product];
-      }
-    });
-  }, [toast]);
+    const isWishlisted = wishlist.some((item) => item.id === product.id);
+
+    if (isWishlisted) {
+      toast({
+        title: "Removed from Wishlist",
+        description: `${product.name} has been removed from your wishlist.`,
+      });
+      setWishlist((prev) => prev.filter((item) => item.id !== product.id));
+    } else {
+      toast({
+        title: "Added to Wishlist!",
+        description: `${product.name} has been added to your wishlist.`,
+      });
+      setWishlist((prev) => [...prev, product]);
+    }
+  }, [toast, wishlist]);
 
   return (
     <WishlistSheet wishlist={wishlist} onToggleWishlist={handleToggleWishlist}>
