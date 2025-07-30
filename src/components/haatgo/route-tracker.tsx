@@ -3,11 +3,12 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Clock, Truck, Package, Home } from "lucide-react"
+import { MapPin, Clock, Truck, Package, Home, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { routeStops as initialRouteStops } from "@/lib/data"
 import { useDeliveries } from "@/context/delivery-context"
 import { useParcels } from "@/context/parcel-context"
+import { Button } from "../ui/button"
 
 const routeStopsWithTime = initialRouteStops.map((stop, index) => ({
     ...stop,
@@ -19,70 +20,79 @@ const routeStopsWithTime = initialRouteStops.map((stop, index) => ({
 export function RouteTracker() {
   const [routeStops, setRouteStops] = useState(routeStopsWithTime);
   const [mapUrl, setMapUrl] = useState('');
+  const [selectedStop, setSelectedStop] = useState<any>(null);
   const { deliveries } = useDeliveries();
   const { parcels } = useParcels();
 
   const nextStop = routeStops.find(stop => !stop.passed);
   
-  const generateMapUrl = useMemo(() => {
-    const allStops = [...routeStops];
-
-    deliveries.forEach(d => {
-        if (!allStops.find(s => s.lat === d.lat && s.lon === d.lon)) {
-            allStops.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, eta: '' });
-        }
-    });
-
-    const parcelStopNames = new Set(parcels.flatMap(p => [p.fromStop, p.toStop]));
-    parcelStopNames.forEach(name => {
-        const stop = initialRouteStops.find(s => s.name === name);
-        if (stop && !allStops.find(s => s.name === name)) {
-            allStops.push({ ...stop, type: 'parcel', passed: false, eta: '' });
-        } else if (stop) {
-            const existing = allStops.find(s => s.name === name);
-            if (existing && !existing.type) (existing as any).type = 'parcel';
-        }
-    });
-
-
-    const lats = allStops.map(s => s.lat);
-    const lons = allStops.map(s => s.lon);
-    const minLat = Math.min(...lats);
-    const maxLat = Math.max(...lats);
-    const minLon = Math.min(...lons);
-    const maxLon = Math.max(...lons);
-    
-    const latPad = (maxLat - minLat) * 0.2 || 0.1;
-    const lonPad = (maxLon - minLon) * 0.2 || 0.1;
-
-    const bbox = [minLon - lonPad, minLat - latPad, maxLon + lonPad, maxLat + latPad].join(',');
-    
-    const markers = allStops.map(stop => {
-        let color = 'blue'; // Default for parcel/route stops
-        if ((stop as any).type === 'delivery') {
-            color = 'purple';
-        } else if ((stop as any).passed) {
-            color = 'green';
-        } else if (!(stop as any).type) {
-            color = 'orange';
-        }
-        return `marker=${stop.lat},${stop.lon},${color}`;
-    }).join('&');
-    
-    const url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${markers}`;
-    
-    setMapUrl(url);
-
-  }, [routeStops, deliveries, parcels]);
-
   useEffect(() => {
-    generateMapUrl;
-  }, [generateMapUrl]);
+    let url = '';
+    if (selectedStop) {
+      const bbox = [selectedStop.lon - 0.01, selectedStop.lat - 0.01, selectedStop.lon + 0.01, selectedStop.lat + 0.01].join(',');
+      const marker = `marker=${selectedStop.lat},${selectedStop.lon},red`;
+      url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${marker}`;
+    } else {
+        const allStops = [...routeStops];
+
+        deliveries.forEach(d => {
+            if (!allStops.find(s => s.lat === d.lat && s.lon === d.lon)) {
+                allStops.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, eta: '' });
+            }
+        });
+
+        const parcelStopNames = new Set(parcels.flatMap(p => [p.fromStop, p.toStop]));
+        parcelStopNames.forEach(name => {
+            const stop = initialRouteStops.find(s => s.name === name);
+            if (stop && !allStops.find(s => s.name === name)) {
+                allStops.push({ ...stop, type: 'parcel', passed: false, eta: '' });
+            } else if (stop) {
+                const existing = allStops.find(s => s.name === name);
+                if (existing && !existing.type) (existing as any).type = 'parcel';
+            }
+        });
+
+        const lats = allStops.map(s => s.lat);
+        const lons = allStops.map(s => s.lon);
+        const minLat = Math.min(...lats);
+        const maxLat = Math.max(...lats);
+        const minLon = Math.min(...lons);
+        const maxLon = Math.max(...lons);
+        
+        const latPad = (maxLat - minLat) * 0.2 || 0.1;
+        const lonPad = (maxLon - minLon) * 0.2 || 0.1;
+
+        const bbox = [minLon - lonPad, minLat - latPad, maxLon + lonPad, maxLat + latPad].join(',');
+        
+        const markers = allStops.map(stop => {
+            let color = 'blue'; // Default for parcel/route stops
+            if ((stop as any).type === 'delivery') {
+                color = 'purple';
+            } else if ((stop as any).passed) {
+                color = 'green';
+            } else if (!(stop as any).type) {
+                color = 'orange';
+            }
+            return `marker=${stop.lat},${stop.lon},${color}`;
+        }).join('&');
+        
+        url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${markers}`;
+    }
+    setMapUrl(url);
+  }, [routeStops, deliveries, parcels, selectedStop]);
 
   return (
     <Card className="shadow-lg rounded-xl overflow-hidden">
       <CardHeader>
-        <CardTitle className="font-headline text-xl">Seller's Route Today</CardTitle>
+        <div className="flex justify-between items-center">
+            <CardTitle className="font-headline text-xl">Seller's Route Today</CardTitle>
+            {selectedStop && (
+                <Button variant="ghost" size="sm" onClick={() => setSelectedStop(null)} className="flex items-center gap-1">
+                    <X className="h-4 w-4" />
+                    Clear View
+                </Button>
+            )}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="relative rounded-lg overflow-hidden mb-4">
@@ -114,7 +124,7 @@ export function RouteTracker() {
         </div>
         <ul className="space-y-3">
           {routeStops.map((stop) => (
-            <li key={stop.name} className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md">
+            <li key={stop.name} className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md cursor-pointer" onClick={() => setSelectedStop(stop)}>
               <MapPin className={cn("h-5 w-5", stop.passed ? 'text-green-500' : 'text-primary')} />
               <span className={cn("flex-grow", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
                 {stop.name}
