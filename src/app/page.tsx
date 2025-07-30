@@ -41,7 +41,7 @@ export default function Home() {
     <WishlistSheet wishlist={wishlist} onToggleWishlist={handleToggleWishlist}>
       <div className="flex flex-col min-h-screen bg-background">
         <AppHeader wishlistCount={wishlist.length} />
-        <div className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
+        <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col gap-6 lg:gap-8">
             <LivestreamViewer />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -49,13 +49,13 @@ export default function Home() {
                 <RouteTracker />
                 <OrderTracker />
               </aside>
-              <main className="lg:col-span-2 flex flex-col gap-6 lg:gap-8">
+              <div className="lg:col-span-2 flex flex-col gap-6 lg:gap-8">
                 <Recommendations allProducts={allProducts} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
                 <ProductBrowser allProducts={allProducts} categories={categories} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
-              </main>
+              </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </WishlistSheet>
   );
