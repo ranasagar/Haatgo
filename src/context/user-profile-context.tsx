@@ -7,6 +7,7 @@ type UserProfile = {
     address: string;
     lat: string;
     lon: string;
+    whatsapp: string;
 };
 
 type UserProfileContextType = {
@@ -18,6 +19,7 @@ const defaultProfile: UserProfile = {
     address: '123 Main St, Kathmandu',
     lat: '27.7172',
     lon: '85.3240',
+    whatsapp: '',
 };
 
 const UserProfileContext = createContext<UserProfileContextType | undefined>(undefined);
@@ -25,8 +27,13 @@ const UserProfileContext = createContext<UserProfileContextType | undefined>(und
 export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     const [profile, setProfile] = useState<UserProfile>(() => {
         if (typeof window !== 'undefined') {
-            const savedProfile = localStorage.getItem('userProfile');
-            return savedProfile ? JSON.parse(savedProfile) : defaultProfile;
+            try {
+                const savedProfile = localStorage.getItem('userProfile');
+                return savedProfile ? JSON.parse(savedProfile) : defaultProfile;
+            } catch (error) {
+                console.error("Failed to parse userProfile from localStorage", error);
+                return defaultProfile;
+            }
         }
         return defaultProfile;
     });

@@ -31,10 +31,16 @@ import {
 import { useDeliveries } from "@/context/delivery-context"
 import type { Delivery } from "@/lib/data"
 import { cn } from "@/lib/utils"
+import { sendOrderNotification } from "@/ai/flows/notification-flow"
+import { useToast } from "@/hooks/use-toast"
+import { useUserProfile } from "@/context/user-profile-context"
+
 
 export default function DeliveriesPage() {
     const { deliveries, setDeliveries } = useDeliveries();
+    const { profile } = useUserProfile();
     const [mapUrl, setMapUrl] = React.useState('');
+    const { toast } = useToast();
 
     const generateMapUrl = React.useCallback(() => {
         if (deliveries.length === 0) return;
@@ -65,8 +71,39 @@ export default function DeliveriesPage() {
         generateMapUrl();
     }, [generateMapUrl]);
 
-    const handleUpdateStatus = (id: string, status: Delivery['status']) => {
-        setDeliveries(prev => prev.map(d => d.id === id ? {...d, status} : d));
+    const handleUpdateStatus = async (delivery: Delivery, status: Delivery['status']) => {
+        setDeliveries(prev => prev.map(d => d.id === delivery.id ? {...d, status} : d));
+        
+        // Don't send notification if user has no whatsapp number configured
+        if (!profile.whatsapp) {
+          console.log(`User ${delivery.customerName} has no WhatsApp number configured. Skipping notification.`);
+          return;
+        }
+
+        try {
+            const result = await sendOrderNotification({
+                customerName: delivery.customerName,
+                contact: profile.whatsapp,
+                orderId: delivery.orderId,
+                productName: "Your recent order", // Simplified for now
+                newStatus: status,
+            });
+            if (result.success) {
+                toast({
+                    title: "Notification Sent!",
+                    description: `User ${delivery.customerName} has been notified about their order status.`,
+                });
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            console.error("Failed to send notification:", error);
+            toast({
+                title: "Notification Failed",
+                description: "Could not send status update notification to the user.",
+                variant: "destructive",
+            });
+        }
     };
 
 
@@ -141,9 +178,9 @@ export default function DeliveriesPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Update Status</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleUpdateStatus(delivery.id, 'Pending')}>Pending</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleUpdateStatus(delivery.id, 'Out for Delivery')}>Out for Delivery</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleUpdateStatus(delivery.id, 'Completed')}>Completed</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleUpdateStatus(delivery, 'Pending')}>Pending</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleUpdateStatus(delivery, 'Out for Delivery')}>Out for Delivery</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleUpdateStatus(delivery, 'Completed')}>Completed</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

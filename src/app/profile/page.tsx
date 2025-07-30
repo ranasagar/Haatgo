@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { useUserProfile } from "@/context/user-profile-context"
+import { Separator } from "@/components/ui/separator"
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -33,6 +34,7 @@ export default function ProfilePage() {
   const [address, setAddress] = useState(profile.address);
   const [lat, setLat] = useState(profile.lat);
   const [lon, setLon] = useState(profile.lon);
+  const [whatsapp, setWhatsapp] = useState(profile.whatsapp);
   
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
@@ -50,6 +52,7 @@ export default function ProfilePage() {
     setAddress(profile.address);
     setLat(profile.lat);
     setLon(profile.lon);
+    setWhatsapp(profile.whatsapp);
   }, [profile]);
 
   if (!user) {
@@ -134,10 +137,10 @@ export default function ProfilePage() {
         setLoadingAddress(false);
         return;
     }
-    setProfile({ address, lat, lon });
+    setProfile({ address, lat, lon, whatsapp });
     toast({
-        title: "Address Updated",
-        description: "Your address has been successfully saved.",
+        title: "Address & Contact Info Updated",
+        description: "Your address and contact info have been successfully saved.",
     });
     setLoadingAddress(false);
   }
@@ -185,8 +188,8 @@ export default function ProfilePage() {
       
       <Card>
         <CardHeader>
-            <CardTitle>Shipping Address</CardTitle>
-            <CardDescription>Update your primary shipping address.</CardDescription>
+            <CardTitle>Shipping & Contact Details</CardTitle>
+            <CardDescription>Update your primary shipping address and WhatsApp number for notifications.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
              <div className="grid gap-2">
@@ -203,10 +206,16 @@ export default function ProfilePage() {
                     <Input id="lon" value={lon} onChange={(e) => setLon(e.target.value)} placeholder="e.g., 85.3240" />
                 </div>
             </div>
+            <Separator />
+             <div className="grid gap-2">
+                <Label htmlFor="whatsapp">WhatsApp Number</Label>
+                <Input id="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="e.g., +9779800000000" />
+                <p className="text-sm text-muted-foreground">Used for order status notifications. Include country code.</p>
+            </div>
         </CardContent>
         <CardFooter className="border-t pt-6">
             <Button onClick={handleAddressUpdate} disabled={loadingAddress}>
-                {loadingAddress ? 'Saving...' : 'Save Address'}
+                {loadingAddress ? 'Saving...' : 'Save Details'}
             </Button>
         </CardFooter>
       </Card>
