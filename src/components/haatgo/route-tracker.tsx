@@ -1,59 +1,59 @@
 
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin, Clock, Truck, Package, Home, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { routeStops as initialRouteStops } from "@/lib/data"
 import { useDeliveries } from "@/context/delivery-context"
 import { useParcels } from "@/context/parcel-context"
+import { useRoutes } from "@/context/route-context"
+import type { RouteStop } from "@/context/route-context"
 import { Button } from "../ui/button"
 
-const routeStopsWithTime = initialRouteStops.map((stop, index) => ({
-    ...stop,
-    eta: `${9 + index * 2}:${index === 1 ? '30' : '00'} ${index < 2 ? "AM" : "PM"}` ,
-    passed: index < 1,
-}));
-
-
 export function RouteTracker() {
-  const [routeStops, setRouteStops] = useState(routeStopsWithTime);
+  const { routes } = useRoutes();
   const [mapUrl, setMapUrl] = useState('');
-  const [selectedStop, setSelectedStop] = useState<any>(null);
+  const [selectedStop, setSelectedStop] = useState<RouteStop | null>(null);
   const { deliveries } = useDeliveries();
   const { parcels } = useParcels();
 
+  // For this component, we'll just display the first route if multiple exist.
+  const activeRoute = routes.length > 0 ? routes[0] : null;
+  const routeStops = activeRoute ? activeRoute.stops : [];
   const nextStop = routeStops.find(stop => !stop.passed);
   
   useEffect(() => {
     let url = '';
+    const allStopsForMap: (RouteStop & { type?: string })[] = routeStops.map(s => ({ ...s, type: 'route' }));
+
     if (selectedStop) {
       const bbox = [selectedStop.lon - 0.01, selectedStop.lat - 0.01, selectedStop.lon + 0.01, selectedStop.lat + 0.01].join(',');
       const marker = `marker=${selectedStop.lat},${selectedStop.lon},red`;
       url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${marker}`;
     } else {
-        const allStops = [...routeStops];
-
         deliveries.forEach(d => {
-            if (!allStops.find(s => s.lat === d.lat && s.lon === d.lon)) {
-                allStops.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, eta: '' });
+            if (!allStopsForMap.find(s => s.lat === d.lat && s.lon === d.lon)) {
+                allStopsForMap.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, eta: '' });
             }
         });
 
         const parcelStopNames = new Set(parcels.flatMap(p => [p.fromStop, p.toStop]));
         parcelStopNames.forEach(name => {
-            const stop = initialRouteStops.find(s => s.name === name);
-            if (stop && !allStops.find(s => s.name === name)) {
-                allStops.push({ ...stop, type: 'parcel', passed: false, eta: '' });
-            } else if (stop) {
-                const existing = allStops.find(s => s.name === name);
-                if (existing && !existing.type) (existing as any).type = 'parcel';
+            const stop = routeStops.find(s => s.name === name);
+            if (stop) {
+                const existing = allStopsForMap.find(s => s.name === name);
+                if (existing) existing.type = 'parcel';
             }
         });
 
-        const lats = allStops.map(s => s.lat);
-        const lons = allStops.map(s => s.lon);
+        if (allStopsForMap.length === 0) {
+            setMapUrl(`https://www.openstreetmap.org/export/embed.html?bbox=80,26,90,31&layer=mapnik`);
+            return;
+        }
+
+        const lats = allStopsForMap.map(s => s.lat);
+        const lons = allStopsForMap.map(s => s.lon);
         const minLat = Math.min(...lats);
         const maxLat = Math.max(...lats);
         const minLon = Math.min(...lons);
@@ -64,15 +64,10 @@ export function RouteTracker() {
 
         const bbox = [minLon - lonPad, minLat - latPad, maxLon + lonPad, maxLat + latPad].join(',');
         
-        const markers = allStops.map(stop => {
-            let color = 'blue'; // Default for parcel/route stops
-            if ((stop as any).type === 'delivery') {
-                color = 'purple';
-            } else if ((stop as any).passed) {
-                color = 'green';
-            } else if (!(stop as any).type) {
-                color = 'orange';
-            }
+        const markers = allStopsForMap.map(stop => {
+            let color = 'blue'; // Default for parcel stops
+            if (stop.type === 'delivery') color = 'purple';
+            else if (stop.type === 'route') color = stop.passed ? 'green' : 'orange';
             return `marker=${stop.lat},${stop.lon},${color}`;
         }).join('&');
         
@@ -106,13 +101,15 @@ export function RouteTracker() {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
           <div className="absolute bottom-2 left-4 text-white">
-             {nextStop ? (
+             {activeRoute && nextStop ? (
               <>
                 <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Next Stop: {nextStop.name}</h3>
                 <p className="text-sm">Arriving at approx. {nextStop.eta}</p>
               </>
-            ) : (
+            ) : activeRoute ? (
                  <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Route Completed!</h3>
+            ) : (
+                 <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> No active route.</h3>
             )}
           </div>
         </div>
@@ -123,7 +120,7 @@ export function RouteTracker() {
             <div className="flex items-center gap-1.5"><Package className="h-3 w-3 text-blue-500" /><span>Parcel Hub</span></div>
         </div>
         <ul className="space-y-3">
-          {routeStops.map((stop) => (
+          {routeStops.length > 0 ? routeStops.map((stop) => (
             <li key={stop.name} className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md cursor-pointer" onClick={() => setSelectedStop(stop)}>
               <MapPin className={cn("h-5 w-5", stop.passed ? 'text-green-500' : 'text-primary')} />
               <span className={cn("flex-grow", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
@@ -134,7 +131,9 @@ export function RouteTracker() {
                 <span>{stop.eta}</span>
               </div>
             </li>
-          ))}
+          )) : (
+            <p className="text-center text-muted-foreground text-sm py-4">No route defined for today.</p>
+          )}
         </ul>
       </CardContent>
     </Card>

@@ -29,7 +29,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -42,32 +41,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-
-type Stop = {
-    name: string;
-    passed: boolean;
-    eta: string;
-};
-
-type Route = {
-    id: string;
-    name: string;
-    stops: Stop[];
-    date: string;
-};
-
-const initialRoutes: Route[] = [
-    {
-        id: "1",
-        name: "Chisapani - Sankhejung",
-        stops: [
-            { name: "Chisapani Market", passed: false, eta: "09:00 AM" },
-            { name: "Bhedetar Junction", passed: false, eta: "11:30 AM" },
-            { name: "Sankhejung Village", passed: false, eta: "02:00 PM" },
-        ],
-        date: "2024-07-25",
-    },
-];
+import { useRoutes } from "@/context/route-context";
+import type { Route, Stop } from "@/context/route-context";
 
 const defaultNewRoute = {
     name: '',
@@ -76,7 +51,7 @@ const defaultNewRoute = {
 
 export default function RoutesPage() {
     const [open, setOpen] = React.useState(false);
-    const [routes, setRoutes] = React.useState<Route[]>(initialRoutes);
+    const { routes, setRoutes } = useRoutes();
     const [selectedRoute, setSelectedRoute] = React.useState<Route | null>(null);
     const [newRoute, setNewRoute] = React.useState(defaultNewRoute);
 
@@ -108,7 +83,7 @@ export default function RoutesPage() {
     };
 
     const handleStopChange = (index: number, field: 'name' | 'eta', value: string) => {
-        const updatedStops = [...newRoute.stops];
+        const updatedStops = [...newRoute.stops] as Stop[];
         updatedStops[index] = { ...updatedStops[index], [field]: value };
         setNewRoute(prev => ({ ...prev, stops: updatedStops }));
     };
