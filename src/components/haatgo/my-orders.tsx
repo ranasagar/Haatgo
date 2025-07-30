@@ -5,42 +5,65 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import { useOrders } from "@/context/order-context"
-import { ShoppingBag } from "lucide-react"
+import { useDeliveries } from "@/context/delivery-context"
+import { useParcels } from "@/context/parcel-context"
+import { Package, Send, ShoppingBag } from "lucide-react"
 
 const statusColors: { [key: string]: string } = {
-    "Delivered": "bg-green-100 text-green-800 border-green-200",
+    "Completed": "bg-green-100 text-green-800 border-green-200",
+    "Out for Delivery": "bg-blue-100 text-blue-800 border-blue-200",
     "On the Way": "bg-blue-100 text-blue-800 border-blue-200",
-    "Confirmed": "bg-yellow-100 text-yellow-800 border-yellow-200",
+    "Ready for Pickup": "bg-yellow-100 text-yellow-800 border-yellow-200",
     "Pending": "bg-gray-100 text-gray-800 border-gray-200",
 }
 
 export function MyOrders() {
-  const { orders } = useOrders();
+  const { deliveries } = useDeliveries();
+  const { parcels } = useParcels();
+
+  const allTasks = [
+    ...deliveries.map(d => ({
+        id: d.id,
+        type: 'Delivery' as const,
+        description: `Order for ${d.customerName}`,
+        destination: d.address,
+        status: d.status,
+    })),
+    ...parcels.map(p => ({
+        id: p.id,
+        type: 'Parcel' as const,
+        description: `From ${p.senderName} to ${p.receiverName}`,
+        destination: p.toStop,
+        status: p.status
+    }))
+  ].sort((a, b) => a.id.localeCompare(b.id));
 
   return (
     <Card className="shadow-lg rounded-xl">
       <CardHeader>
-        <CardTitle className="font-headline text-xl">My Orders</CardTitle>
+        <CardTitle className="font-headline text-xl">Route Manifest</CardTitle>
       </CardHeader>
       <CardContent>
-        {orders.length === 0 ? (
+        {allTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-60 text-center text-muted-foreground">
             <ShoppingBag className="h-12 w-12 mb-4" />
-            <p className="font-semibold">No orders yet</p>
-            <p className="text-sm">Your past orders will appear here.</p>
+            <p className="font-semibold">No tasks for today</p>
+            <p className="text-sm">The seller's tasks will appear here.</p>
           </div>
         ) : (
             <ScrollArea className="h-60">
                 <ul className="space-y-4">
-                    {orders.map(order => (
-                        <li key={order.id} className="flex items-center justify-between">
-                            <div>
-                                <p className="font-semibold">{order.product}</p>
-                                <p className="text-sm text-muted-foreground">{order.id} - {order.date}</p>
+                    {allTasks.map(task => (
+                        <li key={task.id} className="flex items-center gap-3">
+                             <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                                {task.type === 'Delivery' ? <Package className="h-4 w-4 text-primary" /> : <Send className="h-4 w-4 text-primary" />}
                             </div>
-                            <Badge variant="outline" className={cn("text-xs font-bold", statusColors[order.status])}>
-                                {order.status}
+                            <div className="flex-grow">
+                                <p className="font-semibold">{task.description}</p>
+                                <p className="text-sm text-muted-foreground">{task.destination}</p>
+                            </div>
+                            <Badge variant="outline" className={cn("text-xs font-bold", statusColors[task.status])}>
+                                {task.status}
                             </Badge>
                         </li>
                     ))}
