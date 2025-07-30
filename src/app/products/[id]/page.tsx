@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useAuth } from "@/context/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { Breadcrumbs, type BreadcrumbItem } from "@/components/haatgo/breadcrumbs"
 
 function StarRating({ rating, setRating, interactive = false }: { rating: number; setRating?: (rating: number) => void; interactive?: boolean }) {
   return (
@@ -160,6 +161,12 @@ export default function ProductDetailPage() {
     return notFound()
   }
 
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: "Home", href: "/" },
+    { label: "Products", href: "/" }, // Assuming the main product browser is on the home page
+    { label: product.name, href: `/products/${product.id}` },
+  ];
+
   const getStockBadge = () => {
     if (product.quantity === 0) {
       return <Badge variant="destructive">Sold Out</Badge>;
@@ -173,6 +180,7 @@ export default function ProductDetailPage() {
   return (
     <div className="flex flex-col min-h-screen bg-muted/20">
       <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
+        <Breadcrumbs items={breadcrumbItems} />
         <Card className="overflow-hidden">
             <div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start">
                 <div className="p-4">
