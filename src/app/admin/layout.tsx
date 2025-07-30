@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Home, Package, ShoppingCart, Map, PanelLeft, Clapperboard, Truck, Settings, BookOpen, Info, Wallet, LogOut } from "lucide-react";
+import { Home, Package, ShoppingCart, Map, PanelLeft, Clapperboard, Truck, Settings, BookOpen, Info, Wallet, LogOut, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -140,9 +140,15 @@ export default function AdminLayout({
                       <DropdownMenuLabel>My Account</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                          <Link href="/profile">Profile</Link>
+                          <Link href="/profile">
+                            <UserIcon className="mr-2 h-4 w-4" />
+                            Profile
+                          </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={logout}>Sign Out</DropdownMenuItem>
+                      <DropdownMenuItem onClick={logout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                      </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
             )}
