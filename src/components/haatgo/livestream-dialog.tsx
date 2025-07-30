@@ -22,7 +22,7 @@ export function LivestreamDialog() {
           Watch Live
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-6xl p-0 border-0">
+      <DialogContent className="max-w-6xl p-0 border-0 h-[80vh]">
          <DialogHeader className="sr-only">
           <DialogTitle>Livestream</DialogTitle>
           <DialogDescription>
