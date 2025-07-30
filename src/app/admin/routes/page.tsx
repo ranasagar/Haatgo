@@ -43,6 +43,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useRoutes } from "@/context/route-context";
 import type { Route, Stop } from "@/context/route-context";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const defaultNewRoute = {
     name: '',
