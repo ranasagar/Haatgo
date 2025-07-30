@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { MessageSquare, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAppSettings } from "@/context/app-settings-context"
 
 // NOTE: Using inline SVGs as lucide-react doesn't have brand icons.
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -23,17 +24,17 @@ const FacebookMessengerIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c.83 0 1.64-.1 2.42-.29.43-.11.63-.59.4-.99l-1.9-3.23c-.23-.39-.75-.54-1.18-.33a7.05 7.05 0 0 1-7.74-7.74c0-3.32 2.31-6.14 5.43-6.84.4-.09.79.16.88.55l.89 3.86c.09.39-.16.79-.55.88a3.1 3.1 0 0 0-2.45 2.45c-.09.4-.49.64-.88.55l-3.86-.89c-.4-.09-.64-.49-.55-.88C4.14 8.31 6.96 6 10.28 6c3.89 0 7.06 3.17 7.06 7.06a7.05 7.05 0 0 1-3.32 5.95c-.39.23-.54.75-.33 1.18l3.23 1.9c.4.23.99.03.99-.4A10.02 10.02 0 0 0 22 12c0-5.52-4.48-10-10-10z"></path></svg>
 )
 
-
-// In a real app, these would come from a database, managed in the admin panel.
-const chatLinks = [
-    { id: 'whatsapp', href: 'https://wa.me/9779800000000', label: 'Chat on WhatsApp', icon: WhatsAppIcon, color: "bg-[#25D366] hover:bg-[#128C7E]" },
-    { id: 'viber', href: 'viber://chat?number=%2B9779800000000', label: 'Chat on Viber', icon: ViberIcon, color: "bg-[#7360F2] hover:bg-[#5f48ea]" },
-    { id: 'instagram', href: 'https://ig.me/m/haatgo', label: 'Message on Instagram', icon: InstagramIcon, color: "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:opacity-90" },
-    { id: 'facebook', href: 'https://m.me/haatgo', label: 'Message on Messenger', icon: FacebookMessengerIcon, color: "bg-[#00B2FF] hover:bg-[#0084ff]" },
-];
-
 export function FloatingChatButtons() {
     const [isOpen, setIsOpen] = useState(false);
+    const { settings } = useAppSettings();
+
+    const chatLinks = [
+        { id: 'whatsapp', href: `https://wa.me/${settings.whatsapp.replace('+', '')}`, label: 'Chat on WhatsApp', icon: WhatsAppIcon, color: "bg-[#25D366] hover:bg-[#128C7E]" },
+        { id: 'viber', href: `viber://chat?number=%2B${settings.viber.replace('+', '')}`, label: 'Chat on Viber', icon: ViberIcon, color: "bg-[#7360F2] hover:bg-[#5f48ea]" },
+        { id: 'instagram', href: `https://ig.me/m/${settings.instagram}`, label: 'Message on Instagram', icon: InstagramIcon, color: "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:opacity-90" },
+        { id: 'facebook', href: `https://m.me/${settings.facebook}`, label: 'Message on Messenger', icon: FacebookMessengerIcon, color: "bg-[#00B2FF] hover:bg-[#0084ff]" },
+    ];
+
 
     return (
         <TooltipProvider>

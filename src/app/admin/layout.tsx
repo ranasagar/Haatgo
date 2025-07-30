@@ -1,15 +1,19 @@
 
+"use client";
+
 import { Home, Package, ShoppingCart, Map, PanelLeft, Clapperboard, Truck, Settings } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAppSettings } from "@/context/app-settings-context";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { settings } = useAppSettings();
   const navItems = [
     { href: "/admin", icon: Home, label: "Dashboard" },
     { href: "/admin/products", icon: Package, label: "Products" },
@@ -28,7 +32,7 @@ export default function AdminLayout({
             className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
           >
            <Truck className="h-5 w-5 transition-all group-hover:scale-110" />
-            <span className="sr-only">HaatGo</span>
+            <span className="sr-only">{settings.appName}</span>
           </Link>
           <TooltipProvider>
             {navItems.map((item) => (
@@ -67,7 +71,7 @@ export default function AdminLayout({
                    className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
                 >
                   <Truck className="h-5 w-5 transition-all group-hover:scale-110" />
-                  <span className="sr-only">HaatGo</span>
+                  <span className="sr-only">{settings.appName}</span>
                 </Link>
                  {navItems.map((item) => (
                     <Link
