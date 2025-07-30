@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import { MapPin } from "lucide-react"
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -28,8 +29,13 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
+  const [address, setAddress] = useState('');
+  const [lat, setLat] = useState('27.7172');
+  const [lon, setLon] = useState('85.3240');
+  
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
+  const [loadingAddress, setLoadingAddress] = useState(false);
 
   useEffect(() => {
     if (user?.displayName) {
@@ -82,7 +88,6 @@ export default function ProfilePage() {
     try {
       if(user.email) {
         const credential = EmailAuthProvider.credential(user.email, currentPassword);
-        // Re-authenticate before password change for security
         await reauthenticateWithCredential(user, credential);
         await updatePassword(user, newPassword);
         
@@ -90,7 +95,7 @@ export default function ProfilePage() {
           title: "Password Updated",
           description: "You have been logged out for security. Please log in again with your new password.",
         });
-        await logout(); // Force logout after password change
+        await logout();
       }
     } catch (error: any) {
         let errorMessage = "Failed to update password.";
@@ -112,6 +117,24 @@ export default function ProfilePage() {
       setConfirmPassword('');
     }
   };
+  
+  const handleAddressUpdate = () => {
+    setLoadingAddress(true);
+    if (!address) {
+        toast({ title: "Address is required", variant: "destructive" });
+        setLoadingAddress(false);
+        return;
+    }
+    // In a real app, this would save to a database.
+    console.log("Saving address:", { address, lat, lon });
+    toast({
+        title: "Address Updated",
+        description: "Your address has been successfully saved.",
+    });
+    setLoadingAddress(false);
+  }
+
+  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${parseFloat(lon)-0.01},${parseFloat(lat)-0.01},${parseFloat(lon)+0.01},${parseFloat(lat)+0.01}&layer=mapnik&marker=${lat},${lon}`;
 
 
   return (
@@ -153,6 +176,49 @@ export default function ProfilePage() {
         </CardFooter>
       </Card>
       
+      <Card>
+        <CardHeader>
+            <CardTitle>Shipping Address</CardTitle>
+            <CardDescription>Update your primary shipping address. This is required for deliveries.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+             <div className="grid gap-2">
+                <Label htmlFor="address">Address</Label>
+                <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="e.g., 123 Main St, Kathmandu" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                    <Label htmlFor="lat">Latitude</Label>
+                    <Input id="lat" value={lat} onChange={(e) => setLat(e.target.value)} placeholder="e.g., 27.7172" />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="lon">Longitude</Label>
+                    <Input id="lon" value={lon} onChange={(e) => setLon(e.target.value)} placeholder="e.g., 85.3240" />
+                </div>
+            </div>
+            <div className="relative rounded-lg overflow-hidden h-64 border">
+                <iframe
+                    className="w-full h-full border-0"
+                    src={mapUrl}
+                    title="Address Map"
+                    key={mapUrl}
+                ></iframe>
+            </div>
+            <Button asChild variant="outline">
+                <a href={`https://www.openstreetmap.org/#map=14/${lat}/${lon}`} target="_blank" rel="noopener noreferrer">
+                    <MapPin className="mr-2 h-4 w-4" />
+                    Pinpoint on Map
+                </a>
+            </Button>
+             <p className="text-sm text-muted-foreground">Click "Pinpoint on Map", find your location, right-click, select "Show address", and copy the coordinates here.</p>
+        </CardContent>
+        <CardFooter className="border-t pt-6">
+            <Button onClick={handleAddressUpdate} disabled={loadingAddress}>
+                {loadingAddress ? 'Saving...' : 'Save Address'}
+            </Button>
+        </CardFooter>
+      </Card>
+
       <Card>
         <CardHeader>
             <CardTitle>Password</CardTitle>
@@ -220,3 +286,5 @@ export default function ProfilePage() {
     </div>
   )
 }
+
+    
