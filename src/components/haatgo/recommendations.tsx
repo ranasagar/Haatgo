@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -21,6 +22,10 @@ export function Recommendations({ allProducts, wishlist, onToggleWishlist }: Rec
 
   useEffect(() => {
     async function getRecs() {
+      if (allProducts.length === 0) {
+        setLoading(false);
+        return;
+      }
       try {
         setLoading(true);
         // Using hardcoded sample data for demonstration
@@ -31,12 +36,18 @@ export function Recommendations({ allProducts, wishlist, onToggleWishlist }: Rec
 
         // Match recommendations with actual products.
         const matchedProducts = result.recommendations
-          .map(recName => allProducts.find(p => p.name.toLowerCase().includes(recName.toLowerCase().slice(0, -1)))) // remove plural 's'
+          .map(recName => {
+            const cleanRecName = recName.toLowerCase().replace(/s$/, ''); // remove plural 's'
+            return allProducts.find(p => p.name.toLowerCase().includes(cleanRecName));
+          })
           .filter((p): p is Product => p !== undefined);
+        
+        const uniqueProducts = Array.from(new Set(matchedProducts.map(p => p.id))).map(id => matchedProducts.find(p => p.id === id)!);
 
-        setRecommendedProducts(matchedProducts.slice(0, 5)); // Limit to 5 for the carousel
+        setRecommendedProducts(uniqueProducts.slice(0, 5)); // Limit to 5 for the carousel
       } catch (error) {
         console.error("Failed to get recommendations:", error);
+        // Gracefully fail by showing no recommendations
         setRecommendedProducts([]);
       } finally {
         setLoading(false);
@@ -69,7 +80,7 @@ export function Recommendations({ allProducts, wishlist, onToggleWishlist }: Rec
   }
 
   if (recommendedProducts.length === 0) {
-    return null; // Don't show the component if there are no recommendations
+    return null; // Don't show the component if there are no recommendations or if an error occurred
   }
 
   return (
@@ -83,7 +94,7 @@ export function Recommendations({ allProducts, wishlist, onToggleWishlist }: Rec
         <Carousel
           opts={{
             align: "start",
-            loop: true,
+            loop: recommendedProducts.length > 2, // Only loop if there are enough items
           }}
           className="w-full"
         >
