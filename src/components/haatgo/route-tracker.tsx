@@ -1,14 +1,46 @@
+
+"use client"
+
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin, Clock, Truck } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-const routeStops = [
-  { name: "Chisapani Market", eta: "9:00 AM", passed: true },
+const initialRouteStops = [
+  { name: "Chisapani Market", eta: "9:00 AM", passed: false },
   { name: "Bhedetar Junction", eta: "11:30 AM", passed: false },
   { name: "Sankhejung Village", eta: "2:00 PM", passed: false },
 ]
 
 export function RouteTracker() {
+  const [routeStops, setRouteStops] = useState(initialRouteStops);
+  const [currentStopIndex, setCurrentStopIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentStopIndex(prevIndex => {
+        const nextIndex = (prevIndex + 1);
+        if (nextIndex > routeStops.length) {
+          // Reset after completing all stops
+          setRouteStops(initialRouteStops.map(s => ({...s, passed: false})));
+          return 0;
+        }
+        
+        setRouteStops(prevStops => 
+            prevStops.map((stop, index) => 
+                index < nextIndex ? { ...stop, passed: true } : stop
+            )
+        );
+        return nextIndex;
+      });
+    }, 5000); // Move to the next stop every 5 seconds for demo
+
+    return () => clearInterval(interval);
+  }, [routeStops.length]);
+
+  const nextStop = routeStops.find(stop => !stop.passed);
+
   return (
     <Card className="shadow-lg rounded-xl overflow-hidden">
       <CardHeader>
@@ -26,15 +58,21 @@ export function RouteTracker() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
           <div className="absolute bottom-2 left-4 text-white">
-            <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Next Stop: Bhedetar</h3>
-            <p className="text-sm">Arriving in approx. 45 minutes</p>
+             {nextStop ? (
+              <>
+                <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Next Stop: {nextStop.name}</h3>
+                <p className="text-sm">Arriving at approx. {nextStop.eta}</p>
+              </>
+            ) : (
+                 <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Route Completed!</h3>
+            )}
           </div>
         </div>
         <ul className="space-y-3">
           {routeStops.map((stop) => (
             <li key={stop.name} className="flex items-center gap-3">
-              <MapPin className={`h-5 w-5 ${stop.passed ? 'text-green-500' : 'text-primary'}`} />
-              <span className={`flex-grow ${stop.passed ? 'line-through text-muted-foreground' : 'font-medium'}`}>
+              <MapPin className={cn("h-5 w-5", stop.passed ? 'text-green-500' : 'text-primary')} />
+              <span className={cn("flex-grow", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
                 {stop.name}
               </span>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
