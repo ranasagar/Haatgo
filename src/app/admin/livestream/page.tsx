@@ -7,10 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Video, ThumbsUp, MessageSquare, Share2, Facebook, Check, Trash2, Shield } from "lucide-react";
+import { Video, ThumbsUp, MessageSquare, Share2, Facebook, Check, Trash2, Shield, Wifi, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { fetchLivestream, type LivestreamData } from "@/ai/flows/livestream-fetcher";
+import { Badge } from "@/components/ui/badge";
 
 type Comment = {
   id: number;
@@ -33,9 +35,26 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export default function LivestreamPage() {
   const [comments, setComments] = useState<Comment[]>(initialComments);
+  const [fbStreamData, setFbStreamData] = useState<LivestreamData | null>(null);
+  const [tkStreamData, setTkStreamData] = useState<LivestreamData | null>(null);
+  const [loading, setLoading] = useState<'facebook' | 'tiktok' | null>(null);
 
   const handleDeleteComment = (id: number) => {
     setComments(prev => prev.filter(c => c.id !== id));
+  }
+  
+  const handleGoLive = async (platform: 'facebook' | 'tiktok') => {
+    setLoading(platform);
+    try {
+        const identifier = platform === 'facebook' ? 'haatgo' : 'haatgo_official';
+        const result = await fetchLivestream({ platform, identifier });
+        if(platform === 'facebook') setFbStreamData(result);
+        if(platform === 'tiktok') setTkStreamData(result);
+    } catch(err) {
+        console.error("Failed to fetch livestream data:", err);
+    } finally {
+        setLoading(null);
+    }
   }
 
   return (
@@ -59,11 +78,27 @@ export default function LivestreamPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                        <div className="text-center text-muted-foreground">
-                            <Video className="h-16 w-16 mx-auto" />
-                            <p>Facebook Livestream Placeholder</p>
-                        </div>
+                        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center relative">
+                         {fbStreamData?.isLive && (
+                            <Badge className="absolute top-4 left-4 z-10 bg-red-600 hover:bg-red-700">
+                                <Wifi className="h-4 w-4 mr-2" />
+                                LIVE
+                            </Badge>
+                         )}
+                         {fbStreamData?.isLive ? (
+                            <div className="text-center text-muted-foreground">
+                                <Video className="h-16 w-16 mx-auto text-primary" />
+                                <p className="font-semibold mt-2">{fbStreamData.title}</p>
+                                <div className="flex items-center justify-center gap-2 mt-1">
+                                    <Users className="h-4 w-4" /> {fbStreamData.viewerCount} watching
+                                </div>
+                            </div>
+                         ) : (
+                            <div className="text-center text-muted-foreground">
+                                <Video className="h-16 w-16 mx-auto" />
+                                <p>Facebook Livestream Placeholder</p>
+                            </div>
+                         )}
                         </div>
                     </CardContent>
                     <CardFooter className="flex items-center gap-4 border-t pt-4">
@@ -137,11 +172,13 @@ export default function LivestreamPage() {
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="facebook-page">Facebook Page</Label>
-                            <Input id="facebook-page" defaultValue="https://facebook.com/haatgo" readOnly />
+                            <Input id="facebook-page" defaultValue="haatgo" readOnly />
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-col gap-2">
-                        <Button className="w-full">Go Live</Button>
+                        <Button className="w-full" onClick={() => handleGoLive('facebook')} disabled={loading === 'facebook'}>
+                          {loading === 'facebook' ? 'Starting...' : 'Go Live'}
+                        </Button>
                         <Button variant="outline" className="w-full">Schedule Stream</Button>
                         <Button variant="link" size="sm" asChild>
                             <a href="https://www.facebook.com/live/create" target="_blank" rel="noopener noreferrer">
@@ -165,11 +202,27 @@ export default function LivestreamPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="aspect-[9/16] sm:aspect-video bg-muted rounded-lg flex items-center justify-center">
-                        <div className="text-center text-muted-foreground">
-                            <Video className="h-16 w-16 mx-auto" />
-                            <p>TikTok Livestream Placeholder</p>
-                        </div>
+                       <div className="aspect-video bg-muted rounded-lg flex items-center justify-center relative">
+                         {tkStreamData?.isLive && (
+                            <Badge className="absolute top-4 left-4 z-10 bg-red-600 hover:bg-red-700">
+                                <Wifi className="h-4 w-4 mr-2" />
+                                LIVE
+                            </Badge>
+                         )}
+                         {tkStreamData?.isLive ? (
+                            <div className="text-center text-muted-foreground">
+                                <Video className="h-16 w-16 mx-auto text-primary" />
+                                <p className="font-semibold mt-2">{tkStreamData.title}</p>
+                                <div className="flex items-center justify-center gap-2 mt-1">
+                                    <Users className="h-4 w-4" /> {tkStreamData.viewerCount} watching
+                                </div>
+                            </div>
+                         ) : (
+                            <div className="text-center text-muted-foreground">
+                                <Video className="h-16 w-16 mx-auto" />
+                                <p>TikTok Livestream Placeholder</p>
+                            </div>
+                         )}
                         </div>
                     </CardContent>
                      <CardFooter className="flex items-center gap-4 border-t pt-4">
@@ -213,7 +266,9 @@ export default function LivestreamPage() {
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-col gap-2">
-                        <Button className="w-full">Go Live on TikTok</Button>
+                         <Button className="w-full" onClick={() => handleGoLive('tiktok')} disabled={loading === 'tiktok'}>
+                           {loading === 'tiktok' ? 'Starting...' : 'Go Live on TikTok'}
+                         </Button>
                          <Button variant="link" size="sm" asChild>
                             <a href="https://www.tiktok.com/live/creators" target="_blank" rel="noopener noreferrer">
                                 <TikTokIcon className="h-4 w-4 mr-2" />
