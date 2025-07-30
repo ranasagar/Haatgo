@@ -13,6 +13,7 @@ import { Recommendations } from "@/components/haatgo/recommendations";
 import { ProductBrowser } from "@/components/haatgo/product-browser";
 import { WishlistSheet } from "@/components/haatgo/wishlist-sheet";
 import { useToast } from "@/hooks/use-toast";
+import { MyOrders } from "@/components/haatgo/my-orders";
 
 export default function Home() {
   const [wishlist, setWishlist] = useState<Product[]>([]);
@@ -47,6 +48,7 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
               <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
                 <RouteTracker />
+                <MyOrders />
                 <OrderTracker />
               </aside>
               <div className="lg:col-span-2 flex flex-col gap-6 lg:gap-8">
