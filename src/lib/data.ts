@@ -3,6 +3,7 @@ export type Product = {
   id: string;
   name: string;
   category: string;
+  district: string;
   price: number;
   cost: number;
   quantity: number;
@@ -46,11 +47,16 @@ export type Parcel = {
 
 export const categories = ['All', 'Food', 'Clothing', 'Utensils', 'Handicrafts', 'Electronics', 'Farming'];
 
+export const districts = [
+    "All Districts", "Achham", "Arghakhanchi", "Baglung", "Baitadi", "Bajhang", "Bajura", "Banke", "Bara", "Bardiya", "Bhaktapur", "Bhojpur", "Chitwan", "Dadeldhura", "Dailekh", "Dang", "Darchula", "Dhading", "Dhankuta", "Dhanusa", "Dolakha", "Dolpa", "Doti", "Gorkha", "Gulmi", "Humla", "Ilam", "Jajarkot", "Jhapa", "Jumla", "Kailali", "Kalikot", "Kanchanpur", "Kapilvastu", "Kaski", "Kathmandu", "Kavrepalanchok", "Khotang", "Lalitpur", "Lamjung", "Mahottari", "Makwanpur", "Manang", "Morang", "Mugu", "Mustang", "Myagdi", "Nawalparasi", "Nuwakot", "Okhaldhunga", "Palpa", "Panchthar", "Parbat", "Parsa", "Pyuthan", "Ramechhap", "Rasuwa", "Rautahat", "Rolpa", "Rukum", "Rupandehi", "Salyan", "Sankhuwasabha", "Saptari", "Sarlahi", "Sindhuli", "Sindhupalchowk", "Siraha", "Solukhumbu", "Sunsari", "Surkhet", "Syangja", "Tanahun", "Taplejung", "Terhathum", "Udayapur"
+];
+
 export const products: Product[] = [
   {
     id: '1',
     name: 'Ilam Tea',
     category: 'Food',
+    district: 'Ilam',
     price: 800,
     cost: 600,
     quantity: 50,
@@ -63,6 +69,7 @@ export const products: Product[] = [
     id: '2',
     name: 'Mustang Apples',
     category: 'Food',
+    district: 'Mustang',
     price: 450,
     cost: 300,
     quantity: 40,
@@ -75,6 +82,7 @@ export const products: Product[] = [
     id: '3',
     name: 'Palpali Dhaka Topi',
     category: 'Clothing',
+    district: 'Palpa',
     price: 700,
     cost: 500,
     quantity: 30,
@@ -87,6 +95,7 @@ export const products: Product[] = [
     id: '4',
     name: 'Patan Singing Bowl',
     category: 'Handicrafts',
+    district: 'Lalitpur',
     price: 3500,
     cost: 2800,
     quantity: 15,
@@ -99,6 +108,7 @@ export const products: Product[] = [
     id: '5',
     name: 'Jumla Marsi Rice',
     category: 'Food',
+    district: 'Jumla',
     price: 300,
     cost: 220,
     quantity: 25,
@@ -111,6 +121,7 @@ export const products: Product[] = [
     id: '6',
     name: 'Bhaktapur Ju Ju Dhau',
     category: 'Food',
+    district: 'Bhaktapur',
     price: 250,
     cost: 180,
     quantity: 20,
@@ -123,6 +134,7 @@ export const products: Product[] = [
     id: '7',
     name: 'Khukuri from Bhojpur',
     category: 'Handicrafts',
+    district: 'Bhojpur',
     price: 2800,
     cost: 2200,
     quantity: 10,
@@ -135,6 +147,7 @@ export const products: Product[] = [
     id: '8',
     name: 'Mithila Art Painting',
     category: 'Handicrafts',
+    district: 'Dhanusa',
     price: 1800,
     cost: 1300,
     quantity: 18,
@@ -147,6 +160,7 @@ export const products: Product[] = [
     id: '9',
     name: 'Chitwan Honey',
     category: 'Food',
+    district: 'Chitwan',
     price: 900,
     cost: 700,
     quantity: 35,
@@ -159,6 +173,7 @@ export const products: Product[] = [
     id: '10',
     name: 'Pashmina Shawl',
     category: 'Clothing',
+    district: 'Kathmandu',
     price: 5500,
     cost: 4500,
     quantity: 12,
@@ -171,6 +186,7 @@ export const products: Product[] = [
     id: '11',
     name: 'Tehrathum Handmade Paper',
     category: 'Handicrafts',
+    district: 'Terhathum',
     price: 400,
     cost: 250,
     quantity: 100,
@@ -183,6 +199,7 @@ export const products: Product[] = [
     id: '12',
     name: 'Palpa Karuwa',
     category: 'Utensils',
+    district: 'Palpa',
     price: 1600,
     cost: 1200,
     quantity: 22,
@@ -195,6 +212,7 @@ export const products: Product[] = [
     id: '13',
     name: 'Dolkha Organic Coffee',
     category: 'Food',
+    district: 'Dolakha',
     price: 1100,
     cost: 850,
     quantity: 28,
@@ -207,6 +225,7 @@ export const products: Product[] = [
     id: '14',
     name: 'Sunsari Wicker Baskets',
     category: 'Handicrafts',
+    district: 'Sunsari',
     price: 950,
     cost: 700,
     quantity: 40,
@@ -219,6 +238,7 @@ export const products: Product[] = [
     id: '15',
     name: 'Solukhumbu Yak Cheese',
     category: 'Food',
+    district: 'Solukhumbu',
     price: 750,
     cost: 550,
     quantity: 18,
