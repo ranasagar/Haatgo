@@ -69,7 +69,7 @@ export function ProductBrowser() {
                     >
                         <CarouselContent className="-ml-1">
                             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                                <TabsList>
+                                <TabsList className="flex-nowrap">
                                     {categories.map((category) => (
                                         <CarouselItem key={category} className="pl-1 basis-auto">
                                             <TabsTrigger value={category}>{category}</TabsTrigger>
