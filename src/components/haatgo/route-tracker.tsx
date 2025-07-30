@@ -34,7 +34,13 @@ export function RouteTracker() {
     const lonPad = (maxLon - minLon) * 0.2;
 
     const bbox = [minLon - lonPad, minLat - latPad, maxLon + lonPad, maxLat + latPad].join(',');
-    const markers = routeStops.map(stop => `marker=${stop.lat},${stop.lon}`).join('&');
+    
+    // Use blue for upcoming stops and green for passed stops
+    const markers = routeStops.map(stop => {
+        const color = stop.passed ? 'green' : 'blue';
+        return `marker=${stop.lat},${stop.lon},${color}`;
+    }).join('&');
+
     return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${markers}`;
   }
 
