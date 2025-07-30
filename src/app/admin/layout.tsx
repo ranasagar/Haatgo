@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Home, Package, ShoppingCart, Map, Clapperboard, Truck, Settings, BookOpen, Info, Wallet, LogOut, User as UserIcon, Store, Send } from "lucide-react";
+import { Home, Package, ShoppingCart, Map, Clapperboard, Truck, Settings, BookOpen, Info, Wallet, LogOut, User as UserIcon, Store, Send, Users } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -43,6 +43,7 @@ export default function AdminLayout({
     { href: "/admin", icon: Home, label: "Dashboard" },
     { href: "/admin/products", icon: Package, label: "Products" },
     { href: "/admin/orders", icon: ShoppingCart, label: "Orders" },
+    { href: "/admin/users", icon: Users, label: "Users" },
     { href: "/admin/routes", icon: Map, label: "Routes" },
     { href: "/admin/deliveries", icon: Truck, label: "Deliveries" },
     { href: "/admin/parcels", icon: Send, label: "Parcels" },

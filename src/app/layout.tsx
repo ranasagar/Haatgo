@@ -13,6 +13,7 @@ import { OrderProvider } from '@/context/order-context';
 import { UserProfileProvider } from '@/context/user-profile-context';
 import { ReviewProvider } from '@/context/review-context';
 import { RouteProvider } from '@/context/route-context';
+import { UserProvider } from '@/context/user-context';
 
 export const metadata: Metadata = {
   title: 'HaatGo',
@@ -44,13 +45,15 @@ export default function RootLayout({
                 <DeliveryProvider>
                   <ParcelProvider>
                     <RouteProvider>
-                      <OrderProvider>
-                        <CartProvider>
-                          <ReviewProvider>
-                            {children}
-                          </ReviewProvider>
-                        </CartProvider>
-                      </OrderProvider>
+                      <UserProvider>
+                        <OrderProvider>
+                          <CartProvider>
+                            <ReviewProvider>
+                              {children}
+                            </ReviewProvider>
+                          </CartProvider>
+                        </OrderProvider>
+                      </UserProvider>
                     </RouteProvider>
                   </ParcelProvider>
                 </DeliveryProvider>

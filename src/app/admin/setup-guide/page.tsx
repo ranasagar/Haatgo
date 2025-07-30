@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { FileText, Settings, Palette, Map, Package, Clapperboard, Wallet, KeyRound, Truck } from "lucide-react";
+import { FileText, Settings, Palette, Map, Package, Clapperboard, Wallet, KeyRound, Truck, Users } from "lucide-react";
 
 export default function SetupGuidePage() {
   return (
@@ -62,12 +62,32 @@ export default function SetupGuidePage() {
               </ol>
             </AccordionContent>
           </AccordionItem>
-          
+
           <AccordionItem value="item-2">
             <AccordionTrigger>
               <div className="flex items-center gap-3">
+                <Users className="h-5 w-5 text-primary" />
+                <span>Step 3: Manage Users</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="pl-8">
+              <p className="text-muted-foreground mb-2">
+                Control who has access to your application.
+              </p>
+              <ol className="list-decimal list-inside space-y-2">
+                <li>Navigate to the <code className="bg-muted px-1 rounded-sm">Users</code> page from the sidebar.</li>
+                <li>You will see a list of all users, including the admin account you logged in with.</li>
+                <li>Click <strong>Add User</strong> to create a new user account. You can assign them a 'Customer' or 'Admin' role.</li>
+                <li>Use the actions menu on each row to edit user details, activate/deactivate their account, or delete them.</li>
+              </ol>
+            </AccordionContent>
+          </AccordionItem>
+          
+          <AccordionItem value="item-3">
+            <AccordionTrigger>
+              <div className="flex items-center gap-3">
                 <Package className="h-5 w-5 text-primary" />
-                <span>Step 3: Add Your Products</span>
+                <span>Step 4: Add Your Products</span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -84,11 +104,11 @@ export default function SetupGuidePage() {
             </AccordionContent>
           </AccordionItem>
           
-          <AccordionItem value="item-3">
+          <AccordionItem value="item-4">
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Map className="h-5 w-5 text-primary" />
-                <span>Step 4: Create a Seller Route</span>
+                <span>Step 5: Create a Seller Route</span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -106,11 +126,11 @@ export default function SetupGuidePage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="item-4">
+          <AccordionItem value="item-5">
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Truck className="h-5 w-5 text-primary" />
-                <span>Step 5: Manage Deliveries</span>
+                <span>Step 6: Manage Deliveries</span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -126,11 +146,11 @@ export default function SetupGuidePage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="item-5">
+          <AccordionItem value="item-6">
             <AccordionTrigger>
                 <div className="flex items-center gap-3">
                     <Wallet className="h-5 w-5 text-primary" />
-                    <span>Step 6: Review Your Finances</span>
+                    <span>Step 7: Review Your Finances</span>
                 </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -147,11 +167,11 @@ export default function SetupGuidePage() {
             </AccordionContent>
           </AccordionItem>
           
-          <AccordionItem value="item-6">
+          <AccordionItem value="item-7">
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Clapperboard className="h-5 w-5 text-primary" />
-                <span>Step 7: Start a Livestream</span>
+                <span>Step 8: Start a Livestream</span>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-8">
@@ -168,7 +188,7 @@ export default function SetupGuidePage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="item-7">
+          <AccordionItem value="item-8">
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Palette className="h-5 w-5 text-primary" />
