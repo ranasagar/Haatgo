@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type { Product } from "@/lib/data";
 import { categories } from "@/lib/data";
 
@@ -15,13 +15,14 @@ import { WishlistSheet } from "@/components/haatgo/wishlist-sheet";
 import { useToast } from "@/hooks/use-toast";
 import { MyOrders } from "@/components/haatgo/my-orders";
 import { FloatingChatButtons } from "@/components/haatgo/floating-chat-buttons";
+import { useProducts } from "@/context/product-context";
 
 export default function Home() {
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const { toast } = useToast();
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const { products } = useProducts();
 
-  const handleToggleWishlist = (product: Product) => {
+  const handleToggleWishlist = useCallback((product: Product) => {
     setWishlist((prev) => {
       const isWishlisted = prev.some((item) => item.id === product.id);
       if (isWishlisted) {
@@ -38,7 +39,7 @@ export default function Home() {
         return [...prev, product];
       }
     });
-  };
+  }, [toast]);
 
   return (
     <WishlistSheet wishlist={wishlist} onToggleWishlist={handleToggleWishlist}>
@@ -54,8 +55,8 @@ export default function Home() {
                 <OrderTracker />
               </aside>
               <div className="lg:col-span-2 flex flex-col gap-6 lg:gap-8">
-                <Recommendations allProducts={allProducts} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
-                <ProductBrowser categories={categories} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} onProductsChange={setAllProducts} />
+                <Recommendations allProducts={products} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
+                <ProductBrowser categories={categories} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
               </div>
             </div>
           </div>
