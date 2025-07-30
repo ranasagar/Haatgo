@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -5,6 +6,7 @@ import type { Product } from "@/lib/data";
 import { products as allProducts, categories } from "@/lib/data";
 
 import { AppHeader } from "@/components/haatgo/header";
+import { LivestreamViewer } from "@/components/haatgo/livestream-viewer";
 import { RouteTracker } from "@/components/haatgo/route-tracker";
 import { OrderTracker } from "@/components/haatgo/order-tracker";
 import { Recommendations } from "@/components/haatgo/recommendations";
@@ -40,15 +42,18 @@ export default function Home() {
       <div className="flex flex-col min-h-screen bg-background">
         <AppHeader wishlistCount={wishlist.length} />
         <div className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-            <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
-              <RouteTracker />
-              <OrderTracker />
-            </aside>
-            <main className="lg:col-span-2 flex flex-col gap-6 lg:gap-8">
-              <Recommendations allProducts={allProducts} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
-              <ProductBrowser allProducts={allProducts} categories={categories} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
-            </main>
+          <div className="flex flex-col gap-6 lg:gap-8">
+            <LivestreamViewer />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+              <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
+                <RouteTracker />
+                <OrderTracker />
+              </aside>
+              <main className="lg:col-span-2 flex flex-col gap-6 lg:gap-8">
+                <Recommendations allProducts={allProducts} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
+                <ProductBrowser allProducts={allProducts} categories={categories} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
+              </main>
+            </div>
           </div>
         </div>
       </div>
