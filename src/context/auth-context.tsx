@@ -11,6 +11,7 @@ import { LoadingAnimation } from '@/components/haatgo/loading-animation';
 type AuthContextType = {
     user: User | null;
     loading: boolean;
+    isAdmin: boolean;
     login: (email: string, pass: string) => Promise<any>;
     signup: (email: string, pass: string) => Promise<any>;
     logout: () => Promise<void>;
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -32,6 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             setUser(user);
+            setIsAdmin(user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
             if (user) {
                 const token = await user.getIdToken();
                 Cookies.set('firebaseIdToken', token, { expires: 1 }); // expires in 1 day
@@ -42,6 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }, (error) => {
             console.error("Auth state change error:", error);
             setUser(null);
+            setIsAdmin(false);
             Cookies.remove('firebaseIdToken');
             setLoading(false);
         });
@@ -77,6 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const value = {
         user,
         loading,
+        isAdmin,
         login,
         signup,
         logout,

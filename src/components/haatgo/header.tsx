@@ -22,11 +22,10 @@ import { useCart } from "@/context/cart-context"
 
 export function AppHeader() {
   const { settings } = useAppSettings();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const { cart } = useCart();
 
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantityInCart, 0);
-  const isAdmin = user && user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
