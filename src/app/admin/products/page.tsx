@@ -44,6 +44,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Product } from "@/lib/data";
 import { useProducts } from "@/context/product-context";
+import { cn } from "@/lib/utils";
 
 const defaultNewProduct: Product = {
   id: '',
@@ -52,6 +53,8 @@ const defaultNewProduct: Product = {
   cost: 0,
   quantity: 10,
   measurement: 'piece',
+  status: 'active',
+  district: "Kathmandu",
   description: "",
   category: "Food",
   image: 'https://storage.googleapis.com/haatgo-store-images/placeholder.png',
@@ -99,6 +102,14 @@ export default function ProductsPage() {
     }));
   }
 
+  const toggleProductStatus = (productId: string) => {
+    setProducts(products.map(p => 
+      p.id === productId 
+        ? { ...p, status: p.status === 'active' ? 'archived' : 'active' } 
+        : p
+    ));
+  };
+
   return (
     <>
       <Tabs defaultValue="all">
@@ -106,10 +117,7 @@ export default function ProductsPage() {
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="draft">Draft</TabsTrigger>
-            <TabsTrigger value="archived" className="hidden sm:flex">
-              Archived
-            </TabsTrigger>
+            <TabsTrigger value="archived">Archived</TabsTrigger>
           </TabsList>
           <div className="ml-auto flex items-center gap-2">
             <DropdownMenu>
@@ -195,7 +203,11 @@ export default function ProductsPage() {
                         {product.name}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">Active</Badge>
+                        <Badge variant={product.status === 'active' ? 'default' : 'secondary'} className={cn({
+                          'bg-green-600 hover:bg-green-700': product.status === 'active',
+                        })}>
+                          {product.status}
+                        </Badge>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         रू{product.price.toFixed(2)}
@@ -204,7 +216,7 @@ export default function ProductsPage() {
                         रू{product.cost.toFixed(2)}
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        {product.quantity} in stock
+                        {product.quantity > 0 ? `${product.quantity} in stock` : 'Sold out'}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -221,7 +233,11 @@ export default function ProductsPage() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => openEditDialog(product)}>Edit</DropdownMenuItem>
-                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toggleProductStatus(product.id)}>
+                              {product.status === 'active' ? 'Archive' : 'Activate'}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -292,3 +308,5 @@ export default function ProductsPage() {
     </>
   );
 }
+
+    

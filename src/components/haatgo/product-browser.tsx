@@ -25,8 +25,20 @@ export function ProductBrowser() {
   const filteredProducts = allProducts.filter(product => {
     const categoryMatch = activeTab === 'All' || product.category === activeTab;
     const districtMatch = activeDistrict === 'All Districts' || product.district === activeDistrict;
-    return categoryMatch && districtMatch;
+    const statusMatch = product.status === 'active';
+    return categoryMatch && districtMatch && statusMatch;
   });
+
+  const soldOutProducts = allProducts.filter(product => {
+    const categoryMatch = activeTab === 'All' || product.category === activeTab;
+    const districtMatch = activeDistrict === 'All Districts' || product.district === activeDistrict;
+    const statusMatch = product.status === 'active';
+    const soldOutMatch = product.quantity === 0;
+    return categoryMatch && districtMatch && statusMatch && soldOutMatch;
+  });
+
+  const availableProducts = filteredProducts.filter(p => p.quantity > 0);
+
 
   return (
     <Card className="shadow-lg rounded-xl">
@@ -46,40 +58,48 @@ export function ProductBrowser() {
                     ))}
                 </SelectContent>
             </Select>
-            <Tabs defaultValue={categories[0]} onValueChange={setActiveTab} className="w-full overflow-hidden">
-                <div className="w-full">
+            <div className="w-full overflow-hidden">
+                <div className="w-full relative px-10">
                     <Carousel
                         opts={{
                             align: "start",
                             dragFree: true,
                         }}
-                        className="w-full relative"
+                        className="w-full"
                     >
-                        <CarouselContent>
-                            <TabsList className="bg-transparent p-0 m-0">
-                                {categories.map((category) => (
-                                <CarouselItem key={category} className="basis-auto pl-2">
-                                    <TabsTrigger value={category}>{category}</TabsTrigger>
-                                </CarouselItem>
-                                ))}
-                            </TabsList>
+                        <CarouselContent className="-ml-1">
+                            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                                <TabsList>
+                                    {categories.map((category) => (
+                                        <CarouselItem key={category} className="pl-1 basis-auto">
+                                            <TabsTrigger value={category}>{category}</TabsTrigger>
+                                        </CarouselItem>
+                                    ))}
+                                </TabsList>
+                            </Tabs>
                         </CarouselContent>
-                        <CarouselPrevious className="h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary disabled:opacity-0" />
-                        <CarouselNext className="h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary disabled:opacity-0" />
+                        <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary disabled:opacity-0" />
+                        <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 hover:bg-background border-primary text-primary hover:text-primary disabled:opacity-0" />
                     </Carousel>
                 </div>
-            </Tabs>
+            </div>
         </div>
         <div>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {filteredProducts.map((product) => (
+                {availableProducts.map((product) => (
+                    <ProductCard
+                        key={product.id}
+                        product={product}
+                    />
+                ))}
+                 {soldOutProducts.map((product) => (
                     <ProductCard
                         key={product.id}
                         product={product}
                     />
                 ))}
             </div>
-            {filteredProducts.length === 0 && (
+            {availableProducts.length === 0 && soldOutProducts.length === 0 && (
                 <div className="text-center py-16 text-muted-foreground">
                     <p className="font-semibold">No products found</p>
                     <p className="text-sm">Try adjusting your category or district filter.</p>
@@ -90,3 +110,5 @@ export function ProductBrowser() {
     </Card>
   );
 }
+
+    

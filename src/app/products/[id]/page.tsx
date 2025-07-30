@@ -79,6 +79,7 @@ function ReviewForm({ productId }: { productId: string }) {
         }
         setIsSubmitting(true);
         addReview({
+            id: `review-${Date.now()}`,
             productId,
             userId: user.uid,
             userName: user.displayName || user.email || "Anonymous",
@@ -180,7 +181,7 @@ export default function ProductDetailPage() {
                         alt={product.name}
                         width={600}
                         height={600}
-                        className="object-cover w-full h-auto aspect-square rounded-lg shadow-lg"
+                        className={cn("object-cover w-full h-auto aspect-square rounded-lg shadow-lg", {"grayscale": product.quantity === 0})}
                         data-ai-hint={product.dataAiHint}
                     />
                 </div>
@@ -212,9 +213,9 @@ export default function ProductDetailPage() {
                          disabled={product.quantity === 0}
                        >
                         <ShoppingCart className="mr-2 h-5 w-5" />
-                        Add to cart
+                        {product.quantity === 0 ? "Sold Out" : "Add to cart"}
                        </Button>
-                       <p className="text-sm text-center text-muted-foreground mt-2">{product.quantity} pieces remaining</p>
+                       {product.quantity > 0 && <p className="text-sm text-center text-muted-foreground mt-2">{product.quantity} pieces remaining</p>}
                     </div>
                 </div>
             </div>
@@ -231,7 +232,7 @@ export default function ProductDetailPage() {
             <CardContent className="space-y-8">
                 {productReviews.length > 0 ? (
                     productReviews.map((review, index) => (
-                        <div key={index} className="grid gap-4">
+                        <div key={review.id} className="grid gap-4">
                             <div className="flex items-start gap-4">
                                 <Avatar>
                                     <AvatarImage src={review.userAvatar || `https://placehold.co/100x100.png`} />
@@ -270,3 +271,5 @@ export default function ProductDetailPage() {
     </div>
   )
 }
+
+    

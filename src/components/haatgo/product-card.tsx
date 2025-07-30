@@ -24,36 +24,28 @@ type ProductCardProps = {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const { addToCart } = useCart();
-  const getStockBadge = () => {
-    if (product.quantity === 0) {
-      return <Badge variant="destructive" className="absolute top-2 left-2">Sold Out</Badge>;
-    }
-    if (product.quantity <= 5) {
-      return <Badge variant="secondary" className="absolute top-2 left-2 bg-yellow-400 text-yellow-900">Low Stock</Badge>;
-    }
-    return null;
-  };
-  
+  const isSoldOut = product.quantity === 0;
+
   return (
     <TooltipProvider>
-      <Card className={cn("overflow-hidden rounded-lg group transition-all hover:shadow-md flex flex-col", className)}>
+      <Card className={cn("overflow-hidden rounded-lg group transition-all hover:shadow-md flex flex-col", { "bg-muted/50": isSoldOut }, className)}>
         <CardContent className="p-0 flex flex-col flex-grow">
           <div className="relative">
-            <Link href={`/products/${product.id}`}>
+            <Link href={`/products/${product.id}`} className={cn({"pointer-events-none": isSoldOut})}>
               <Image
                 src={product.image}
                 alt={product.name}
                 width={400}
                 height={300}
-                className="object-cover w-full h-48 transition-transform duration-300 group-hover:scale-105"
+                className={cn("object-cover w-full h-48 transition-transform duration-300 group-hover:scale-105", { "grayscale": isSoldOut })}
                 data-ai-hint={product.dataAiHint}
               />
             </Link>
-            {getStockBadge()}
+            {isSoldOut && <Badge variant="destructive" className="absolute top-2 left-2">Sold Out</Badge>}
           </div>
           <div className="p-4 flex flex-col flex-grow">
             <div className="flex items-start justify-between gap-2">
-               <Link href={`/products/${product.id}`} className="hover:underline">
+               <Link href={`/products/${product.id}`} className={cn("hover:underline", {"pointer-events-none": isSoldOut})}>
                     <h3 className="font-headline font-semibold text-lg leading-tight">{product.name}</h3>
                </Link>
               {product.description && (
@@ -70,8 +62,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
               )}
             </div>
             <div className="flex justify-between items-center mt-1">
-              <p className="text-muted-foreground text-sm">{product.category}</p>
-              {product.quantity > 0 && <p className="text-sm text-muted-foreground">{product.quantity} left</p>}
+              <p className="text-sm text-muted-foreground">{product.category}</p>
+              {!isSoldOut && product.quantity <= 5 && <p className="text-sm text-yellow-600 font-semibold">{product.quantity} left</p>}
             </div>
              <div className="flex-grow" />
             <div className="flex justify-between items-end mt-4">
@@ -82,10 +74,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
               <Button 
                 size="sm" 
                 onClick={() => addToCart(product)} 
-                disabled={product.quantity === 0}
+                disabled={isSoldOut}
               >
                 <ShoppingCart className="mr-2 h-4 w-4" />
-                Add to cart
+                {isSoldOut ? "Sold Out" : "Add to cart"}
               </Button>
             </div>
           </div>
@@ -94,3 +86,5 @@ export function ProductCard({ product, className }: ProductCardProps) {
     </TooltipProvider>
   );
 }
+
+    

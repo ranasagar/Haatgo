@@ -8,6 +8,7 @@ export type Product = {
   cost: number;
   quantity: number;
   measurement: string;
+  status: 'active' | 'archived';
   description?: string;
   image: string;
   dataAiHint: string;
@@ -61,6 +62,7 @@ export const products: Product[] = [
     cost: 600,
     quantity: 50,
     measurement: '250g pack',
+    status: 'active',
     description: "Savor the authentic taste of the Himalayas with this premium orthodox tea from the rolling hills of Ilam. Known for its delicate floral aroma and muscatel flavor, it's a perfect cup for any time of day.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'tea leaves',
@@ -72,8 +74,9 @@ export const products: Product[] = [
     district: 'Mustang',
     price: 450,
     cost: 300,
-    quantity: 40,
+    quantity: 0,
     measurement: 'per kg',
+    status: 'active',
     description: "Grown in the high-altitude orchards of Mustang, these apples are renowned for their crisp texture and exceptional sweetness. A healthy and delicious treat, perfect for eating fresh or baking.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'red apples',
@@ -87,6 +90,7 @@ export const products: Product[] = [
     cost: 500,
     quantity: 30,
     measurement: 'piece',
+    status: 'active',
     description: "Wear a piece of Nepali heritage with this authentic Dhaka Topi from Palpa. Handwoven with intricate geometric patterns, this traditional cap is a symbol of national pride and cultural identity.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'dhaka topi',
@@ -100,6 +104,7 @@ export const products: Product[] = [
     cost: 2800,
     quantity: 15,
     measurement: 'piece',
+    status: 'active',
     description: "Create a tranquil atmosphere with this handcrafted singing bowl from Patan, the city of fine arts. Used for centuries in meditation and healing, its resonant tones promote relaxation and mindfulness.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'singing bowl',
@@ -113,6 +118,7 @@ export const products: Product[] = [
     cost: 220,
     quantity: 25,
     measurement: 'per kg',
+    status: 'active',
     description: "Cultivated in the highest rice-growing area on Earth, Jumla's Marsi rice is a unique red variety known for its nutty flavor and health benefits. A nutritious and gluten-free choice for your meals.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'red rice',
@@ -126,6 +132,7 @@ export const products: Product[] = [
     cost: 180,
     quantity: 20,
     measurement: 'clay pot',
+    status: 'active',
     description: "Indulge in the 'King of Yogurts,' a rich and creamy delicacy from Bhaktapur. Made from buffalo milk and fermented in traditional clay pots, its sweet, thick texture is an unforgettable treat.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'yogurt pot',
@@ -139,6 +146,7 @@ export const products: Product[] = [
     cost: 2200,
     quantity: 10,
     measurement: 'piece',
+    status: 'active',
     description: "Own an authentic piece of Gurkha history with this traditional Khukuri from Bhojpur. Hand-forged by skilled artisans, this iconic curved knife is a powerful tool and a magnificent collector's item.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'khukuri knife',
@@ -152,6 +160,7 @@ export const products: Product[] = [
     cost: 1300,
     quantity: 18,
     measurement: 'piece',
+    status: 'active',
     description: "Adorn your walls with a vibrant Mithila painting from the Janakpur region. Characterized by intricate line drawings and vivid colors, these artworks depict mythological and natural themes.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'folk painting',
@@ -165,6 +174,7 @@ export const products: Product[] = [
     cost: 700,
     quantity: 35,
     measurement: '500g jar',
+    status: 'active',
     description: "Pure, raw honey harvested from the nectar of wildflowers in the plains of Chitwan. This natural sweetener is packed with antioxidants and has a rich, complex flavor profile.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'honey jar',
@@ -178,6 +188,7 @@ export const products: Product[] = [
     cost: 4500,
     quantity: 12,
     measurement: 'piece',
+    status: 'active',
     description: "Wrap yourself in luxury with an exquisitely soft Pashmina shawl from the Kathmandu Valley. Made from the fine wool of Himalayan goats, it provides incredible warmth while being feather-light.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'cashmere shawl',
@@ -191,6 +202,7 @@ export const products: Product[] = [
     cost: 250,
     quantity: 100,
     measurement: '10 sheets',
+    status: 'active',
     description: "Eco-friendly and durable Lokta paper from the hills of Tehrathum. Traditionally made from the bark of the Daphne plant, it is perfect for journals, crafts, and official documents.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'handmade paper',
@@ -204,6 +216,7 @@ export const products: Product[] = [
     cost: 1200,
     quantity: 22,
     measurement: 'piece',
+    status: 'active',
     description: "A traditional Nepali water jug made from brass, originating from Palpa. The Karuwa is not only a functional item for storing water but also a beautiful piece of craftsmanship for your home.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'brass jug',
@@ -217,6 +230,7 @@ export const products: Product[] = [
     cost: 850,
     quantity: 28,
     measurement: '250g pack',
+    status: 'active',
     description: "Awaken your senses with aromatic Arabica coffee grown in the mid-hills of Dolkha. This single-origin coffee is known for its smooth body, mild acidity, and hints of citrus and spice.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'coffee beans',
@@ -230,6 +244,7 @@ export const products: Product[] = [
     cost: 700,
     quantity: 40,
     measurement: 'set of 3',
+    status: 'active',
     description: "Handwoven wicker baskets from the craftsmen of Sunsari. Versatile and sturdy, these baskets are perfect for storage, decoration, or as eco-friendly shopping bags. Available in a set of three sizes.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'wicker basket',
@@ -243,6 +258,7 @@ export const products: Product[] = [
     cost: 550,
     quantity: 18,
     measurement: '200g block',
+    status: 'active',
     description: "A hard, savory cheese made from the milk of yaks grazing in the high pastures of the Everest region. Known locally as 'Chhurpi', it has a unique, tangy flavor and a long shelf life.",
     image: 'https://placehold.co/400x300.png',
     dataAiHint: 'cheese block',
@@ -308,3 +324,5 @@ export const initialOrders: Order[] = [
   { id: "#1004", product: "Stainless Steel Pot Set", status: "On the Way", date: "2023-06-26", amount: 2500.00 },
   { id: "#1003", product: "Basmati Rice (25kg)", status: "Confirmed", date: "2023-06-25", amount: 3200.00 },
 ];
+
+    
