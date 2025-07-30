@@ -6,7 +6,6 @@ import type { Product } from "@/lib/data";
 import { categories } from "@/lib/data";
 
 import { AppHeader } from "@/components/haatgo/header";
-import { LivestreamViewer } from "@/components/haatgo/livestream-viewer";
 import { RouteTracker } from "@/components/haatgo/route-tracker";
 import { OrderTracker } from "@/components/haatgo/order-tracker";
 import { Recommendations } from "@/components/haatgo/recommendations";
@@ -17,6 +16,7 @@ import { MyOrders } from "@/components/haatgo/my-orders";
 import { FloatingChatButtons } from "@/components/haatgo/floating-chat-buttons";
 import { useProducts } from "@/context/product-context";
 import { SendPackage } from "@/components/haatgo/send-package";
+import { LivestreamDialog } from "@/components/haatgo/livestream-dialog";
 
 export default function Home() {
   const [wishlist, setWishlist] = useState<Product[]>([]);
@@ -47,7 +47,7 @@ export default function Home() {
         <AppHeader wishlistCount={wishlist.length} />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col gap-6 lg:gap-8">
-            <LivestreamViewer />
+            <LivestreamDialog />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
               <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
                 <RouteTracker />

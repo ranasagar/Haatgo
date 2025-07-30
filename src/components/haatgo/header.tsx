@@ -38,10 +38,6 @@ export function AppHeader({ wishlistCount }: AppHeaderProps) {
           <h1 className="text-2xl font-headline font-bold text-foreground">{settings.appName}</h1>
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
-          <Button className="font-bold hidden sm:flex" size="sm">
-            <Radio className="mr-2 h-4 w-4" />
-            Watch Live
-          </Button>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Open Wishlist">
               <div className="relative">
