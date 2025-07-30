@@ -29,15 +29,12 @@ export function RouteTracker() {
       </CardHeader>
       <CardContent>
         <div className="relative rounded-lg overflow-hidden mb-4">
-          <Image
-            src="https://placehold.co/600x400"
-            alt="Map of route"
-            width={600}
-            height={400}
-            className="w-full h-auto"
-            data-ai-hint="nepal landscape map"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+          <iframe
+            className="w-full h-64 border-0 rounded-lg"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=80.058%2C26.347%2C88.201%2C30.447&layer=mapnik"
+            title="Route Map"
+          ></iframe>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
           <div className="absolute bottom-2 left-4 text-white">
              {nextStop ? (
               <>
