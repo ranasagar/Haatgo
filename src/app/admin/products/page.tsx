@@ -83,7 +83,7 @@ export default function ProductsPage() {
       const newProduct: Product = {
         ...selectedProduct,
         id: (products.length + 1).toString(),
-        image: "https://placehold.co/400x300", // placeholder
+        image: "https://storage.googleapis.com/haatgo-store-images/placeholder.png", // placeholder
         dataAiHint: selectedProduct.name.toLowerCase().split(' ').slice(0, 2).join(' '),
       };
       setProducts([...products, newProduct]);
