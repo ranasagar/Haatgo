@@ -56,7 +56,6 @@ const defaultNewProduct: Product = {
   status: 'active',
   district: "Kathmandu",
   description: "",
-  category: "Food",
   image: 'https://storage.googleapis.com/haatgo-store-images/placeholder.png',
   dataAiHint: ''
 };
@@ -81,15 +80,15 @@ export default function ProductsPage() {
   
   const handleSave = () => {
     if (isEditing) {
-      setProducts(products.map(p => p.id === selectedProduct.id ? selectedProduct : p));
+      setProducts(prevProducts => prevProducts.map(p => p.id === selectedProduct.id ? selectedProduct : p));
     } else {
-      const newProduct: Product = {
+      const newProductWithId: Product = {
         ...selectedProduct,
-        id: (products.length + 1).toString(),
-        image: "https://storage.googleapis.com/haatgo-store-images/placeholder.png", // placeholder
+        id: `prod-${Date.now()}`,
+        image: "https://storage.googleapis.com/haatgo-store-images/placeholder.png",
         dataAiHint: selectedProduct.name.toLowerCase().split(' ').slice(0, 2).join(' '),
       };
-      setProducts([...products, newProduct]);
+      setProducts(prevProducts => [...prevProducts, newProductWithId]);
     }
     setOpen(false);
   }
@@ -103,7 +102,7 @@ export default function ProductsPage() {
   }
 
   const toggleProductStatus = (productId: string) => {
-    setProducts(products.map(p => 
+    setProducts(prevProducts => prevProducts.map(p => 
       p.id === productId 
         ? { ...p, status: p.status === 'active' ? 'archived' : 'active' } 
         : p
@@ -297,7 +296,7 @@ export default function ProductsPage() {
                 <Label htmlFor="description" className="text-right">
                   Description
                 </Label>
-                <Textarea id="description" value={selectedProduct.description} onChange={handleInputChange} placeholder="Product description" className="col-span-3" />
+                <Textarea id="description" value={selectedProduct.description || ''} onChange={handleInputChange} placeholder="Product description" className="col-span-3" />
               </div>
             </div>
             <DialogFooter>
@@ -308,5 +307,3 @@ export default function ProductsPage() {
     </>
   );
 }
-
-    
