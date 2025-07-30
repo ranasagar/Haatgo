@@ -16,9 +16,11 @@ export default function Home() {
 
   return (
     <AppShell>
-        <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
-          <div className="flex flex-col gap-6 lg:gap-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
             <LiveIndicator />
+        </div>
+        <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-6 lg:gap-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
               <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
                 <RouteTracker />
