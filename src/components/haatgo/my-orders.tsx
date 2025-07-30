@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { useDeliveries } from "@/context/delivery-context"
 import { useParcels } from "@/context/parcel-context"
+import { useAuth } from "@/context/auth-context"
 import { Package, Send, ShoppingBag } from "lucide-react"
 
 const statusColors: { [key: string]: string } = {
@@ -20,16 +21,26 @@ const statusColors: { [key: string]: string } = {
 export function MyOrders() {
   const { deliveries } = useDeliveries();
   const { parcels } = useParcels();
+  const { user, isAdmin } = useAuth();
+
+  const userDeliveries = isAdmin 
+    ? deliveries 
+    : user ? deliveries.filter(d => d.customerName === user.displayName) : [];
+
+  const userParcels = isAdmin
+    ? parcels
+    : user ? parcels.filter(p => p.senderName === user.displayName || p.receiverName === user.displayName) : [];
+
 
   const allTasks = [
-    ...deliveries.map(d => ({
+    ...userDeliveries.map(d => ({
         id: d.id,
         type: 'Delivery' as const,
         description: `Order for ${d.customerName}`,
         destination: d.address,
         status: d.status,
     })),
-    ...parcels.map(p => ({
+    ...userParcels.map(p => ({
         id: p.id,
         type: 'Parcel' as const,
         description: `From ${p.senderName} to ${p.receiverName}`,
@@ -47,8 +58,8 @@ export function MyOrders() {
         {allTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-60 text-center text-muted-foreground">
             <ShoppingBag className="h-12 w-12 mb-4" />
-            <p className="font-semibold">No tasks for today</p>
-            <p className="text-sm">The seller's tasks will appear here.</p>
+            <p className="font-semibold">{isAdmin ? "No tasks for today" : "You have no active deliveries or parcels"}</p>
+            <p className="text-sm">{isAdmin ? "The seller's tasks will appear here." : "Your items will appear here once they are on the route."}</p>
           </div>
         ) : (
             <ScrollArea className="h-60">
