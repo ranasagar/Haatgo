@@ -27,6 +27,7 @@ import { Textarea } from "../ui/textarea"
 import { routeStops } from "@/lib/data"
 import { useParcels } from "@/context/parcel-context"
 import { useToast } from "@/hooks/use-toast"
+import { Separator } from "@/components/ui/separator"
 
 const defaultParcel = {
     fromStop: '',
