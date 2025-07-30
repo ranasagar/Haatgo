@@ -11,6 +11,7 @@ import { ParcelProvider } from '@/context/parcel-context';
 import { CartProvider } from '@/context/cart-context';
 import { OrderProvider } from '@/context/order-context';
 import { UserProfileProvider } from '@/context/user-profile-context';
+import { ReviewProvider } from '@/context/review-context';
 
 export const metadata: Metadata = {
   title: 'HaatGo',
@@ -43,7 +44,9 @@ export default function RootLayout({
                   <ParcelProvider>
                     <OrderProvider>
                       <CartProvider>
-                        {children}
+                        <ReviewProvider>
+                           {children}
+                        </ReviewProvider>
                       </CartProvider>
                     </OrderProvider>
                   </ParcelProvider>

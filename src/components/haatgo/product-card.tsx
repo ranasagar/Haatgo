@@ -2,6 +2,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { Info, ShoppingCart } from "lucide-react"
 import type { Product } from "@/lib/data"
 import { cn } from "@/lib/utils"
@@ -38,19 +39,23 @@ export function ProductCard({ product, className }: ProductCardProps) {
       <Card className={cn("overflow-hidden rounded-lg group transition-all hover:shadow-md flex flex-col", className)}>
         <CardContent className="p-0 flex flex-col flex-grow">
           <div className="relative">
-            <Image
-              src={product.image}
-              alt={product.name}
-              width={400}
-              height={300}
-              className="object-cover w-full h-48 transition-transform duration-300 group-hover:scale-105"
-              data-ai-hint={product.dataAiHint}
-            />
+            <Link href={`/products/${product.id}`}>
+              <Image
+                src={product.image}
+                alt={product.name}
+                width={400}
+                height={300}
+                className="object-cover w-full h-48 transition-transform duration-300 group-hover:scale-105"
+                data-ai-hint={product.dataAiHint}
+              />
+            </Link>
             {getStockBadge()}
           </div>
           <div className="p-4 flex flex-col flex-grow">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-headline font-semibold text-lg leading-tight">{product.name}</h3>
+               <Link href={`/products/${product.id}`} className="hover:underline">
+                    <h3 className="font-headline font-semibold text-lg leading-tight">{product.name}</h3>
+               </Link>
               {product.description && (
                 <Tooltip>
                   <TooltipTrigger asChild>
