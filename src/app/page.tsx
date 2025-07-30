@@ -11,15 +11,16 @@ import { SendPackage } from "@/components/haatgo/send-package";
 import { useProducts } from "@/context/product-context";
 import { FloatingChatButtons } from "@/components/haatgo/floating-chat-buttons";
 import { CartSheet } from "@/components/haatgo/cart-sheet";
+import { AppHeader } from "@/components/haatgo/header";
 import { AppHeaderWithLivestream } from "@/components/haatgo/app-header-with-livestream";
 
 export default function Home() {
   const { products } = useProducts();
 
   return (
-    <CartSheet>
-      <div className="flex flex-col min-h-screen bg-background">
-        <AppHeaderWithLivestream />
+    <div className="flex flex-col min-h-screen bg-background">
+      <AppHeaderWithLivestream />
+      <CartSheet>
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col gap-6 lg:gap-8">
             <div className="sticky top-0 bg-background/90 backdrop-blur-sm py-2 z-30 -mx-4 px-4 sm:hidden">
@@ -39,8 +40,8 @@ export default function Home() {
             </div>
           </div>
         </main>
-        <FloatingChatButtons />
-      </div>
-    </CartSheet>
+      </CartSheet>
+      <FloatingChatButtons />
+    </div>
   );
 }
