@@ -15,29 +15,10 @@ const initialRouteStops = [
 
 export function RouteTracker() {
   const [routeStops, setRouteStops] = useState(initialRouteStops);
-  const [currentStopIndex, setCurrentStopIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStopIndex(prevIndex => {
-        const nextIndex = (prevIndex + 1);
-        if (nextIndex > routeStops.length) {
-          // Reset after completing all stops
-          setRouteStops(initialRouteStops.map(s => ({...s, passed: false})));
-          return 0;
-        }
-        
-        setRouteStops(prevStops => 
-            prevStops.map((stop, index) => 
-                index < nextIndex ? { ...stop, passed: true } : stop
-            )
-        );
-        return nextIndex;
-      });
-    }, 5000); // Move to the next stop every 5 seconds for demo
-
-    return () => clearInterval(interval);
-  }, [routeStops.length]);
+  // NOTE: In a real app, you would fetch the route status from your backend.
+  // For now, we simulate the state locally. In a real-world scenario, you might use
+  // something like Firebase Realtime Database or Firestore to listen for changes
+  // pushed by the admin and update the state here.
 
   const nextStop = routeStops.find(stop => !stop.passed);
 

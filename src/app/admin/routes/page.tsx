@@ -1,6 +1,7 @@
+
 "use client";
 import * as React from "react";
-import { File, ListFilter, MoreHorizontal, PlusCircle } from "lucide-react";
+import { File, ListFilter, MoreHorizontal, PlusCircle, CheckCircle, MapPin } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -40,9 +41,57 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+
+type Stop = {
+    name: string;
+    passed: boolean;
+};
+
+type Route = {
+    id: string;
+    name: string;
+    stops: Stop[];
+    date: string;
+};
+
+const initialRoutes: Route[] = [
+    {
+        id: "1",
+        name: "Chisapani - Sankhejung",
+        stops: [
+            { name: "Chisapani Market", passed: false },
+            { name: "Bhedetar Junction", passed: false },
+            { name: "Sankhejung Village", passed: false },
+        ],
+        date: "2024-07-25",
+    },
+];
+
 
 export default function RoutesPage() {
     const [open, setOpen] = React.useState(false);
+    const [routes, setRoutes] = React.useState<Route[]>(initialRoutes);
+    const [selectedRoute, setSelectedRoute] = React.useState<Route | null>(null);
+
+    const handleToggleStop = (stopName: string) => {
+        if (selectedRoute) {
+            const updatedStops = selectedRoute.stops.map(stop =>
+                stop.name === stopName ? { ...stop, passed: !stop.passed } : stop
+            );
+            const updatedRoute = { ...selectedRoute, stops: updatedStops };
+            setSelectedRoute(updatedRoute);
+            setRoutes(prevRoutes => prevRoutes.map(r => r.id === updatedRoute.id ? updatedRoute : r));
+        }
+    };
+
+    const openManageDialog = (route: Route) => {
+        setSelectedRoute(route);
+    }
+    
+    const closeManageDialog = () => {
+        setSelectedRoute(null);
+    }
 
   return (
     <>
@@ -143,36 +192,39 @@ export default function RoutesPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      Chisapani - Sankhejung
-                    </TableCell>
-                    <TableCell>
-                      Chisapani, Bhedetar, Sankhejung
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      2024-07-25
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
+                  {routes.map(route => (
+                    <TableRow key={route.id}>
+                        <TableCell className="font-medium">
+                        {route.name}
+                        </TableCell>
+                        <TableCell>
+                        {route.stops.map(s => s.name).join(', ')}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                        {route.date}
+                        </TableCell>
+                        <TableCell>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <Button
+                                aria-haspopup="true"
+                                size="icon"
+                                variant="ghost"
+                            >
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Toggle menu</span>
+                            </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => openManageDialog(route)}>Manage Route</DropdownMenuItem>
+                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>
@@ -184,6 +236,40 @@ export default function RoutesPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      
+       <Dialog open={!!selectedRoute} onOpenChange={(isOpen) => !isOpen && closeManageDialog()}>
+            <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle>Manage Route: {selectedRoute?.name}</DialogTitle>
+                    <DialogDescription>
+                        Click on a stop to mark it as passed. This will update the customer view.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                    <ul className="space-y-3">
+                        {selectedRoute?.stops.map((stop) => (
+                            <li key={stop.name}>
+                                <Button
+                                    variant="outline"
+                                    className={cn("w-full justify-start", stop.passed && "line-through text-muted-foreground")}
+                                    onClick={() => handleToggleStop(stop.name)}
+                                >
+                                    {stop.passed ? (
+                                        <CheckCircle className="h-5 w-5 mr-3 text-green-500" />
+                                    ) : (
+                                        <MapPin className="h-5 w-5 mr-3 text-primary" />
+                                    )}
+                                    {stop.name}
+                                </Button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <DialogFooter>
+                    <Button onClick={closeManageDialog}>Done</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </>
   );
 }
