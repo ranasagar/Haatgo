@@ -18,7 +18,7 @@ const orderSteps = [
 
 function SingleOrderTracker({ order }: { order: import("@/lib/data").Order }) {
     const currentStepIndex = orderSteps.findIndex(step => step.name === order.status);
-    const progressPercentage = (currentStepIndex / (orderSteps.length -1)) * 100;
+    const progressPercentage = currentStepIndex >= 0 ? (currentStepIndex / (orderSteps.length -1)) * 100 : 0;
 
     return (
         <div className="p-4 border rounded-lg">
@@ -30,11 +30,11 @@ function SingleOrderTracker({ order }: { order: import("@/lib/data").Order }) {
                  <p className="text-lg font-bold text-primary">रू{order.amount.toFixed(2)}</p>
             </div>
             
-             <div className="relative flex justify-between">
-                <div className="absolute left-0 top-1/2 w-full h-1 bg-border -translate-y-1/2" />
+             <div className="relative flex justify-between pt-2">
+                <div className="absolute left-0 top-[22px] w-full h-1 bg-border -translate-y-1/2" />
                 <AnimatePresence>
                 <motion.div
-                    className="absolute left-0 top-1/2 h-1 bg-primary -translate-y-1/2"
+                    className="absolute left-0 top-[22px] h-1 bg-primary -translate-y-1/2"
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPercentage}%` }}
                     transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -44,7 +44,7 @@ function SingleOrderTracker({ order }: { order: import("@/lib/data").Order }) {
                 {orderSteps.map((step, index) => {
                     const isActive = index <= currentStepIndex;
                     return (
-                        <div key={step.name} className="z-10 flex flex-col items-center">
+                        <div key={step.name} className="z-10 flex flex-col items-center w-20 text-center">
                             <div
                                 className={cn(
                                     "flex h-6 w-6 items-center justify-center rounded-full bg-background border-2 transition-colors duration-300",
@@ -53,7 +53,7 @@ function SingleOrderTracker({ order }: { order: import("@/lib/data").Order }) {
                             >
                                 <step.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-muted-foreground")} />
                             </div>
-                            <span className={cn("text-xs mt-1 transition-colors", isActive ? "text-foreground" : "text-muted-foreground")}>
+                            <span className={cn("text-xs mt-1 transition-colors", isActive ? "text-foreground font-semibold" : "text-muted-foreground")}>
                                 {step.name}
                             </span>
                         </div>
