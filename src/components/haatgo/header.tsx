@@ -26,6 +26,7 @@ export function AppHeader() {
   const { cart } = useCart();
 
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantityInCart, 0);
+  const isAdmin = user && user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
@@ -71,12 +72,14 @@ export function AppHeader() {
                           <span>Profile</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                      <Link href="/admin">
-                          <LayoutDashboard className="mr-2 h-4 w-4" />
-                          <span>Admin Panel</span>
-                      </Link>
-                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                        <Link href="/admin">
+                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                            <span>Admin Panel</span>
+                        </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout}>
                       <LogOut className="mr-2 h-4 w-4" />

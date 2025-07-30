@@ -22,7 +22,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (user) {
-      router.push('/admin');
+      router.push('/');
     }
   }, [user, router]);
 
