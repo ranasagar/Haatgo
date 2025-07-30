@@ -1,20 +1,31 @@
+
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { Product } from "@/lib/data"
+import { products as sampleProducts } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProductCard } from "./product-card"
 
 type ProductBrowserProps = {
-  allProducts: Product[];
   categories: string[];
   wishlist: Product[];
   onToggleWishlist: (product: Product) => void;
+  onProductsChange: (products: Product[]) => void;
 };
 
-export function ProductBrowser({ allProducts, categories, wishlist, onToggleWishlist }: ProductBrowserProps) {
+export function ProductBrowser({ categories, wishlist, onToggleWishlist, onProductsChange }: ProductBrowserProps) {
   const [activeTab, setActiveTab] = useState(categories[0]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    // In a real app, this would be an API call to fetch products.
+    // For this demo, we use the static data and simulate fetching.
+    const fetchedProducts = sampleProducts;
+    setAllProducts(fetchedProducts);
+    onProductsChange(fetchedProducts);
+  }, [onProductsChange]);
 
   const filteredProducts = activeTab === 'All'
     ? allProducts

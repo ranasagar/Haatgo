@@ -14,14 +14,17 @@ const initialRouteStops = [
 
 export function RouteTracker() {
   const [routeStops, setRouteStops] = useState(initialRouteStops);
-  // NOTE: In a real app, you would fetch the route status from your backend.
-  // For now, we simulate the state locally. In a real-world scenario, you might use
-  // something like Firebase Realtime Database or Firestore to listen for changes
-  // pushed by the admin and update the state here.
+  const [mapUrl, setMapUrl] = useState('');
 
   const nextStop = routeStops.find(stop => !stop.passed);
-
-  const generateMapUrl = () => {
+  
+  const generateMapUrl = (center?: {lat: number, lon: number}, zoom?: number) => {
+    if (center && zoom) {
+      const url = `https://www.openstreetmap.org/export/embed.html?bbox=${center.lon-0.1},${center.lat-0.1},${center.lon+0.1},${center.lat+0.1}&layer=mapnik&marker=${center.lat},${center.lon}`;
+      setMapUrl(url);
+      return;
+    }
+    
     const lats = routeStops.map(s => s.lat);
     const lons = routeStops.map(s => s.lon);
     const minLat = Math.min(...lats);
@@ -42,9 +45,6 @@ export function RouteTracker() {
     const routePath = routeStops.map(stop => `${stop.lon},${stop.lat}`).join(';');
     const url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=route&route=${routePath}&${markers}`;
     
-    // A bit of a hack to make the route line visible, as embed API is limited.
-    // We are essentially adding a custom style to the parent document.
-    // This is not ideal but works for this specific use-case.
     const styledUrl = `data:text/html;charset=utf-8,
       <style>
         .ol-overlaycontainer-stopevent { display: none; }
@@ -53,8 +53,17 @@ export function RouteTracker() {
       <iframe width="100%" height="100%" frameborder="0" src="${url}"></iframe>
     `;
 
-    return styledUrl;
+    setMapUrl(styledUrl);
   }
+
+  useEffect(() => {
+    generateMapUrl();
+  }, [routeStops]);
+
+  const handleStopClick = (lat: number, lon: number) => {
+    generateMapUrl({lat, lon}, 15);
+  };
+
 
   return (
     <Card className="shadow-lg rounded-xl overflow-hidden">
@@ -65,8 +74,9 @@ export function RouteTracker() {
         <div className="relative rounded-lg overflow-hidden mb-4">
           <iframe
             className="w-full h-64 border-0 rounded-lg"
-            src={generateMapUrl()}
+            src={mapUrl}
             title="Route Map"
+            key={mapUrl} // Re-render iframe when URL changes
           ></iframe>
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
           <div className="absolute bottom-2 left-4 text-white">
@@ -82,7 +92,7 @@ export function RouteTracker() {
         </div>
         <ul className="space-y-3">
           {routeStops.map((stop) => (
-            <li key={stop.name} className="flex items-center gap-3">
+            <li key={stop.name} className="flex items-center gap-3 cursor-pointer hover:bg-muted/50 p-2 rounded-md" onClick={() => handleStopClick(stop.lat, stop.lon)}>
               <MapPin className={cn("h-5 w-5", stop.passed ? 'text-green-500' : 'text-primary')} />
               <span className={cn("flex-grow", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
                 {stop.name}

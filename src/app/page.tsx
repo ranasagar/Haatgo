@@ -1,10 +1,9 @@
 
-
 "use client";
 
 import { useState } from "react";
 import type { Product } from "@/lib/data";
-import { products as allProducts, categories } from "@/lib/data";
+import { categories } from "@/lib/data";
 
 import { AppHeader } from "@/components/haatgo/header";
 import { LivestreamViewer } from "@/components/haatgo/livestream-viewer";
@@ -20,6 +19,7 @@ import { FloatingChatButtons } from "@/components/haatgo/floating-chat-buttons";
 export default function Home() {
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const { toast } = useToast();
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   const handleToggleWishlist = (product: Product) => {
     setWishlist((prev) => {
@@ -55,7 +55,7 @@ export default function Home() {
               </aside>
               <div className="lg:col-span-2 flex flex-col gap-6 lg:gap-8">
                 <Recommendations allProducts={allProducts} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
-                <ProductBrowser allProducts={allProducts} categories={categories} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} />
+                <ProductBrowser categories={categories} onToggleWishlist={handleToggleWishlist} wishlist={wishlist} onProductsChange={setAllProducts} />
               </div>
             </div>
           </div>
