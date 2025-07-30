@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
   }
   
   if ((pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password') && token) {
-     return NextResponse.redirect(new URL('/admin', request.url))
+     return NextResponse.redirect(new URL('/', request.url))
   }
 
   // Allow logged-in users to visit the customer-facing homepage
