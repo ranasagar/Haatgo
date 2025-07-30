@@ -5,6 +5,7 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 import type { Product } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { useOrders } from './order-context';
+import { useProducts } from './product-context';
 
 export type CartItem = Product & {
     quantityInCart: number;
@@ -25,11 +26,30 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [cart, setCart] = useState<CartItem[]>([]);
     const { toast } = useToast();
     const { addOrder } = useOrders();
+    const { products } = useProducts(); // Get live product data
 
     const addToCart = (product: Product) => {
+        const liveProduct = products.find(p => p.id === product.id);
+        if (!liveProduct || liveProduct.quantity === 0) {
+             toast({
+                title: "Out of Stock",
+                description: "This product is currently unavailable.",
+                variant: "destructive",
+            });
+            return;
+        }
+
         setCart(prevCart => {
             const existingItem = prevCart.find(item => item.id === product.id);
             if (existingItem) {
+                if (existingItem.quantityInCart >= liveProduct.quantity) {
+                     toast({
+                        title: "Stock Limit Reached",
+                        description: `You cannot add more of ${product.name}.`,
+                        variant: "destructive"
+                    });
+                    return prevCart;
+                }
                 return prevCart.map(item =>
                     item.id === product.id
                         ? { ...item, quantityInCart: item.quantityInCart + 1 }
@@ -57,6 +77,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             removeFromCart(productId);
             return;
         }
+        const liveProduct = products.find(p => p.id === productId);
+        if (liveProduct && quantity > liveProduct.quantity) {
+             toast({
+                title: "Stock Limit Reached",
+                description: `Only ${liveProduct.quantity} of ${liveProduct.name} available.`,
+                variant: "destructive"
+            });
+            return;
+        }
+
         setCart(prevCart =>
             prevCart.map(item =>
                 item.id === productId ? { ...item, quantityInCart: quantity } : item
