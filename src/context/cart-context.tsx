@@ -26,7 +26,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [cart, setCart] = useState<CartItem[]>([]);
     const { toast } = useToast();
     const { addOrder } = useOrders();
-    const { products } = useProducts(); // Get live product data
+    const { products, updateProductQuantity } = useProducts();
 
     const addToCart = (product: Product) => {
         const liveProduct = products.find(p => p.id === product.id);
@@ -103,19 +103,25 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const checkout = () => {
-        if (cart.length === 0) return;
-
-        // For demo purposes, we'll just create a new order for the first item
-        // In a real app, you would create orders for all items or a single order with multiple items
-        const firstItem = cart[0];
-        const newOrder = {
-            id: `#${Math.floor(Math.random() * 9000) + 1000}`,
-            product: `${firstItem.name} (x${firstItem.quantityInCart})`,
-            status: 'Pending' as const,
-            date: new Date().toISOString().split('T')[0],
-            amount: firstItem.price * firstItem.quantityInCart
+        if (cart.length === 0) {
+            toast({ title: "Your cart is empty.", variant: "destructive"});
+            return;
         };
-        addOrder(newOrder);
+
+        cart.forEach(item => {
+            // Create a new order for each item
+            const newOrder = {
+                id: `#${Math.floor(Math.random() * 9000) + 1000}`,
+                product: `${item.name} (x${item.quantityInCart})`,
+                status: 'Pending' as const,
+                date: new Date().toISOString().split('T')[0],
+                amount: item.price * item.quantityInCart
+            };
+            addOrder(newOrder);
+
+            // Deduct from inventory
+            updateProductQuantity(item.id, item.quantityInCart);
+        });
         
         setCart([]); // Clear the cart after checkout
         toast({
