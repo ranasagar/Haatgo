@@ -75,35 +75,38 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
     )
   }
 
+  const VideoScreen = ({ isLive, streamData }: {isLive: boolean, streamData: LivestreamData | null | undefined}) => (
+     <div className="w-full h-full flex items-center justify-center text-center text-foreground p-4 rounded-lg relative overflow-hidden bg-black">
+        {isLive ? (
+            <Video className="h-24 w-24 text-primary/30" />
+        ) : (
+            <div className="text-center text-muted-foreground">
+                <WifiOff className="h-16 w-16 mx-auto text-muted-foreground/50" />
+                <p className="mt-2 font-semibold">Livestream is Offline</p>
+            </div>
+        )}
+        <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+            <div className="relative z-10 text-left">
+                <p className="font-semibold text-white text-lg">
+                    {isLive ? (streamData?.title || "Livestream is active.") : "Follow us for the next livestream!"}
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                   <SocialLink platform="facebook" username={settings.facebook} />
+                   <SocialLink platform="tiktok" username={settings.tiktok} />
+                   <SocialLink platform="instagram" username={settings.instagram} />
+                </div>
+            </div>
+        </div>
+    </div>
+  )
+
   const renderFacebookTab = () => (
-    <div className="lg:col-span-2 bg-muted flex items-center justify-center relative rounded-tl-lg rounded-tr-lg lg:rounded-tr-none lg:rounded-bl-lg">
+    <div className="lg:col-span-2 bg-black flex items-center justify-center relative rounded-tl-lg rounded-tr-lg lg:rounded-tr-none lg:rounded-bl-lg">
         <Badge variant={isLive ? "default" : "destructive"} className={cn("transition-all absolute top-4 left-4 z-10", isLive ? "bg-green-600 hover:bg-green-700" : "")}>
             {isLive ? <Wifi className="h-4 w-4 mr-2" /> : <WifiOff className="h-4 w-4 mr-2" />}
             {isLive ? 'Online' : 'Offline'}
         </Badge>
-        {isLive ? (
-            <div className="w-full h-full flex items-center justify-center text-center text-foreground p-4 rounded-lg relative overflow-hidden bg-black">
-                {/* Placeholder for actual video feed */}
-                <Video className="h-24 w-24 text-primary/30" />
-                
-                {/* Subtle Overlay at the bottom */}
-                <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-                    <div className="relative z-10 text-left">
-                        <p className="font-semibold text-white text-lg">{streamData?.title || "Livestream is active."}</p>
-                        <div className="mt-2 flex items-center gap-2">
-                           <SocialLink platform="facebook" username={settings.facebook} />
-                           <SocialLink platform="tiktok" username={settings.tiktok} />
-                           <SocialLink platform="instagram" username={settings.instagram} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        ) : (
-            <div className="text-center text-muted-foreground">
-                <Video className="h-16 w-16 mx-auto" />
-                <p>Livestream is currently offline.</p>
-            </div>
-        )}
+        <VideoScreen isLive={isLive} streamData={streamData} />
     </div>
   );
 
@@ -197,29 +200,7 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
         </CardHeader>
         <CardContent>
           <div className="aspect-video bg-muted rounded-lg flex items-center justify-center relative">
-            {isLive ? (
-                 <div className="w-full h-full flex items-center justify-center text-center text-foreground p-4 rounded-lg relative overflow-hidden bg-black">
-                    {/* Placeholder for actual video feed */}
-                    <Video className="h-24 w-24 text-primary/30" />
-                    
-                    {/* Subtle Overlay at the bottom */}
-                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-                        <div className="relative z-10 text-left">
-                            <p className="font-semibold text-white text-lg">{streamData?.title || "Livestream is active."}</p>
-                            <div className="mt-2 flex items-center gap-2">
-                               <SocialLink platform="facebook" username={settings.facebook} />
-                               <SocialLink platform="tiktok" username={settings.tiktok} />
-                               <SocialLink platform="instagram" username={settings.instagram} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            ) : (
-              <div className="text-center text-muted-foreground">
-                <Video className="h-16 w-16 mx-auto" />
-                <p>Livestream is currently offline.</p>
-              </div>
-            )}
+            <VideoScreen isLive={isLive} streamData={streamData} />
           </div>
         </CardContent>
       </Card>
