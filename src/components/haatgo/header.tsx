@@ -19,11 +19,10 @@ import {
 import { useAppSettings } from "@/context/app-settings-context";
 import { useAuth } from "@/context/auth-context"
 import { useCart } from "@/context/cart-context"
-import { Skeleton } from "../ui/skeleton"
 
 export function AppHeader() {
   const { settings } = useAppSettings();
-  const { user, logout, isAdmin, loading } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const { cart } = useCart();
   const [mounted, setMounted] = useState(false);
 
@@ -32,57 +31,6 @@ export function AppHeader() {
   }, []);
 
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantityInCart, 0);
-
-  const AuthDisplay = () => {
-    if (loading) {
-      return <Skeleton className="h-9 w-28 rounded-md" />
-    }
-    if (user) {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-              <Avatar className="h-9 w-9 cursor-pointer">
-                  <AvatarImage src={user.photoURL || "https://placehold.co/100x100"} alt="User Avatar" />
-                  <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
-              </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                  </Link>
-              </DropdownMenuItem>
-              {isAdmin && (
-                <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                        <LayoutDashboard className="mr-2 h-4 w-4" />
-                        <span>Admin Panel</span>
-                    </Link>
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign Out</span>
-              </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    }
-     return (
-        <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm">
-                <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild size="sm">
-                <Link href="/signup">Sign Up</Link>
-            </Button>
-        </div>
-      )
-  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
@@ -108,9 +56,53 @@ export function AppHeader() {
               </div>
             </Button>
           </SheetTrigger>
-          <AuthDisplay />
+          {mounted && user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Avatar className="h-9 w-9 cursor-pointer">
+                      <AvatarImage src={user.photoURL || "https://placehold.co/100x100"} alt="User Avatar" />
+                      <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                      <Link href="/profile">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Profile</span>
+                      </Link>
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                        <Link href="/admin">
+                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                            <span>Admin Panel</span>
+                        </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign Out</span>
+                  </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : mounted && !user ? (
+            <div className="flex items-center gap-2">
+                <Button asChild variant="ghost" size="sm">
+                    <Link href="/login">Login</Link>
+                </Button>
+                <Button asChild size="sm">
+                    <Link href="/signup">Sign Up</Link>
+                </Button>
+            </div>
+          ) : (
+            <div className="h-9 w-28 animate-pulse rounded-md bg-muted" /> // Skeleton loader
+          )}
         </div>
       </div>
     </header>
   );
 }
+
