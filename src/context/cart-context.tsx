@@ -23,13 +23,35 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const getInitialCart = (): CartItem[] => {
+    if (typeof window === 'undefined') {
+        return [];
+    }
+    try {
+        const savedCart = localStorage.getItem('haatgo-cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+        console.error("Failed to parse cart from localStorage", error);
+        return [];
+    }
+};
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-    const [cart, setCart] = useState<CartItem[]>([]);
+    const [cart, setCart] = useState<CartItem[]>(getInitialCart);
     const { toast } = useToast();
     const { addOrder } = useOrders();
     const { products, updateProductQuantity } = useProducts();
     const { user } = useAuth();
     const [lastAction, setLastAction] = useState<{ name: string; payload?: any } | null>(null);
+
+     useEffect(() => {
+        try {
+            localStorage.setItem('haatgo-cart', JSON.stringify(cart));
+        } catch (error) {
+            console.error("Failed to save cart to localStorage", error);
+        }
+    }, [cart]);
+
 
     useEffect(() => {
         if (!lastAction) return;
