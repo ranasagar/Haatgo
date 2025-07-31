@@ -62,8 +62,8 @@ export function ProductMarquee() {
 
   return (
     <div className="w-full">
-        <div className="relative flex w-full overflow-hidden rounded-lg bg-muted p-2 shadow-inner items-center justify-between">
-            <div className="flex-shrink-0 flex items-center pr-4">
+        <div className="relative flex w-full overflow-hidden rounded-lg bg-muted p-2 shadow-inner items-center">
+            <div className="flex-shrink-0 flex items-center pr-4 border-r border-border/50">
                 <Tag className="h-6 w-6 text-primary" />
                 <span className="font-headline font-semibold ml-2 text-primary hidden sm:inline">Special Offers</span>
             </div>
@@ -83,8 +83,18 @@ export function ProductMarquee() {
                     </div>
                 )}
             </div>
-            <div className="flex-shrink-0 flex items-center gap-4 pl-4 border-l border-border/50">
-                {weather ? (
+        </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between items-center mt-2 px-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 items-center">
+                {specialTags.map(tag => (
+                    <div key={tag} className="flex items-center gap-1.5">
+                        {tagIcons[tag]}
+                        <span>{tag}</span>
+                    </div>
+                ))}
+            </div>
+            <div className="flex items-center gap-4">
+                 {weather ? (
                     <div className="flex items-center gap-2">
                         {weatherIcons[weather.icon] || <Sun className="h-5 w-5 text-yellow-500" />}
                         <span className="font-semibold text-sm text-muted-foreground">{weather.temperature}°C, {weather.condition}</span>
@@ -102,14 +112,7 @@ export function ProductMarquee() {
                 )}
             </div>
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 justify-start mt-2 px-2 text-xs text-muted-foreground">
-            {specialTags.map(tag => (
-                <div key={tag} className="flex items-center gap-1.5">
-                    {tagIcons[tag]}
-                    <span>{tag}</span>
-                </div>
-            ))}
-        </div>
     </div>
   );
 }
+
