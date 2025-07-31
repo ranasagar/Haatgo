@@ -1,7 +1,7 @@
 
 "use client";
 import * as React from "react";
-import { File, ListFilter, MoreHorizontal, PlusCircle, CheckCircle, MapPin } from "lucide-react";
+import { File, ListFilter, MoreHorizontal, PlusCircle, CheckCircle, MapPin, Loader2, Sun, Cloud, Cloudy, CloudSun, CloudRain, CloudSnow, CloudLightning, Wind } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,17 +44,59 @@ import { cn } from "@/lib/utils";
 import { useRoutes } from "@/context/route-context";
 import type { Route, Stop } from "@/context/route-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { fetchForecast, type ForecastOutput } from "@/ai/flows/forecast-flow";
+import { useToast } from "@/hooks/use-toast";
 
 const defaultNewRoute = {
     name: '',
     stops: [{ name: '', eta: '' }],
 };
 
+const weatherIcons: { [key: string]: React.ReactNode } = {
+    Sun: <Sun className="h-5 w-5 text-yellow-500" />,
+    Cloud: <Cloud className="h-5 w-5 text-gray-400" />,
+    Cloudy: <Cloudy className="h-5 w-5 text-gray-500" />,
+    CloudSun: <CloudSun className="h-5 w-5 text-yellow-500" />,
+    CloudRain: <CloudRain className="h-5 w-5 text-blue-400" />,
+    CloudSnow: <CloudSnow className="h-5 w-5 text-blue-200" />,
+    CloudLightning: <CloudLightning className="h-5 w-5 text-yellow-400" />,
+    Wind: <Wind className="h-5 w-5 text-gray-400" />,
+};
+
+
+function ForecastDisplay({ forecast, stopName }: { forecast: ForecastOutput; stopName: string }) {
+    return (
+        <Card className="my-4 bg-muted/50">
+            <CardHeader>
+                <CardTitle className="text-base">7-Day Forecast for {stopName}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ul className="space-y-3">
+                    {forecast.forecast.map((day, index) => (
+                        <li key={index} className="flex items-center justify-between gap-2 text-sm">
+                             <div className="w-20">
+                                <p className="font-semibold">{day.day}</p>
+                                <p className="text-xs text-muted-foreground">{day.date}</p>
+                            </div>
+                            <span className="flex-grow text-center text-muted-foreground">{day.condition}</span>
+                            {weatherIcons[day.icon] || <Sun className="h-5 w-5 text-yellow-500" />}
+                            <span className="font-bold w-12 text-right">{day.temp}°C</span>
+                        </li>
+                    ))}
+                </ul>
+            </CardContent>
+        </Card>
+    );
+}
+
 export default function RoutesPage() {
     const [open, setOpen] = React.useState(false);
     const { routes, setRoutes } = useRoutes();
+    const { toast } = useToast();
     const [selectedRoute, setSelectedRoute] = React.useState<Route | null>(null);
     const [newRoute, setNewRoute] = React.useState(defaultNewRoute);
+    const [weatherData, setWeatherData] = React.useState<ForecastOutput | null>(null);
+    const [loadingWeatherFor, setLoadingWeatherFor] = React.useState<string | null>(null);
 
 
     const handleToggleStop = (stopName: string) => {
@@ -74,7 +116,27 @@ export default function RoutesPage() {
     
     const closeManageDialog = () => {
         setSelectedRoute(null);
+        setWeatherData(null);
     }
+    
+    const handleCheckWeather = async (stopName: string) => {
+        setLoadingWeatherFor(stopName);
+        setWeatherData(null);
+        try {
+            const forecast = await fetchForecast({ location: stopName });
+            setWeatherData(forecast);
+        } catch (error) {
+            console.error("Failed to fetch weather forecast:", error);
+            toast({
+                title: "Error",
+                description: "Could not fetch weather forecast for this location.",
+                variant: "destructive",
+            });
+        } finally {
+            setLoadingWeatherFor(null);
+        }
+    }
+
 
     const handleAddStop = () => {
         setNewRoute(prev => ({
@@ -267,25 +329,49 @@ export default function RoutesPage() {
                 <DialogHeader>
                     <DialogTitle>Manage Route: {selectedRoute?.name}</DialogTitle>
                     <DialogDescription>
-                        Click on a stop to mark it as passed. This will update the customer view.
+                        Mark stops as passed or check the 7-day weather forecast.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="py-4">
                     <ul className="space-y-3">
                         {selectedRoute?.stops.map((stop) => (
-                            <li key={stop.name}>
-                                <Button
-                                    variant="outline"
-                                    className={cn("w-full justify-start", stop.passed && "line-through text-muted-foreground")}
-                                    onClick={() => handleToggleStop(stop.name)}
-                                >
-                                    {stop.passed ? (
-                                        <CheckCircle className="h-5 w-5 mr-3 text-green-500" />
-                                    ) : (
-                                        <MapPin className="h-5 w-5 mr-3 text-primary" />
-                                    )}
-                                    {stop.name}
-                                </Button>
+                           <li key={stop.name}>
+                                <div className="flex items-center gap-2">
+                                     <Button
+                                        variant="outline"
+                                        className={cn("w-full justify-start", stop.passed && "line-through text-muted-foreground")}
+                                        onClick={() => handleToggleStop(stop.name)}
+                                    >
+                                        {stop.passed ? (
+                                            <CheckCircle className="h-5 w-5 mr-3 text-green-500" />
+                                        ) : (
+                                            <MapPin className="h-5 w-5 mr-3 text-primary" />
+                                        )}
+                                        {stop.name}
+                                         <span className="ml-auto text-xs text-muted-foreground">{stop.eta}</span>
+                                    </Button>
+                                    <Button 
+                                        size="sm" 
+                                        variant="ghost" 
+                                        onClick={() => handleCheckWeather(stop.name)}
+                                        disabled={loadingWeatherFor === stop.name}
+                                    >
+                                         {loadingWeatherFor === stop.name ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                         ) : (
+                                            <Cloudy className="h-4 w-4" />
+                                         )}
+                                    </Button>
+                                </div>
+                                {loadingWeatherFor === stop.name && (
+                                    <div className="text-center py-4">
+                                        <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
+                                        <p className="text-sm text-muted-foreground mt-2">Fetching forecast...</p>
+                                    </div>
+                                )}
+                                {weatherData && loadingWeatherFor === null && (
+                                    <ForecastDisplay forecast={weatherData} stopName={stop.name} />
+                                )}
                             </li>
                         ))}
                     </ul>
