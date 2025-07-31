@@ -49,7 +49,7 @@ export function ProductMarquee() {
                 </div>
             </div>
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center mt-2 px-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 justify-start mt-2 px-2 text-xs text-muted-foreground">
             {specialTags.map(tag => (
                 <div key={tag} className="flex items-center gap-1.5">
                     {tagIcons[tag]}
