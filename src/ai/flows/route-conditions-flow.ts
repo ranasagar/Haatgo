@@ -34,10 +34,9 @@ const prompt = ai.definePrompt({
   prompt: `You are a live traffic and weather reporting system for a traveling marketplace in Nepal.
   Your goal is to provide brief, helpful, and realistic updates for a specific route.
   
-  Route Name: {{{routeName}}}
-  Stops: {{#each stops}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+  The current route is the {{{routeName}}} route, which includes stops like {{#each stops}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}.
 
-  Generate 3-4 plausible updates. Mix weather conditions (sun, rain, fog) and road conditions (clear, traffic, minor delays, construction).
+  Generate 3-4 plausible updates based on this route. Mix weather conditions (sun, rain, fog) and road conditions (clear, traffic, minor delays, construction).
   Keep each update short and to the point.
   
   Example updates:
