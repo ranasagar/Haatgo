@@ -68,23 +68,23 @@ export function ProductMarquee() {
 
   return (
     <div className="w-full">
-        <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between items-center mb-2 px-2 text-xs text-muted-foreground">
-            <div className="hidden sm:flex flex-wrap gap-x-4 gap-y-1 items-center">
+        <div className="flex flex-nowrap gap-x-4 gap-y-2 justify-between items-center mb-2 px-2 text-xs text-muted-foreground">
+            <div className="hidden md:flex flex-nowrap gap-x-4 gap-y-1 items-center shrink-0">
                 {specialTags.map(tag => (
                     <div key={tag} className="flex items-center gap-1.5">
                         {tagIcons[tag]}
-                        <span>{tag}</span>
+                        <span className="hidden lg:inline">{tag}</span>
                     </div>
                 ))}
             </div>
-            <div className="flex items-center gap-2 sm:gap-4 ml-auto">
+            <div className="flex items-center gap-2 sm:gap-4 ml-auto whitespace-nowrap">
                  {currentDay ? (
-                     <div className="flex items-center gap-2">
+                     <div className="hidden sm:flex items-center gap-2">
                         <Calendar className="h-5 w-5 text-muted-foreground" />
                         <span className="font-semibold text-sm text-muted-foreground">{currentDay}</span>
                     </div>
                  ) : (
-                    <Skeleton className="h-5 w-20" />
+                    <Skeleton className="h-5 w-20 hidden sm:block" />
                  )}
                  {weather ? (
                     <div className="flex items-center gap-2">
@@ -129,4 +129,3 @@ export function ProductMarquee() {
     </div>
   );
 }
-
