@@ -102,7 +102,7 @@ function ForecastDisplay({ forecast, stopName }: { forecast: ForecastOutput; sto
 
 export default function RoutesPage() {
     const [open, setOpen] = React.useState(false);
-    const { routes, setRoutes, updateRoute } = useRoutes();
+    const { routes, updateRoute, addRoute } = useRoutes();
     const { toast } = useToast();
     const [selectedRoute, setSelectedRoute] = React.useState<Route | null>(null);
     const [newRoute, setNewRoute] = React.useState(defaultNewRoute);
@@ -194,8 +194,7 @@ export default function RoutesPage() {
         }
 
         if (newRoute.name && routeStops.length >= 2) {
-            const routeToAdd: Route = {
-                id: (routes.length + 1).toString(),
+            const routeToAdd: Omit<Route, 'id'> = {
                 name: newRoute.name,
                 isRoundTrip: !!newRoute.isRoundTrip,
                 startLocation: routeStops[0].name,
@@ -203,7 +202,7 @@ export default function RoutesPage() {
                 stops: routeStops.map(s => ({...s, lat: 27.7172, lon: 85.3240 })), // Dummy coords
                 date: new Date().toISOString().split('T')[0],
             };
-            setRoutes(prev => [...prev, routeToAdd]);
+            addRoute(routeToAdd);
             setNewRoute(defaultNewRoute);
             setOpen(false);
         } else {
@@ -480,6 +479,7 @@ export default function RoutesPage() {
     </>
   );
 }
+
 
 
 
