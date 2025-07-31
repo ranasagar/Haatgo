@@ -65,6 +65,8 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
     const Icon = platform === 'facebook' ? Facebook : platform === 'instagram' ? InstagramIcon : TikTokIcon;
     const url = platform === 'facebook' ? `https://facebook.com/${username}` : platform === 'instagram' ? `https://instagram.com/${username}` : `https://tiktok.com/@${username}`;
     
+    if (!username) return null;
+
     return (
         <Button asChild size="sm" variant="outline" className="bg-background/20 hover:bg-background/40 border-white/50 text-white">
             <Link href={url} target="_blank" rel="noopener noreferrer">
@@ -75,14 +77,14 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
     )
   }
 
-  const VideoScreen = ({ isLive, streamData }: {isLive: boolean, streamData: LivestreamData | null | undefined}) => (
+  const VideoScreen = ({ isLive, streamData, platform }: {isLive: boolean, streamData: LivestreamData | null | undefined, platform: 'facebook' | 'tiktok'}) => (
      <div className="w-full h-full flex items-center justify-center text-center text-foreground p-4 rounded-lg relative overflow-hidden bg-black">
         {isLive ? (
             <Video className="h-24 w-24 text-primary/30" />
         ) : (
             <div className="text-center text-muted-foreground">
                 <WifiOff className="h-16 w-16 mx-auto text-muted-foreground/50" />
-                <p className="mt-2 font-semibold">Livestream is Offline</p>
+                <p className="mt-2 font-semibold">{platform.charAt(0).toUpperCase() + platform.slice(1)} Livestream is Offline</p>
             </div>
         )}
         <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
@@ -106,7 +108,7 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
             {isLive ? <Wifi className="h-4 w-4 mr-2" /> : <WifiOff className="h-4 w-4 mr-2" />}
             {isLive ? 'Online' : 'Offline'}
         </Badge>
-        <VideoScreen isLive={isLive} streamData={streamData} />
+        <VideoScreen isLive={isLive} streamData={streamData} platform="facebook" />
     </div>
   );
 
@@ -115,10 +117,7 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
         <Badge variant={"destructive"} className="transition-all absolute top-4 left-4 z-10">
             <WifiOff className="h-4 w-4 mr-2" /> Offline
         </Badge>
-         <div className="text-center text-muted-foreground">
-            <Video className="h-16 w-16 mx-auto" />
-            <p>TikTok Livestream is currently offline.</p>
-        </div>
+         <VideoScreen isLive={false} streamData={null} platform="tiktok" />
     </div>
   );
 
@@ -187,73 +186,91 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-      <Card className="shadow-lg rounded-xl lg:col-span-2 overflow-hidden">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="font-headline text-xl">
-            Live Broadcast
-          </CardTitle>
-          <Badge variant={isLive ? "default" : "destructive"} className={cn("transition-all", isLive ? "bg-green-600 hover:bg-green-700" : "")}>
-            {isLive ? <Wifi className="h-4 w-4 mr-2" /> : <WifiOff className="h-4 w-4 mr-2" />}
-            {isLive ? 'Online' : 'Offline'}
-          </Badge>
-        </CardHeader>
-        <CardContent>
-          <div className="aspect-video bg-muted rounded-lg flex items-center justify-center relative">
-            <VideoScreen isLive={isLive} streamData={streamData} />
-          </div>
-        </CardContent>
-      </Card>
-
-       <Card className="shadow-lg rounded-xl flex flex-col">
-        <CardHeader>
-          <CardTitle className="font-headline text-xl">Live Chat</CardTitle>
-        </CardHeader>
-        <CardContent className="flex-grow overflow-y-auto pr-2">
-           <div className="space-y-4">
-              {comments.map((comment) => (
-                <div key={comment.id} className="flex items-start gap-3 group">
-                    <Avatar className="h-8 w-8 border">
-                        <AvatarImage src={comment.avatar} alt={comment.author} />
-                        <AvatarFallback>{comment.author.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="bg-muted/60 rounded-lg px-3 py-2 text-sm flex-grow">
-                        <p className="font-semibold">{comment.author}</p>
-                        <p>{comment.message}</p>
+     <Tabs defaultValue="facebook" className="w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+            <Card className="shadow-lg rounded-xl lg:col-span-2 overflow-hidden">
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle className="font-headline text-xl">
+                        Live Broadcast
+                    </CardTitle>
+                    <TabsList className="grid w-full max-w-xs grid-cols-2">
+                         <TabsTrigger value="facebook"><Facebook className="mr-2 h-4 w-4" /> Facebook</TabsTrigger>
+                         <TabsTrigger value="tiktok"><TikTokIcon className="mr-2 h-4 w-4" /> TikTok</TabsTrigger>
+                    </TabsList>
+                </CardHeader>
+                <CardContent>
+                    <div className="aspect-video bg-muted rounded-lg flex items-center justify-center relative">
+                        <TabsContent value="facebook" className="w-full h-full m-0">
+                           <div className="relative h-full w-full">
+                                <Badge variant={isLive ? "default" : "destructive"} className={cn("transition-all absolute top-4 left-4 z-10", isLive ? "bg-green-600 hover:bg-green-700" : "")}>
+                                    {isLive ? <Wifi className="h-4 w-4 mr-2" /> : <WifiOff className="h-4 w-4 mr-2" />}
+                                    {isLive ? 'Online' : 'Offline'}
+                                </Badge>
+                                <VideoScreen isLive={isLive} streamData={streamData} platform="facebook" />
+                           </div>
+                        </TabsContent>
+                        <TabsContent value="tiktok" className="w-full h-full m-0">
+                           <div className="relative h-full w-full">
+                                <Badge variant="destructive" className="transition-all absolute top-4 left-4 z-10">
+                                    <WifiOff className="h-4 w-4 mr-2" /> Offline
+                                </Badge>
+                                <VideoScreen isLive={false} streamData={null} platform="tiktok" />
+                           </div>
+                        </TabsContent>
                     </div>
-                    {isAdmin && (
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-600"
-                            onClick={() => handleDeleteComment(comment.id)}
-                            aria-label="Delete comment"
-                        >
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    )}
+                </CardContent>
+            </Card>
+
+            <Card className="shadow-lg rounded-xl flex flex-col">
+                <CardHeader>
+                <CardTitle className="font-headline text-xl">Live Chat</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-grow overflow-y-auto pr-2">
+                <div className="space-y-4">
+                    {comments.map((comment) => (
+                        <div key={comment.id} className="flex items-start gap-3 group">
+                            <Avatar className="h-8 w-8 border">
+                                <AvatarImage src={comment.avatar} alt={comment.author} />
+                                <AvatarFallback>{comment.author.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="bg-muted/60 rounded-lg px-3 py-2 text-sm flex-grow">
+                                <p className="font-semibold">{comment.author}</p>
+                                <p>{comment.message}</p>
+                            </div>
+                            {isAdmin && (
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-8 w-8 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-600"
+                                    onClick={() => handleDeleteComment(comment.id)}
+                                    aria-label="Delete comment"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
+                    ))}
                 </div>
-              ))}
-           </div>
-        </CardContent>
-        <CardFooter className="pt-4 border-t">
-            <form onSubmit={handleCommentSubmit} className="flex w-full items-center gap-2">
-                 <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://placehold.co/100x100.png" alt="Your avatar" />
-                    <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-                <Input 
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Add a comment..." 
-                    className="flex-grow"
-                />
-                <Button type="submit" size="icon" disabled={!newComment.trim()}>
-                    <Send className="h-4 w-4" />
-                </Button>
-            </form>
-        </CardFooter>
-      </Card>
-    </div>
+                </CardContent>
+                <CardFooter className="pt-4 border-t">
+                    <form onSubmit={handleCommentSubmit} className="flex w-full items-center gap-2">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src="https://placehold.co/100x100.png" alt="Your avatar" />
+                            <AvatarFallback>U</AvatarFallback>
+                        </Avatar>
+                        <Input 
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Add a comment..." 
+                            className="flex-grow"
+                        />
+                        <Button type="submit" size="icon" disabled={!newComment.trim()}>
+                            <Send className="h-4 w-4" />
+                        </Button>
+                    </form>
+                </CardFooter>
+            </Card>
+        </div>
+     </Tabs>
   );
 }
