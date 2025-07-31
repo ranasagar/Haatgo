@@ -39,7 +39,7 @@ export default function SetupGuidePage() {
                 <li>Set the <code className="bg-muted px-1 rounded-sm">NEXT_PUBLIC_ADMIN_EMAIL</code> variable to the email address you want to use as the administrator.</li>
                 <li>In the Firebase Console, navigate to <span className="font-bold">Authentication</span> under the "Build" section in the left menu.</li>
                 <li>Go to the "Sign-in method" tab and enable the <span className="font-bold">Email/Password</span> provider.</li>
-                <li>Your app is now ready for user registration and login!</li>
+                <li>Your app is now ready for user registration and login! The first user to sign up will be the admin.</li>
               </ol>
             </AccordionContent>
           </AccordionItem>
