@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 export type RouteStop = {
     name: string;
@@ -48,9 +48,30 @@ const initialRoutes: Route[] = [
 
 const RouteContext = createContext<RouteContextType | undefined>(undefined);
 
+const getInitialRoutes = (): Route[] => {
+    if (typeof window === "undefined") {
+        return initialRoutes;
+    }
+    try {
+        const savedRoutes = localStorage.getItem('haatgo-routes');
+        return savedRoutes ? JSON.parse(savedRoutes) : initialRoutes;
+    } catch (error) {
+        console.error("Failed to parse routes from localStorage", error);
+        return initialRoutes;
+    }
+};
+
 export const RouteProvider = ({ children }: { children: ReactNode }) => {
-    const [routes, setRoutes] = useState<Route[]>(initialRoutes);
+    const [routes, setRoutes] = useState<Route[]>(getInitialRoutes);
     
+    useEffect(() => {
+        try {
+            localStorage.setItem('haatgo-routes', JSON.stringify(routes));
+        } catch (error) {
+            console.error("Failed to save routes to localStorage", error);
+        }
+    }, [routes]);
+
     const updateRoute = (updatedRoute: Route) => {
         setRoutes(prevRoutes => prevRoutes.map(r => r.id === updatedRoute.id ? updatedRoute : r));
     }
