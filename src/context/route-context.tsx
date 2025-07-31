@@ -18,6 +18,8 @@ export type RouteStop = Stop & {
 export type Route = {
     id: string;
     name: string;
+    startLocation: string;
+    endLocation: string;
     stops: RouteStop[];
     date: string;
 };
@@ -31,6 +33,8 @@ const initialRoutes: Route[] = [
     {
         id: "1",
         name: "Chisapani - Sankhejung",
+        startLocation: "Chisapani",
+        endLocation: "Sankhejung",
         stops: [
             { name: "Chisapani Market", day: "Day 1", time: "09:00 AM", passed: true, lat: 26.9833, lon: 87.1333 },
             { name: "Bhedetar Junction", day: "Day 1", time: "11:30 AM", passed: false, lat: 26.9167, lon: 87.3167 },

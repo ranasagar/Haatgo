@@ -2,8 +2,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Clock, Truck, Package, Home, X } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { MapPin, Clock, Truck, Package, Home, X, Flag, FlagTriangleRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useDeliveries } from "@/context/delivery-context"
 import { useParcels } from "@/context/parcel-context"
@@ -79,8 +79,11 @@ export function RouteTracker() {
   return (
     <Card className="shadow-lg rounded-xl overflow-hidden">
       <CardHeader>
-        <div className="flex justify-between items-center">
-            <CardTitle className="font-headline text-xl">Seller's Route Today</CardTitle>
+        <div className="flex justify-between items-start">
+            <div>
+                <CardTitle className="font-headline text-xl">Seller's Route Today</CardTitle>
+                {activeRoute && <CardDescription>{activeRoute.name}</CardDescription>}
+            </div>
             {selectedStop && (
                 <Button variant="ghost" size="sm" onClick={() => setSelectedStop(null)} className="flex items-center gap-1">
                     <X className="h-4 w-4" />
@@ -113,6 +116,20 @@ export function RouteTracker() {
             )}
           </div>
         </div>
+        
+        {activeRoute && (
+            <div className="flex justify-between text-sm font-medium mb-4 px-2">
+                <div className="flex items-center gap-2">
+                    <Flag className="text-primary h-5 w-5" />
+                    <span>Start: {activeRoute.startLocation}</span>
+                </div>
+                 <div className="flex items-center gap-2">
+                    <FlagTriangleRight className="text-primary h-5 w-5" />
+                    <span>End: {activeRoute.endLocation}</span>
+                </div>
+            </div>
+        )}
+
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground mb-4 px-2">
             <div className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-orange-500" /><span>Route Stop</span></div>
             <div className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-green-500" /><span>Passed Stop</span></div>
