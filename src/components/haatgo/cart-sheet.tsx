@@ -101,9 +101,9 @@ export function CartSheet({ children }: CartSheetProps) {
                             <Image
                                 src={product.image}
                                 alt={product.name}
-                                width={64}
-                                height={64}
-                                className="rounded-md object-cover h-16 w-16"
+                                width={80}
+                                height={80}
+                                className="rounded-md object-cover h-20 w-20"
                                 data-ai-hint={product.dataAiHint}
                             />
                             <div className="flex-grow">
@@ -137,7 +137,7 @@ export function CartSheet({ children }: CartSheetProps) {
           </div>
         )}
         {cart.length > 0 && (
-          <SheetFooter className="flex-col gap-2 border-t pt-4">
+          <SheetFooter className="flex-col gap-4 border-t pt-4">
             <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                     <span>Subtotal</span>
@@ -157,10 +157,12 @@ export function CartSheet({ children }: CartSheetProps) {
                 <span>Total</span>
                 <span>रू {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
-            <SheetClose asChild>
-                <Button className="w-full font-bold" onClick={handleCheckout}>Proceed to Checkout</Button>
-            </SheetClose>
-            <Button variant="outline" className="w-full" onClick={clearCart}>Clear Cart</Button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <SheetClose asChild>
+                    <Button className="w-full font-bold" onClick={handleCheckout}>Proceed to Checkout</Button>
+                </SheetClose>
+                <Button variant="outline" className="w-full" onClick={clearCart}>Clear Cart</Button>
+            </div>
           </SheetFooter>
         )}
       </SheetContent>
