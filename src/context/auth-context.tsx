@@ -88,10 +88,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         resetPassword,
     };
 
-    if (loading) {
-        return <LoadingAnimation />;
-    }
-
+    // To prevent hydration mismatch, we render children immediately.
+    // The `loading` state can be used by child components to show their own loading UI.
     return (
         <AuthContext.Provider value={value}>
             {children}
