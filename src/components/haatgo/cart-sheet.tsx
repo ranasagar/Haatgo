@@ -97,17 +97,17 @@ export function CartSheet({ children }: CartSheetProps) {
                     const { originalPrice, effectivePrice, discountApplied } = getPriceInfo(product);
 
                     return (
-                        <li key={product.id} className="flex items-center gap-2 sm:gap-4">
+                        <li key={product.id} className="grid grid-cols-[auto,1fr,auto] items-start gap-4">
                             <Image
                                 src={product.image}
                                 alt={product.name}
                                 width={80}
                                 height={80}
-                                className="rounded-md object-cover h-16 w-16 sm:h-20 sm:w-20"
+                                className="rounded-md object-cover h-20 w-20"
                                 data-ai-hint={product.dataAiHint}
                             />
-                            <div className="flex-grow min-w-0">
-                                <p className="font-semibold whitespace-normal break-words">{product.name}</p>
+                            <div className="flex flex-col gap-1">
+                                <p className="font-semibold whitespace-normal break-words leading-tight">{product.name}</p>
                                 <div className="flex items-baseline gap-2">
                                     <p className="text-sm font-bold text-primary">रू {effectivePrice.toLocaleString()}</p>
                                     {discountApplied && (
@@ -123,7 +123,7 @@ export function CartSheet({ children }: CartSheetProps) {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-destructive flex-shrink-0"
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                 onClick={() => removeFromCart(product.id)}
                                 aria-label="Remove from cart"
                             >
