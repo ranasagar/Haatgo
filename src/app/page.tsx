@@ -21,7 +21,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background">
       <AppHeader />
       <StickyLivestreamBar />
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="flex flex-col gap-6 lg:gap-8">
           <ProductMarquee />
           <LiveIndicator />
