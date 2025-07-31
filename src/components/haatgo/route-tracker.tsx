@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { MapPin, Clock, Truck, Package, Home, X, Flag, FlagTriangleRight } from "lucide-react"
+import { MapPin, Clock, Truck, Package, Home, X, Flag, FlagTriangleRight, Repeat } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useDeliveries } from "@/context/delivery-context"
 import { useParcels } from "@/context/parcel-context"
@@ -11,6 +11,7 @@ import { useRoutes } from "@/context/route-context"
 import type { RouteStop } from "@/context/route-context"
 import { Button } from "../ui/button"
 import { format } from "date-fns"
+import { Badge } from "@/components/ui/badge"
 
 export function RouteTracker() {
   const { routes } = useRoutes();
@@ -119,7 +120,7 @@ export function RouteTracker() {
         </div>
         
         {activeRoute && (
-            <div className="flex justify-between text-sm font-medium mb-4 px-2">
+             <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between text-sm font-medium mb-4 px-2">
                 <div className="flex items-center gap-2">
                     <Flag className="text-primary h-5 w-5" />
                     <span>Start: {activeRoute.startLocation}</span>
@@ -128,6 +129,12 @@ export function RouteTracker() {
                     <FlagTriangleRight className="text-primary h-5 w-5" />
                     <span>End: {activeRoute.endLocation}</span>
                 </div>
+                 {activeRoute.isRoundTrip && (
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                        <Repeat className="h-3 w-3" />
+                        Round Trip
+                    </Badge>
+                )}
             </div>
         )}
 
@@ -138,8 +145,8 @@ export function RouteTracker() {
             <div className="flex items-center gap-1.5"><Package className="h-3 w-3 text-blue-500" /><span>Parcel Hub</span></div>
         </div>
         <ul className="space-y-3">
-          {routeStops.length > 0 ? routeStops.map((stop) => (
-            <li key={stop.name} className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md cursor-pointer" onClick={() => setSelectedStop(stop)}>
+          {routeStops.length > 0 ? routeStops.map((stop, index) => (
+            <li key={`${stop.name}-${index}`} className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md cursor-pointer" onClick={() => setSelectedStop(stop)}>
               <MapPin className={cn("h-5 w-5", stop.passed ? 'text-green-500' : 'text-primary')} />
               <span className={cn("flex-grow", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
                 {stop.name}

@@ -2,7 +2,7 @@
 "use client";
 import * as React from "react";
 import { format } from "date-fns"
-import { File, ListFilter, MoreHorizontal, PlusCircle, CheckCircle, MapPin, Loader2, Sun, Cloud, Cloudy, CloudSun, CloudRain, CloudSnow, CloudLightning, Wind, Calendar as CalendarIcon } from "lucide-react";
+import { File, ListFilter, MoreHorizontal, PlusCircle, CheckCircle, MapPin, Loader2, Sun, Cloud, Cloudy, CloudSun, CloudRain, CloudSnow, CloudLightning, Wind, Calendar as CalendarIcon, Repeat } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -53,9 +53,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchForecast, type ForecastOutput } from "@/ai/flows/forecast-flow";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 const defaultNewRoute: Partial<Route> & { stops: ({ name: string, date: Date | undefined, time: string })[] } = {
     name: '',
+    isRoundTrip: false,
     stops: [
         { name: '', date: new Date(), time: '09:00 AM' },
         { name: '', date: new Date(), time: '02:00 PM' }
@@ -178,7 +181,7 @@ export default function RoutesPage() {
     }
 
     const handleSaveRoute = () => {
-        const routeStops = (newRoute.stops || [])
+        let routeStops = (newRoute.stops || [])
             .filter(s => s.name.trim() !== '' && s.time.trim() !== '' && s.date)
             .map(s => ({ 
                 name: s.name,
@@ -187,12 +190,18 @@ export default function RoutesPage() {
                 passed: false 
             }));
 
+        if (newRoute.isRoundTrip && routeStops.length > 1) {
+            const returnStops = [...routeStops].slice(0, -1).reverse();
+            routeStops = [...routeStops, ...returnStops];
+        }
+
         if (newRoute.name && routeStops.length >= 2) {
             const routeToAdd: Route = {
                 id: (routes.length + 1).toString(),
                 name: newRoute.name,
+                isRoundTrip: !!newRoute.isRoundTrip,
                 startLocation: routeStops[0].name,
-                endLocation: routeStops[routeStops.length - 1].name,
+                endLocation: newRoute.isRoundTrip ? routeStops[0].name : routeStops[routeStops.length - 1].name,
                 stops: routeStops.map(s => ({...s, lat: 27.7172, lon: 85.3240 })), // Dummy coords
                 date: new Date().toISOString().split('T')[0],
             };
@@ -249,11 +258,29 @@ export default function RoutesPage() {
                     <Label htmlFor="name" className="text-right">
                       Route Name
                     </Label>
-                    <Input id="name" value={newRoute.name} onChange={handleInputChange} placeholder="e.g. East Nepal Route" className="col-span-3" />
+                    <Input id="name" value={newRoute.name} onChange={handleInputChange} placeholder="e.g. East Nepal Circuit" className="col-span-3" />
+                  </div>
+                  <div className="items-top flex space-x-2 justify-end col-span-4">
+                      <Checkbox 
+                        id="isRoundTrip" 
+                        checked={newRoute.isRoundTrip}
+                        onCheckedChange={(checked) => setNewRoute(prev => ({...prev, isRoundTrip: !!checked}))}
+                      />
+                      <div className="grid gap-1.5 leading-none">
+                        <label
+                          htmlFor="isRoundTrip"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Round Trip
+                        </label>
+                        <p className="text-sm text-muted-foreground">
+                          The route will automatically create a return journey.
+                        </p>
+                      </div>
                   </div>
                   {newRoute.stops?.map((stop, index) => (
                     <div key={index} className="grid grid-cols-1 gap-4 p-3 border rounded-lg bg-muted/50">
-                      <Label>{index === 0 ? "Start Location" : (index === newRoute.stops.length - 1 ? "End Location" : `Stop ${index + 1}`)}</Label>
+                      <Label>{index === 0 ? "Start Location" : (index === newRoute.stops.length - 1 && !newRoute.isRoundTrip ? "End Location" : `Stop ${index + 1}`)}</Label>
                       <div className="flex flex-col sm:flex-row items-center gap-2">
                           <Input value={stop.name} onChange={(e) => handleStopChange(index, 'name', e.target.value)} placeholder="e.g. Kathmandu" />
                           <Popover>
@@ -340,7 +367,15 @@ export default function RoutesPage() {
                   {routes.map(route => (
                     <TableRow key={route.id}>
                         <TableCell className="font-medium">
-                        {route.name}
+                          <div className="flex items-center gap-2">
+                              {route.name}
+                              {route.isRoundTrip && (
+                                <Badge variant="secondary" className="flex items-center gap-1">
+                                  <Repeat className="h-3 w-3" />
+                                  Round Trip
+                                </Badge>
+                              )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           {route.startLocation}
@@ -395,8 +430,8 @@ export default function RoutesPage() {
                 </DialogHeader>
                 <div className="py-4">
                     <ul className="space-y-3">
-                        {selectedRoute?.stops.map((stop) => (
-                           <li key={stop.name}>
+                        {selectedRoute?.stops.map((stop, index) => (
+                           <li key={`${stop.name}-${index}`}>
                                 <div className="flex items-center gap-2">
                                      <Button
                                         variant="outline"
