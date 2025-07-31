@@ -12,13 +12,15 @@ import type { RouteStop } from "@/context/route-context"
 import { Button } from "../ui/button"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/context/auth-context"
 
 export function RouteTracker() {
-  const { routes } = useRoutes();
+  const { routes, setRoutes } = useRoutes();
   const [mapUrl, setMapUrl] = useState('');
   const [selectedStop, setSelectedStop] = useState<RouteStop | null>(null);
   const { deliveries } = useDeliveries();
   const { parcels } = useParcels();
+  const { isAdmin } = useAuth();
 
   // For this component, we'll just display the first route if multiple exist.
   const activeRoute = routes.length > 0 ? routes[0] : null;
@@ -77,6 +79,25 @@ export function RouteTracker() {
     }
     setMapUrl(url);
   }, [routeStops, deliveries, parcels, selectedStop]);
+
+  const handleToggleStop = (stopName: string, stopIndex: number) => {
+    if (!isAdmin || !activeRoute) return;
+
+    setRoutes(prevRoutes => prevRoutes.map(r => {
+        if (r.id === activeRoute.id) {
+            const updatedStops = r.stops.map((stop, index) => 
+                stop.name === stopName && index === stopIndex ? { ...stop, passed: !stop.passed } : stop
+            );
+            return { ...r, stops: updatedStops };
+        }
+        return r;
+    }));
+  };
+
+  const handleStopClick = (stop: RouteStop) => {
+    if(isAdmin) return; // Prevent selection if admin is clicking to toggle
+    setSelectedStop(stop);
+  }
 
   return (
     <Card className="shadow-lg rounded-xl overflow-hidden">
@@ -145,18 +166,33 @@ export function RouteTracker() {
             <div className="flex items-center gap-1.5"><Package className="h-3 w-3 text-blue-500" /><span>Parcel Hub</span></div>
         </div>
         <ul className="space-y-3">
-          {routeStops.length > 0 ? routeStops.map((stop, index) => (
-            <li key={`${stop.name}-${index}`} className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md cursor-pointer" onClick={() => setSelectedStop(stop)}>
-              {stop.passed ? <CheckCircle className="h-5 w-5 text-green-500" /> : <MapPin className={cn("h-5 w-5 text-primary")} />}
-              <span className={cn("flex-grow", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
-                {stop.name}
-              </span>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                <span>{format(new Date(stop.date), "MMM d")}, {stop.time}</span>
-              </div>
-            </li>
-          )) : (
+          {routeStops.length > 0 ? routeStops.map((stop, index) => {
+            const stopElement = (
+                 <div className={cn(
+                    "flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md w-full",
+                    isAdmin ? "cursor-pointer" : "cursor-default"
+                )}>
+                  {stop.passed ? <CheckCircle className="h-5 w-5 text-green-500" /> : <MapPin className={cn("h-5 w-5 text-primary")} />}
+                  <span className={cn("flex-grow text-left", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
+                    {stop.name}
+                  </span>
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>{format(new Date(stop.date), "MMM d")}, {stop.time}</span>
+                  </div>
+                 </div>
+            );
+
+            return (
+                 <li key={`${stop.name}-${index}`} onClick={() => isAdmin ? handleToggleStop(stop.name, index) : handleStopClick(stop)}>
+                    {isAdmin ? (
+                        <button className="w-full text-left">{stopElement}</button>
+                    ) : (
+                        <div>{stopElement}</div>
+                    )}
+                </li>
+            );
+            }) : (
             <p className="text-center text-muted-foreground text-sm py-4">No route defined for today.</p>
           )}
         </ul>
