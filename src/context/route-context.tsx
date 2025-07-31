@@ -25,6 +25,7 @@ export type Route = {
 type RouteContextType = {
     routes: Route[];
     setRoutes: React.Dispatch<React.SetStateAction<Route[]>>;
+    updateRoute: (updatedRoute: Route) => void;
 };
 
 const initialRoutes: Route[] = [
@@ -49,9 +50,13 @@ const RouteContext = createContext<RouteContextType | undefined>(undefined);
 
 export const RouteProvider = ({ children }: { children: ReactNode }) => {
     const [routes, setRoutes] = useState<Route[]>(initialRoutes);
+    
+    const updateRoute = (updatedRoute: Route) => {
+        setRoutes(prevRoutes => prevRoutes.map(r => r.id === updatedRoute.id ? updatedRoute : r));
+    }
 
     return (
-        <RouteContext.Provider value={{ routes, setRoutes }}>
+        <RouteContext.Provider value={{ routes, setRoutes, updateRoute }}>
             {children}
         </RouteContext.Provider>
     );

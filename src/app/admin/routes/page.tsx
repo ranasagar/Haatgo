@@ -102,7 +102,7 @@ function ForecastDisplay({ forecast, stopName }: { forecast: ForecastOutput; sto
 
 export default function RoutesPage() {
     const [open, setOpen] = React.useState(false);
-    const { routes, setRoutes } = useRoutes();
+    const { routes, setRoutes, updateRoute } = useRoutes();
     const { toast } = useToast();
     const [selectedRoute, setSelectedRoute] = React.useState<Route | null>(null);
     const [newRoute, setNewRoute] = React.useState(defaultNewRoute);
@@ -117,7 +117,7 @@ export default function RoutesPage() {
             );
             const updatedRoute = { ...selectedRoute, stops: updatedStops };
             setSelectedRoute(updatedRoute);
-            setRoutes(prevRoutes => prevRoutes.map(r => r.id === updatedRoute.id ? updatedRoute : r));
+            updateRoute(updatedRoute);
         }
     };
 
@@ -480,5 +480,6 @@ export default function RoutesPage() {
     </>
   );
 }
+
 
 

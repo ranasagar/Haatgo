@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/context/auth-context"
 
 export function RouteTracker() {
-  const { routes, setRoutes } = useRoutes();
+  const { routes, updateRoute } = useRoutes();
   const [mapUrl, setMapUrl] = useState('');
   const [selectedStop, setSelectedStop] = useState<RouteStop | null>(null);
   const { deliveries } = useDeliveries();
@@ -82,16 +82,11 @@ export function RouteTracker() {
 
   const handleToggleStop = (stopName: string, stopIndex: number) => {
     if (!isAdmin || !activeRoute) return;
-
-    setRoutes(prevRoutes => prevRoutes.map(r => {
-        if (r.id === activeRoute.id) {
-            const updatedStops = r.stops.map((stop, index) => 
-                stop.name === stopName && index === stopIndex ? { ...stop, passed: !stop.passed } : stop
-            );
-            return { ...r, stops: updatedStops };
-        }
-        return r;
-    }));
+    
+    const updatedStops = activeRoute.stops.map((stop, index) => 
+        stop.name === stopName && index === stopIndex ? { ...stop, passed: !stop.passed } : stop
+    );
+    updateRoute({ ...activeRoute, stops: updatedStops });
   };
 
   const handleStopClick = (stop: RouteStop) => {
