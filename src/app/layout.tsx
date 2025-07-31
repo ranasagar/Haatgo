@@ -14,6 +14,8 @@ import { UserProfileProvider } from '@/context/user-profile-context';
 import { ReviewProvider } from '@/context/review-context';
 import { RouteProvider } from '@/context/route-context';
 import { UserProvider } from '@/context/user-context';
+import { CartSheet } from '@/components/haatgo/cart-sheet';
+import { FloatingChatButtons } from '@/components/haatgo/floating-chat-buttons';
 
 export const metadata: Metadata = {
   title: 'HaatGo',
@@ -49,7 +51,10 @@ export default function RootLayout({
                         <OrderProvider>
                           <CartProvider>
                             <ReviewProvider>
-                              {children}
+                              <CartSheet>
+                                {children}
+                              </CartSheet>
+                              <FloatingChatButtons />
                             </ReviewProvider>
                           </CartProvider>
                         </OrderProvider>

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { AppShell } from "@/components/haatgo/app-shell";
+import { AppHeader } from "@/components/haatgo/header";
 
 export default function ProductDetailLayout({
   children,
@@ -10,8 +10,9 @@ export default function ProductDetailLayout({
 }) {
 
   return (
-      <AppShell>
-          {children}
-      </AppShell>
+    <div className="flex flex-col min-h-screen bg-background">
+      <AppHeader />
+      {children}
+    </div>
   );
 }
