@@ -36,20 +36,20 @@ function ShipmentTracker({ shipment }: { shipment: ConsolidatedShipment }) {
 
     return (
         <div className="p-4 border rounded-lg bg-background">
-            <div className="flex justify-between items-start mb-3">
-                <div>
+            <div className="flex justify-between items-start mb-3 gap-2">
+                <div className="flex-grow">
                     <p className="font-bold">{shipment.productDetails}</p>
                     <p className="text-sm text-muted-foreground">Shipment from {shipment.district}</p>
                      <p className="text-xs text-muted-foreground">Order Date: {shipment.earliestDate}</p>
                 </div>
-                 <p className="text-lg font-bold text-primary">रू{shipment.totalAmount.toFixed(2)}</p>
+                 <p className="text-lg font-bold text-primary whitespace-nowrap">रू{shipment.totalAmount.toFixed(2)}</p>
             </div>
             
              <div className="relative flex justify-between pt-2">
-                <div className="absolute left-0 top-[22px] w-full h-1 bg-border -translate-y-1/2" />
+                <div className="absolute left-0 top-5 w-full h-1 bg-border -translate-y-1/2" />
                 <AnimatePresence>
                 <motion.div
-                    className="absolute left-0 top-[22px] h-1 bg-primary -translate-y-1/2"
+                    className="absolute left-0 top-5 h-1 bg-primary -translate-y-1/2"
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPercentage}%` }}
                     transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -59,7 +59,7 @@ function ShipmentTracker({ shipment }: { shipment: ConsolidatedShipment }) {
                 {orderSteps.map((step, index) => {
                     const isActive = index <= currentStepIndex;
                     return (
-                        <div key={step.name} className="z-10 flex flex-col items-center w-20 text-center">
+                        <div key={step.name} className="z-10 flex flex-col items-center text-center px-1">
                             <div
                                 className={cn(
                                     "flex h-6 w-6 items-center justify-center rounded-full bg-background border-2 transition-colors duration-300",
@@ -68,7 +68,10 @@ function ShipmentTracker({ shipment }: { shipment: ConsolidatedShipment }) {
                             >
                                 <step.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-muted-foreground")} />
                             </div>
-                            <span className={cn("text-xs mt-1 transition-colors", isActive ? "text-foreground font-semibold" : "text-muted-foreground")}>
+                            <span className={cn(
+                                "text-xs mt-1 transition-colors sm:block hidden", 
+                                isActive ? "text-foreground font-semibold" : "text-muted-foreground"
+                            )}>
                                 {step.name}
                             </span>
                         </div>
