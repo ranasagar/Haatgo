@@ -108,6 +108,11 @@ export default function RoutesPage() {
     const [newRoute, setNewRoute] = React.useState(defaultNewRoute);
     const [weatherData, setWeatherData] = React.useState<ForecastOutput | null>(null);
     const [loadingWeatherFor, setLoadingWeatherFor] = React.useState<string | null>(null);
+    const [isClient, setIsClient] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsClient(true);
+    }, []);
 
 
     const handleToggleStop = (stopName: string, stopIndex: number) => {
@@ -363,7 +368,7 @@ export default function RoutesPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {routes.map(route => (
+                  {isClient && routes.map(route => (
                     <TableRow key={route.id}>
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
@@ -479,6 +484,7 @@ export default function RoutesPage() {
     </>
   );
 }
+
 
 
 
