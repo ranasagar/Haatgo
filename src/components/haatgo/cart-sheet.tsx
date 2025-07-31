@@ -75,7 +75,7 @@ export function CartSheet({ children }: CartSheetProps) {
   return (
     <Sheet>
       {children}
-      <SheetContent className="flex flex-col w-full sm:max-w-md md:max-w-lg lg:max-w-xl">
+      <SheetContent className="flex w-full flex-col sm:max-w-md md:max-w-lg lg:max-w-xl">
         <SheetHeader>
           <SheetTitle className="font-headline text-2xl">Your Cart</SheetTitle>
           <SheetDescription>
@@ -90,9 +90,9 @@ export function CartSheet({ children }: CartSheetProps) {
             <p className="text-muted-foreground mt-2">Add items to get started.</p>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col min-h-0">
-            <ScrollArea className="flex-grow -mx-6">
-                <ul className="space-y-4 py-4 px-6">
+          <div className="flex min-h-0 flex-1 flex-col">
+            <ScrollArea className="-mx-6 flex-grow">
+                <ul className="space-y-4 px-6 py-4">
                 {cart.map((product) => {
                     const { originalPrice, effectivePrice, discountApplied } = getPriceInfo(product);
 
@@ -109,21 +109,21 @@ export function CartSheet({ children }: CartSheetProps) {
                             <div className="flex-grow">
                                 <p className="font-semibold truncate">{product.name}</p>
                                 <div className="flex items-baseline gap-2">
-                                    <p className="text-sm text-primary font-bold">रू {effectivePrice.toLocaleString()}</p>
+                                    <p className="text-sm font-bold text-primary">रू {effectivePrice.toLocaleString()}</p>
                                     {discountApplied && (
                                         <p className="text-xs text-muted-foreground line-through">रू {originalPrice.toLocaleString()}</p>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-2 mt-1">
                                     <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(product.id, product.quantityInCart - 1)}><Minus className="h-4 w-4" /></Button>
-                                    <span className="text-sm font-medium w-4 text-center">{product.quantityInCart}</span>
+                                    <span className="w-4 text-center text-sm font-medium">{product.quantityInCart}</span>
                                     <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(product.id, product.quantityInCart + 1)}><Plus className="h-4 w-4" /></Button>
                                 </div>
                             </div>
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="text-muted-foreground hover:text-destructive h-8 w-8"
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                 onClick={() => removeFromCart(product.id)}
                                 aria-label="Remove from cart"
                             >
@@ -143,7 +143,7 @@ export function CartSheet({ children }: CartSheetProps) {
                     <span>Subtotal</span>
                     <span>रू {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
-                 <div className="flex justify-between text-green-600 font-semibold">
+                 <div className="flex justify-between font-semibold text-green-600">
                     <span>Discount</span>
                     <span>- रू {totalDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
@@ -153,15 +153,15 @@ export function CartSheet({ children }: CartSheetProps) {
                 </div>
             </div>
             <Separator />
-            <div className="flex justify-between font-bold text-lg">
+            <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
                 <span>रू {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <SheetClose asChild>
-                    <Button className="w-full font-bold" onClick={handleCheckout}>Proceed to Checkout</Button>
-                </SheetClose>
-                <Button variant="outline" className="w-full" onClick={clearCart}>Clear Cart</Button>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <SheetClose asChild>
+                  <Button className="w-full font-bold" onClick={handleCheckout}>Proceed to Checkout</Button>
+              </SheetClose>
+              <Button variant="outline" className="w-full" onClick={clearCart}>Clear Cart</Button>
             </div>
           </SheetFooter>
         )}
