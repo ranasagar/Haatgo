@@ -49,7 +49,6 @@ export default function AdminLayout({
     { href: "/admin/parcels", icon: Send, label: "Parcels" },
     { href: "/admin/livestream", icon: Clapperboard, label: "Livestream" },
     { href: "/admin/accounting", icon: Wallet, label: "Accounting" },
-    { href: "/admin/setup-guide", icon: BookOpen, label: "Setup Guide" },
     { href: "/admin/about", icon: Info, label: "About" },
   ];
 
