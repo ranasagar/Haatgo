@@ -33,15 +33,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            const adminEmails = ["sagarrana@gmail.com", "admin@example.com"];
-            setUser(user);
-            setIsAdmin(!!user && !!user.email && adminEmails.includes(user.email.trim()));
+            const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+            
             if (user) {
-                const token = await user.getIdToken();
-                Cookies.set('firebaseIdToken', token, { expires: 1 }); // expires in 1 day
+                 const token = await user.getIdToken();
+                 Cookies.set('firebaseIdToken', token, { expires: 1 }); // expires in 1 day
+                 // First user to sign up is admin if ADMIN_EMAIL is not set
+                 // Otherwise, only the user with the ADMIN_EMAIL is admin
+                 const adminCheck = adminEmail ? user.email === adminEmail : (await auth.listUsers(1)).users.length === 1;
+                 setIsAdmin(adminCheck);
             } else {
                 Cookies.remove('firebaseIdToken');
+                setIsAdmin(false);
             }
+            setUser(user);
             setLoading(false);
         }, (error) => {
             console.error("Auth state change error:", error);
