@@ -162,6 +162,9 @@ export function RouteTracker() {
         </div>
         <ul className="space-y-3">
           {routeStops.length > 0 ? routeStops.map((stop, index) => {
+            const hasDelivery = deliveries.some(d => d.address.includes(stop.name));
+            const isParcelStop = parcels.some(p => p.fromStop === stop.name || p.toStop === stop.name);
+
             const stopElement = (
                  <div className={cn(
                     "flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md w-full",
@@ -171,6 +174,10 @@ export function RouteTracker() {
                   <span className={cn("flex-grow text-left", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
                     {stop.name}
                   </span>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    {hasDelivery && <Home className="h-4 w-4 text-purple-500" title="Delivery at this stop" />}
+                    {isParcelStop && <Package className="h-4 w-4 text-blue-500" title="Parcel hub at this stop" />}
+                  </div>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
                     <span>{format(new Date(stop.date), "MMM d")}, {stop.time}</span>
