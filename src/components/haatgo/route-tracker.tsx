@@ -14,7 +14,14 @@ import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/context/auth-context"
 import { Skeleton } from "../ui/skeleton"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 
 function RouteDisplay({ route }: { route: Route }) {
     const { updateRoute } = useRoutes();
@@ -198,10 +205,16 @@ function RouteDisplay({ route }: { route: Route }) {
 export function RouteTracker() {
   const { routes } = useRoutes();
   const [isClient, setIsClient] = useState(false);
+  const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    if (routes.length > 0 && !selectedRouteId) {
+        setSelectedRouteId(routes[0].id);
+    }
+  }, [routes, selectedRouteId]);
+
+  const activeRoute = routes.find(r => r.id === selectedRouteId);
 
   const renderContent = () => {
     if (!isClient) {
@@ -232,24 +245,29 @@ export function RouteTracker() {
     }
 
     return (
-      <Tabs defaultValue={routes[0].id} className="w-full">
-        {routes.length > 1 && (
-            <TabsList className="grid w-full grid-cols-1 h-auto md:grid-cols-2">
-                {routes.map(route => (
-                    <TabsTrigger key={route.id} value={route.id} className="text-xs">
-                        {route.startLocation} <ArrowRight className="h-4 w-4 mx-2" /> {route.endLocation}
-                    </TabsTrigger>
-                ))}
-            </TabsList>
-        )}
-        <div className={cn({"mt-4": routes.length > 1})}>
-            {routes.map(route => (
-                <TabsContent key={route.id} value={route.id}>
-                    <RouteDisplay route={route} />
-                </TabsContent>
-            ))}
+        <div>
+            {routes.length > 1 && (
+                <div className="mb-4">
+                    <Select value={selectedRouteId || ''} onValueChange={setSelectedRouteId}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a route" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {routes.map(route => (
+                                <SelectItem key={route.id} value={route.id}>
+                                    <div className="flex items-center gap-2">
+                                        <span>{route.startLocation}</span>
+                                        <ArrowRight className="h-4 w-4" />
+                                        <span>{route.endLocation}</span>
+                                    </div>
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
+            {activeRoute ? <RouteDisplay route={activeRoute} /> : <p>Select a route to view details.</p>}
         </div>
-      </Tabs>
     );
   };
 
@@ -257,7 +275,7 @@ export function RouteTracker() {
     <Card className="shadow-lg rounded-xl overflow-hidden">
       <CardHeader>
         <CardTitle className="font-headline text-xl">Seller's Route Today</CardTitle>
-        {isClient && routes.length > 0 && <CardDescription>{routes[0].name}</CardDescription>}
+        {isClient && activeRoute && <CardDescription>{activeRoute.name}</CardDescription>}
       </CardHeader>
       <CardContent>
           {renderContent()}
@@ -265,5 +283,3 @@ export function RouteTracker() {
     </Card>
   );
 }
-
-    
