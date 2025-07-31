@@ -3,121 +3,98 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { MapPin, Clock, Truck, Package, Home, X, Flag, FlagTriangleRight, Repeat, CheckCircle } from "lucide-react"
+import { MapPin, Clock, Truck, Package, Home, X, Flag, FlagTriangleRight, Repeat, CheckCircle, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useDeliveries } from "@/context/delivery-context"
 import { useParcels } from "@/context/parcel-context"
 import { useRoutes } from "@/context/route-context"
-import type { RouteStop } from "@/context/route-context"
+import type { Route, RouteStop } from "@/context/route-context"
 import { Button } from "../ui/button"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/context/auth-context"
 import { Skeleton } from "../ui/skeleton"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-export function RouteTracker() {
-  const { routes, updateRoute } = useRoutes();
-  const [isClient, setIsClient] = useState(false)
-  const [mapUrl, setMapUrl] = useState('');
-  const [selectedStop, setSelectedStop] = useState<RouteStop | null>(null);
-  const { deliveries } = useDeliveries();
-  const { parcels } = useParcels();
-  const { isAdmin } = useAuth();
-  
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  // For this component, we'll just display the first route if multiple exist.
-  const activeRoute = routes.length > 0 ? routes[0] : null;
-  const routeStops = activeRoute ? activeRoute.stops : [];
-  const nextStop = routeStops.find(stop => !stop.passed);
-  
-  useEffect(() => {
-    let url = '';
-    const allStopsForMap: (RouteStop & { type?: string })[] = routeStops.map(s => ({ ...s, type: 'route' }));
-
-    if (selectedStop) {
-      const bbox = [selectedStop.lon - 0.01, selectedStop.lat - 0.01, selectedStop.lon + 0.01, selectedStop.lat + 0.01].join(',');
-      const marker = `marker=${selectedStop.lat},${selectedStop.lon},red`;
-      url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${marker}`;
-    } else {
-        deliveries.forEach(d => {
-            if (!allStopsForMap.find(s => s.lat === d.lat && s.lon === d.lon)) {
-                allStopsForMap.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, date: new Date().toISOString().split('T')[0], time: '' });
-            }
-        });
-
-        const parcelStopNames = new Set(parcels.flatMap(p => [p.fromStop, p.toStop]));
-        parcelStopNames.forEach(name => {
-            const stop = routeStops.find(s => s.name === name);
-            if (stop) {
-                const existing = allStopsForMap.find(s => s.name === name);
-                if (existing) existing.type = 'parcel';
-            }
-        });
-
-        if (allStopsForMap.length === 0) {
-            setMapUrl(`https://www.openstreetmap.org/export/embed.html?bbox=80,26,90,31&layer=mapnik`);
-            return;
-        }
-
-        const lats = allStopsForMap.map(s => s.lat);
-        const lons = allStopsForMap.map(s => s.lon);
-        const minLat = Math.min(...lats);
-        const maxLat = Math.max(...lats);
-        const minLon = Math.min(...lons);
-        const maxLon = Math.max(...lons);
-        
-        const latPad = (maxLat - minLat) * 0.2 || 0.1;
-        const lonPad = (maxLon - minLon) * 0.2 || 0.1;
-
-        const bbox = [minLon - lonPad, minLat - latPad, maxLon + lonPad, maxLat + latPad].join(',');
-        
-        const markers = allStopsForMap.map(stop => {
-            let color = 'blue'; // Default for parcel stops
-            if (stop.type === 'delivery') color = 'purple';
-            else if (stop.type === 'route') color = stop.passed ? 'green' : 'orange';
-            return `marker=${stop.lat},${stop.lon},${color}`;
-        }).join('&');
-        
-        url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${markers}`;
-    }
-    setMapUrl(url);
-  }, [routeStops, deliveries, parcels, selectedStop]);
-
-  const handleToggleStop = (stopName: string, stopIndex: number) => {
-    if (!isAdmin || !activeRoute) return;
+function RouteDisplay({ route }: { route: Route }) {
+    const { updateRoute } = useRoutes();
+    const [mapUrl, setMapUrl] = useState('');
+    const [selectedStop, setSelectedStop] = useState<RouteStop | null>(null);
+    const { deliveries } = useDeliveries();
+    const { parcels } = useParcels();
+    const { isAdmin } = useAuth();
     
-    const updatedStops = activeRoute.stops.map((stop, index) => 
-        stop.name === stopName && index === stopIndex ? { ...stop, passed: !stop.passed } : stop
-    );
-    updateRoute({ ...activeRoute, stops: updatedStops });
-  };
+    const routeStops = route.stops;
+    const nextStop = routeStops.find(stop => !stop.passed);
 
-  const handleStopClick = (stop: RouteStop) => {
-    if(isAdmin) return; // Prevent selection if admin is clicking to toggle
-    setSelectedStop(stop);
-  }
+    useEffect(() => {
+        let url = '';
+        const allStopsForMap: (RouteStop & { type?: string })[] = routeStops.map(s => ({ ...s, type: 'route' }));
 
-  const renderContent = () => {
-    if (!isClient) {
-      return (
-        <div className="space-y-4">
-          <Skeleton className="h-64 w-full" />
-          <div className="px-2 space-y-3">
-             <Skeleton className="h-5 w-3/4" />
-             <Skeleton className="h-5 w-1/2" />
-          </div>
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-          </div>
-        </div>
-      )
+        if (selectedStop) {
+            const bbox = [selectedStop.lon - 0.01, selectedStop.lat - 0.01, selectedStop.lon + 0.01, selectedStop.lat + 0.01].join(',');
+            const marker = `marker=${selectedStop.lat},${selectedStop.lon},red`;
+            url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${marker}`;
+        } else {
+            deliveries.forEach(d => {
+                if (!allStopsForMap.find(s => s.lat === d.lat && s.lon === d.lon)) {
+                    allStopsForMap.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, date: new Date().toISOString().split('T')[0], time: '' });
+                }
+            });
+
+            const parcelStopNames = new Set(parcels.flatMap(p => [p.fromStop, p.toStop]));
+            parcelStopNames.forEach(name => {
+                const stop = routeStops.find(s => s.name === name);
+                if (stop) {
+                    const existing = allStopsForMap.find(s => s.name === name);
+                    if (existing) existing.type = 'parcel';
+                }
+            });
+
+            if (allStopsForMap.length === 0) {
+                setMapUrl(`https://www.openstreetmap.org/export/embed.html?bbox=80,26,90,31&layer=mapnik`);
+                return;
+            }
+
+            const lats = allStopsForMap.map(s => s.lat);
+            const lons = allStopsForMap.map(s => s.lon);
+            const minLat = Math.min(...lats);
+            const maxLat = Math.max(...lats);
+            const minLon = Math.min(...lons);
+            const maxLon = Math.max(...lons);
+            
+            const latPad = (maxLat - minLat) * 0.2 || 0.1;
+            const lonPad = (maxLon - minLon) * 0.2 || 0.1;
+
+            const bbox = [minLon - lonPad, minLat - latPad, maxLon + lonPad, maxLat + latPad].join(',');
+            
+            const markers = allStopsForMap.map(stop => {
+                let color = 'blue'; // Default for parcel stops
+                if (stop.type === 'delivery') color = 'purple';
+                else if (stop.type === 'route') color = stop.passed ? 'green' : 'orange';
+                return `marker=${stop.lat},${stop.lon},${color}`;
+            }).join('&');
+            
+            url = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&${markers}`;
+        }
+        setMapUrl(url);
+    }, [routeStops, deliveries, parcels, selectedStop]);
+
+    const handleToggleStop = (stopName: string, stopIndex: number) => {
+        if (!isAdmin || !route) return;
+        
+        const updatedStops = route.stops.map((stop, index) => 
+            stop.name === stopName && index === stopIndex ? { ...stop, passed: !stop.passed } : stop
+        );
+        updateRoute({ ...route, stops: updatedStops });
+    };
+
+    const handleStopClick = (stop: RouteStop) => {
+        if(isAdmin) return;
+        setSelectedStop(stop);
     }
-    return (
+    
+     return (
         <>
             <div className="relative rounded-lg overflow-hidden mb-4">
               {mapUrl && (
@@ -125,35 +102,43 @@ export function RouteTracker() {
                   className="w-full h-64 border-0 rounded-lg"
                   src={mapUrl}
                   title="Route Map"
-                  key={mapUrl} // Re-render iframe when URL changes
+                  key={mapUrl}
                 ></iframe>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
               <div className="absolute bottom-2 left-4 text-white">
-                 {activeRoute && nextStop ? (
+                 {route && nextStop ? (
                   <>
                     <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Next Stop: {nextStop.name}</h3>
                     <p className="text-sm">Arriving on {format(new Date(nextStop.date), "PPP")} at approx. {nextStop.time}</p>
                   </>
-                ) : activeRoute ? (
+                ) : route ? (
                      <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Route Completed!</h3>
                 ) : (
                      <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> No active route.</h3>
                 )}
               </div>
+               {selectedStop && (
+                <div className="absolute top-2 right-2">
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedStop(null)} className="flex items-center gap-1 bg-background/80 hover:bg-background h-8">
+                        <X className="h-4 w-4" />
+                        Clear View
+                    </Button>
+                </div>
+                )}
             </div>
             
-            {activeRoute && (
+            {route && (
                  <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between text-sm font-medium mb-4 px-2">
                     <div className="flex items-center gap-2">
                         <Flag className="text-primary h-5 w-5" />
-                        <span>Start: {activeRoute.startLocation}</span>
+                        <span>Start: {route.startLocation}</span>
                     </div>
                      <div className="flex items-center gap-2">
                         <FlagTriangleRight className="text-primary h-5 w-5" />
-                        <span>End: {activeRoute.endLocation}</span>
+                        <span>End: {route.endLocation}</span>
                     </div>
-                     {activeRoute.isRoundTrip && (
+                     {route.isRoundTrip && (
                         <Badge variant="secondary" className="flex items-center gap-1">
                             <Repeat className="h-3 w-3" />
                             Round Trip
@@ -208,29 +193,77 @@ export function RouteTracker() {
             </ul>
         </>
     )
-  }
+}
+
+export function RouteTracker() {
+  const { routes } = useRoutes();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const renderContent = () => {
+    if (!isClient) {
+      return (
+        <div className="space-y-4">
+          <Skeleton className="h-64 w-full" />
+          <div className="px-2 space-y-3">
+             <Skeleton className="h-5 w-3/4" />
+             <Skeleton className="h-5 w-1/2" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+          </div>
+        </div>
+      );
+    }
+
+    if (routes.length === 0) {
+      return (
+          <div className="text-center text-muted-foreground py-10">
+              <Truck className="h-12 w-12 mx-auto mb-4" />
+              <p className="font-semibold">No active routes</p>
+              <p className="text-sm">The seller has not defined any routes yet.</p>
+          </div>
+      )
+    }
+
+    return (
+      <Tabs defaultValue={routes[0].id} className="w-full">
+        {routes.length > 1 && (
+            <TabsList className="grid w-full grid-cols-1 h-auto md:grid-cols-2">
+                {routes.map(route => (
+                    <TabsTrigger key={route.id} value={route.id} className="text-xs">
+                        {route.startLocation} <ArrowRight className="h-4 w-4 mx-2" /> {route.endLocation}
+                    </TabsTrigger>
+                ))}
+            </TabsList>
+        )}
+        <div className={cn({"mt-4": routes.length > 1})}>
+            {routes.map(route => (
+                <TabsContent key={route.id} value={route.id}>
+                    <RouteDisplay route={route} />
+                </TabsContent>
+            ))}
+        </div>
+      </Tabs>
+    );
+  };
 
   return (
     <Card className="shadow-lg rounded-xl overflow-hidden">
       <CardHeader>
-        <div className="flex justify-between items-start">
-            <div>
-                <CardTitle className="font-headline text-xl">Seller's Route Today</CardTitle>
-                {activeRoute && isClient && <CardDescription>{activeRoute.name}</CardDescription>}
-            </div>
-            {selectedStop && (
-                <Button variant="ghost" size="sm" onClick={() => setSelectedStop(null)} className="flex items-center gap-1">
-                    <X className="h-4 w-4" />
-                    Clear View
-                </Button>
-            )}
-        </div>
+        <CardTitle className="font-headline text-xl">Seller's Route Today</CardTitle>
+        {isClient && routes.length > 0 && <CardDescription>{routes[0].name}</CardDescription>}
       </CardHeader>
       <CardContent>
           {renderContent()}
       </CardContent>
     </Card>
-  )
+  );
 }
 
     
