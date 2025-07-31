@@ -13,14 +13,20 @@ import { Button } from "../ui/button"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/context/auth-context"
+import { Skeleton } from "../ui/skeleton"
 
 export function RouteTracker() {
   const { routes, updateRoute } = useRoutes();
+  const [isClient, setIsClient] = useState(false)
   const [mapUrl, setMapUrl] = useState('');
   const [selectedStop, setSelectedStop] = useState<RouteStop | null>(null);
   const { deliveries } = useDeliveries();
   const { parcels } = useParcels();
   const { isAdmin } = useAuth();
+  
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   // For this component, we'll just display the first route if multiple exist.
   const activeRoute = routes.length > 0 ? routes[0] : null;
@@ -94,13 +100,123 @@ export function RouteTracker() {
     setSelectedStop(stop);
   }
 
+  const renderContent = () => {
+    if (!isClient) {
+      return (
+        <div className="space-y-4">
+          <Skeleton className="h-64 w-full" />
+          <div className="px-2 space-y-3">
+             <Skeleton className="h-5 w-3/4" />
+             <Skeleton className="h-5 w-1/2" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+          </div>
+        </div>
+      )
+    }
+    return (
+        <>
+            <div className="relative rounded-lg overflow-hidden mb-4">
+              {mapUrl && (
+                <iframe
+                  className="w-full h-64 border-0 rounded-lg"
+                  src={mapUrl}
+                  title="Route Map"
+                  key={mapUrl} // Re-render iframe when URL changes
+                ></iframe>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-2 left-4 text-white">
+                 {activeRoute && nextStop ? (
+                  <>
+                    <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Next Stop: {nextStop.name}</h3>
+                    <p className="text-sm">Arriving on {format(new Date(nextStop.date), "PPP")} at approx. {nextStop.time}</p>
+                  </>
+                ) : activeRoute ? (
+                     <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Route Completed!</h3>
+                ) : (
+                     <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> No active route.</h3>
+                )}
+              </div>
+            </div>
+            
+            {activeRoute && (
+                 <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between text-sm font-medium mb-4 px-2">
+                    <div className="flex items-center gap-2">
+                        <Flag className="text-primary h-5 w-5" />
+                        <span>Start: {activeRoute.startLocation}</span>
+                    </div>
+                     <div className="flex items-center gap-2">
+                        <FlagTriangleRight className="text-primary h-5 w-5" />
+                        <span>End: {activeRoute.endLocation}</span>
+                    </div>
+                     {activeRoute.isRoundTrip && (
+                        <Badge variant="secondary" className="flex items-center gap-1">
+                            <Repeat className="h-3 w-3" />
+                            Round Trip
+                        </Badge>
+                    )}
+                </div>
+            )}
+
+            <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground mb-4 px-2">
+                <div className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-orange-500" /><span>Route Stop</span></div>
+                <div className="flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-green-500" /><span>Passed Stop</span></div>
+                <div className="flex items-center gap-1.5"><Home className="h-3 w-3 text-purple-500" /><span>Delivery</span></div>
+                <div className="flex items-center gap-1.5"><Package className="h-3 w-3 text-blue-500" /><span>Parcel Hub</span></div>
+            </div>
+            <ul className="space-y-3">
+              {routeStops.length > 0 ? routeStops.map((stop, index) => {
+                const hasDelivery = deliveries.some(d => d.address.includes(stop.name));
+                const isParcelStop = parcels.some(p => p.fromStop === stop.name || p.toStop === stop.name);
+
+                const stopElement = (
+                     <div className={cn(
+                        "flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md w-full",
+                        isAdmin ? "cursor-pointer" : "cursor-default"
+                    )}>
+                      {stop.passed ? <CheckCircle className="h-5 w-5 text-green-500" /> : <MapPin className={cn("h-5 w-5 text-primary")} />}
+                      <span className={cn("flex-grow text-left", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
+                        {stop.name}
+                      </span>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        {hasDelivery && <Home className="h-4 w-4 text-purple-500" title="Delivery at this stop" />}
+                        {isParcelStop && <Package className="h-4 w-4 text-blue-500" title="Parcel hub at this stop" />}
+                      </div>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        <span>{format(new Date(stop.date), "MMM d")}, {stop.time}</span>
+                      </div>
+                     </div>
+                );
+
+                return (
+                     <li key={`${stop.name}-${index}`} onClick={() => isAdmin ? handleToggleStop(stop.name, index) : handleStopClick(stop)}>
+                        {isAdmin ? (
+                            <button className="w-full text-left">{stopElement}</button>
+                        ) : (
+                            <div>{stopElement}</div>
+                        )}
+                    </li>
+                );
+                }) : (
+                <p className="text-center text-muted-foreground text-sm py-4">No route defined for today.</p>
+              )}
+            </ul>
+        </>
+    )
+  }
+
   return (
     <Card className="shadow-lg rounded-xl overflow-hidden">
       <CardHeader>
         <div className="flex justify-between items-start">
             <div>
                 <CardTitle className="font-headline text-xl">Seller's Route Today</CardTitle>
-                {activeRoute && <CardDescription>{activeRoute.name}</CardDescription>}
+                {activeRoute && isClient && <CardDescription>{activeRoute.name}</CardDescription>}
             </div>
             {selectedStop && (
                 <Button variant="ghost" size="sm" onClick={() => setSelectedStop(null)} className="flex items-center gap-1">
@@ -111,94 +227,10 @@ export function RouteTracker() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="relative rounded-lg overflow-hidden mb-4">
-          {mapUrl && (
-            <iframe
-              className="w-full h-64 border-0 rounded-lg"
-              src={mapUrl}
-              title="Route Map"
-              key={mapUrl} // Re-render iframe when URL changes
-            ></iframe>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
-          <div className="absolute bottom-2 left-4 text-white">
-             {activeRoute && nextStop ? (
-              <>
-                <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Next Stop: {nextStop.name}</h3>
-                <p className="text-sm">Arriving on {format(new Date(nextStop.date), "PPP")} at approx. {nextStop.time}</p>
-              </>
-            ) : activeRoute ? (
-                 <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Route Completed!</h3>
-            ) : (
-                 <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> No active route.</h3>
-            )}
-          </div>
-        </div>
-        
-        {activeRoute && (
-             <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between text-sm font-medium mb-4 px-2">
-                <div className="flex items-center gap-2">
-                    <Flag className="text-primary h-5 w-5" />
-                    <span>Start: {activeRoute.startLocation}</span>
-                </div>
-                 <div className="flex items-center gap-2">
-                    <FlagTriangleRight className="text-primary h-5 w-5" />
-                    <span>End: {activeRoute.endLocation}</span>
-                </div>
-                 {activeRoute.isRoundTrip && (
-                    <Badge variant="secondary" className="flex items-center gap-1">
-                        <Repeat className="h-3 w-3" />
-                        Round Trip
-                    </Badge>
-                )}
-            </div>
-        )}
-
-        <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground mb-4 px-2">
-            <div className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-orange-500" /><span>Route Stop</span></div>
-            <div className="flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-green-500" /><span>Passed Stop</span></div>
-            <div className="flex items-center gap-1.5"><Home className="h-3 w-3 text-purple-500" /><span>Delivery</span></div>
-            <div className="flex items-center gap-1.5"><Package className="h-3 w-3 text-blue-500" /><span>Parcel Hub</span></div>
-        </div>
-        <ul className="space-y-3">
-          {routeStops.length > 0 ? routeStops.map((stop, index) => {
-            const hasDelivery = deliveries.some(d => d.address.includes(stop.name));
-            const isParcelStop = parcels.some(p => p.fromStop === stop.name || p.toStop === stop.name);
-
-            const stopElement = (
-                 <div className={cn(
-                    "flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md w-full",
-                    isAdmin ? "cursor-pointer" : "cursor-default"
-                )}>
-                  {stop.passed ? <CheckCircle className="h-5 w-5 text-green-500" /> : <MapPin className={cn("h-5 w-5 text-primary")} />}
-                  <span className={cn("flex-grow text-left", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
-                    {stop.name}
-                  </span>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    {hasDelivery && <Home className="h-4 w-4 text-purple-500" title="Delivery at this stop" />}
-                    {isParcelStop && <Package className="h-4 w-4 text-blue-500" title="Parcel hub at this stop" />}
-                  </div>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{format(new Date(stop.date), "MMM d")}, {stop.time}</span>
-                  </div>
-                 </div>
-            );
-
-            return (
-                 <li key={`${stop.name}-${index}`} onClick={() => isAdmin ? handleToggleStop(stop.name, index) : handleStopClick(stop)}>
-                    {isAdmin ? (
-                        <button className="w-full text-left">{stopElement}</button>
-                    ) : (
-                        <div>{stopElement}</div>
-                    )}
-                </li>
-            );
-            }) : (
-            <p className="text-center text-muted-foreground text-sm py-4">No route defined for today.</p>
-          )}
-        </ul>
+          {renderContent()}
       </CardContent>
     </Card>
   )
 }
+
+    
