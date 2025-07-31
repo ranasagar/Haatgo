@@ -30,6 +30,10 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 7.5a4.5 4.5 0 0 1-4.5 4.5H12v6a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 4.5-4.5V7.5a4.5 4.5 0 1 1 9 0z"></path></svg>
 );
 
+const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+);
+
 
 export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: boolean; streamData?: LivestreamData | null }) {
   const [comments, setComments] = useState<Comment[]>(initialComments);
@@ -57,9 +61,9 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
     setComments(prev => prev.filter(c => c.id !== id));
   }
   
-  const SocialLink = ({ platform, username }: { platform: 'facebook' | 'tiktok', username: string }) => {
-    const Icon = platform === 'facebook' ? Facebook : TikTokIcon;
-    const url = platform === 'facebook' ? `https://facebook.com/${username}` : `https://tiktok.com/@${username}`;
+  const SocialLink = ({ platform, username }: { platform: 'facebook' | 'tiktok' | 'instagram', username: string }) => {
+    const Icon = platform === 'facebook' ? Facebook : platform === 'instagram' ? InstagramIcon : TikTokIcon;
+    const url = platform === 'facebook' ? `https://facebook.com/${username}` : platform === 'instagram' ? `https://instagram.com/${username}` : `https://tiktok.com/@${username}`;
     
     return (
         <Button asChild size="sm" variant="outline" className="bg-background/20 hover:bg-background/40 border-white/50 text-white">
@@ -89,6 +93,7 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
                         <div className="mt-2 flex items-center gap-2">
                            <SocialLink platform="facebook" username={settings.facebook} />
                            <SocialLink platform="tiktok" username={settings.tiktok} />
+                           <SocialLink platform="instagram" username={settings.instagram} />
                         </div>
                     </div>
                 </div>
@@ -204,6 +209,7 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
                             <div className="mt-2 flex items-center gap-2">
                                <SocialLink platform="facebook" username={settings.facebook} />
                                <SocialLink platform="tiktok" username={settings.tiktok} />
+                               <SocialLink platform="instagram" username={settings.instagram} />
                             </div>
                         </div>
                     </div>
@@ -270,4 +276,3 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
     </div>
   );
 }
-
