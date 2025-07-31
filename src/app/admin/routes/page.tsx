@@ -281,14 +281,14 @@ export default function RoutesPage() {
                   {newRoute.stops?.map((stop, index) => (
                     <div key={index} className="grid grid-cols-1 gap-4 p-3 border rounded-lg bg-muted/50">
                       <Label>{index === 0 ? "Start Location" : (index === newRoute.stops.length - 1 && !newRoute.isRoundTrip ? "End Location" : `Stop ${index + 1}`)}</Label>
-                      <div className="flex flex-col sm:flex-row items-center gap-2">
-                          <Input value={stop.name} onChange={(e) => handleStopChange(index, 'name', e.target.value)} placeholder="e.g. Kathmandu" />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 items-center gap-2">
+                          <Input value={stop.name} onChange={(e) => handleStopChange(index, 'name', e.target.value)} placeholder="e.g. Kathmandu" className="md:col-span-2" />
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "w-full sm:w-[240px] justify-start text-left font-normal",
+                                  "w-full justify-start text-left font-normal",
                                   !stop.date && "text-muted-foreground"
                                 )}
                               >
@@ -305,20 +305,22 @@ export default function RoutesPage() {
                               />
                             </PopoverContent>
                           </Popover>
-                          <Input value={stop.time} onChange={(e) => handleStopChange(index, 'time', e.target.value)} placeholder="e.g. 9:00 AM" className="w-full sm:w-auto" />
-                          <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              onClick={() => handleCheckWeather(stop.name)}
-                              disabled={loadingWeatherFor === stop.name}
-                              className="w-full sm:w-28"
-                          >
-                                {loadingWeatherFor === stop.name ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <><Cloudy className="h-4 w-4 mr-2" /> Weather</>
-                                )}
-                          </Button>
+                           <div className="flex gap-2">
+                               <Input value={stop.time} onChange={(e) => handleStopChange(index, 'time', e.target.value)} placeholder="9:00 AM" className="w-full" />
+                               <Button 
+                                  size="icon" 
+                                  variant="ghost" 
+                                  onClick={() => handleCheckWeather(stop.name)}
+                                  disabled={loadingWeatherFor === stop.name}
+                                  className="w-10"
+                              >
+                                    {loadingWeatherFor === stop.name ? (
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <Cloudy className="h-4 w-4" />
+                                    )}
+                              </Button>
+                           </div>
                       </div>
                       {loadingWeatherFor === stop.name && (
                           <div className="text-center py-4">
@@ -480,3 +482,4 @@ export default function RoutesPage() {
     </>
   );
 }
+
