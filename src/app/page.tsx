@@ -12,6 +12,7 @@ import { useProducts } from "@/context/product-context";
 import { ProductMarquee } from "@/components/haatgo/product-marquee";
 import { AppHeader } from "@/components/haatgo/header";
 import { StickyLivestreamBar } from "@/components/haatgo/sticky-livestream-bar";
+import { WeatherForecast } from "@/components/haatgo/weather-forecast";
 
 export default function Home() {
   const { products } = useProducts();
@@ -27,6 +28,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
               <RouteTracker />
+              <WeatherForecast />
               <SendPackage />
               <MyOrders />
               <OrderTracker />
