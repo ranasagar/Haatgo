@@ -25,23 +25,22 @@ const defaultProfile: UserProfile = {
 const UserProfileContext = createContext<UserProfileContextType | undefined>(undefined);
 
 export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
-    const [profile, setProfile] = useState<UserProfile>(() => {
-        if (typeof window !== 'undefined') {
-            try {
-                const savedProfile = localStorage.getItem('userProfile');
-                return savedProfile ? JSON.parse(savedProfile) : defaultProfile;
-            } catch (error) {
-                console.error("Failed to parse userProfile from localStorage", error);
-                return defaultProfile;
-            }
-        }
-        return defaultProfile;
-    });
+    const [profile, setProfile] = useState<UserProfile>(defaultProfile);
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('userProfile', JSON.stringify(profile));
+        try {
+            const savedProfile = localStorage.getItem('userProfile');
+            if (savedProfile) {
+                setProfile(JSON.parse(savedProfile));
+            }
+        } catch (error) {
+            console.error("Failed to parse userProfile from localStorage", error);
         }
+    }, []);
+
+
+    useEffect(() => {
+        localStorage.setItem('userProfile', JSON.stringify(profile));
     }, [profile]);
 
 
