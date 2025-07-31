@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import type { Product } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { useOrders } from './order-context';
@@ -29,15 +29,71 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const { addOrder } = useOrders();
     const { products, updateProductQuantity } = useProducts();
     const { user } = useAuth();
+    const [lastAction, setLastAction] = useState<{ name: string; payload?: any } | null>(null);
+
+    useEffect(() => {
+        if (!lastAction) return;
+
+        switch (lastAction.name) {
+            case 'ADD_SUCCESS':
+                toast({
+                    title: "Added to Cart!",
+                    description: `${lastAction.payload.name} has been added to your cart.`,
+                });
+                break;
+            case 'ADD_FAIL_STOCK':
+                 toast({
+                    title: "Out of Stock",
+                    description: "This product is currently unavailable.",
+                    variant: "destructive",
+                });
+                break;
+            case 'ADD_FAIL_LIMIT':
+                toast({
+                    title: "Stock Limit Reached",
+                    description: `You cannot add more of ${lastAction.payload.name}.`,
+                    variant: "destructive"
+                });
+                break;
+            case 'REMOVE_SUCCESS':
+                toast({
+                    title: "Item Removed",
+                    description: "The item has been removed from your cart.",
+                });
+                break;
+            case 'UPDATE_FAIL_LIMIT':
+                toast({
+                    title: "Stock Limit Reached",
+                    description: `Only ${lastAction.payload.quantity} of ${lastAction.payload.name} available.`,
+                    variant: "destructive"
+                });
+                break;
+            case 'CLEAR_SUCCESS':
+                toast({
+                    title: "Cart Cleared",
+                    description: "All items have been removed from your cart.",
+                });
+                break;
+            case 'CHECKOUT_SUCCESS':
+                 toast({
+                    title: "Order Placed!",
+                    description: "Your order has been successfully placed and is now pending.",
+                });
+                break;
+            case 'CHECKOUT_FAIL_LOGIN':
+                toast({ title: "Please login to place an order.", variant: "destructive"});
+                break;
+            case 'CHECKOUT_FAIL_EMPTY':
+                 toast({ title: "Your cart is empty.", variant: "destructive"});
+                break;
+        }
+        setLastAction(null); // Reset action after showing toast
+    }, [lastAction, toast]);
 
     const addToCart = (product: Product) => {
         const liveProduct = products.find(p => p.id === product.id);
         if (!liveProduct || liveProduct.quantity === 0) {
-             toast({
-                title: "Out of Stock",
-                description: "This product is currently unavailable.",
-                variant: "destructive",
-            });
+            setLastAction({ name: 'ADD_FAIL_STOCK' });
             return;
         }
 
@@ -45,33 +101,25 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             const existingItem = prevCart.find(item => item.id === product.id);
             if (existingItem) {
                 if (existingItem.quantityInCart >= liveProduct.quantity) {
-                     toast({
-                        title: "Stock Limit Reached",
-                        description: `You cannot add more of ${product.name}.`,
-                        variant: "destructive"
-                    });
+                    setLastAction({ name: 'ADD_FAIL_LIMIT', payload: product });
                     return prevCart;
                 }
-                return prevCart.map(item =>
+                const newCart = prevCart.map(item =>
                     item.id === product.id
                         ? { ...item, quantityInCart: item.quantityInCart + 1 }
                         : item
                 );
+                setLastAction({ name: 'ADD_SUCCESS', payload: product });
+                return newCart;
             }
+            setLastAction({ name: 'ADD_SUCCESS', payload: product });
             return [...prevCart, { ...product, quantityInCart: 1 }];
-        });
-        toast({
-            title: "Added to Cart!",
-            description: `${product.name} has been added to your cart.`,
         });
     };
 
     const removeFromCart = (productId: string) => {
         setCart(prevCart => prevCart.filter(item => item.id !== productId));
-        toast({
-            title: "Item Removed",
-            description: "The item has been removed from your cart.",
-        });
+        setLastAction({ name: 'REMOVE_SUCCESS' });
     };
 
     const updateQuantity = (productId: string, quantity: number) => {
@@ -81,11 +129,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
         const liveProduct = products.find(p => p.id === productId);
         if (liveProduct && quantity > liveProduct.quantity) {
-             toast({
-                title: "Stock Limit Reached",
-                description: `Only ${liveProduct.quantity} of ${liveProduct.name} available.`,
-                variant: "destructive"
-            });
+             setLastAction({ name: 'UPDATE_FAIL_LIMIT', payload: { name: liveProduct.name, quantity: liveProduct.quantity }});
             return;
         }
 
@@ -98,10 +142,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const clearCart = () => {
         setCart([]);
-         toast({
-            title: "Cart Cleared",
-            description: "All items have been removed from your cart.",
-        });
+        setLastAction({ name: 'CLEAR_SUCCESS' });
     }
 
     const getPrice = (item: CartItem) => {
@@ -124,12 +165,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const checkout = () => {
         if (!user) {
-            toast({ title: "Please login to place an order.", variant: "destructive"});
+            setLastAction({ name: 'CHECKOUT_FAIL_LOGIN' });
             return;
         }
 
         if (cart.length === 0) {
-            toast({ title: "Your cart is empty.", variant: "destructive"});
+            setLastAction({ name: 'CHECKOUT_FAIL_EMPTY' });
             return;
         };
 
@@ -154,10 +195,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         });
         
         setCart([]); // Clear the cart after checkout
-        toast({
-            title: "Order Placed!",
-            description: "Your order has been successfully placed and is now pending.",
-        });
+        setLastAction({ name: 'CHECKOUT_SUCCESS' });
     };
 
     return (
