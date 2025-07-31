@@ -8,6 +8,8 @@ import { products as initialProducts } from '@/lib/data';
 type ProductContextType = {
     products: Product[];
     setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+    addProduct: (product: Omit<Product, 'id' | 'image' | 'dataAiHint'>) => void;
+    updateProduct: (product: Product) => void;
     updateProductQuantity: (productId: string, quantityToSubtract: number) => void;
 };
 
@@ -15,6 +17,20 @@ const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
     const [products, setProducts] = useState<Product[]>(initialProducts);
+
+    const addProduct = (product: Omit<Product, 'id' | 'image' | 'dataAiHint'>) => {
+        const newProduct: Product = {
+            ...product,
+            id: `prod-${Date.now()}`,
+            image: 'https://storage.googleapis.com/haatgo-store-images/placeholder.png',
+            dataAiHint: product.name.toLowerCase().split(' ').slice(0, 2).join(' '),
+        };
+        setProducts(prev => [newProduct, ...prev]);
+    }
+
+    const updateProduct = (updatedProduct: Product) => {
+        setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
+    }
 
     const updateProductQuantity = (productId: string, quantityToSubtract: number) => {
         setProducts(prevProducts =>
@@ -27,7 +43,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <ProductContext.Provider value={{ products, setProducts, updateProductQuantity }}>
+        <ProductContext.Provider value={{ products, setProducts, addProduct, updateProduct, updateProductQuantity }}>
             {children}
         </ProductContext.Provider>
     );

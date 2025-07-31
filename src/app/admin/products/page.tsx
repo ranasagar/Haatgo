@@ -48,8 +48,7 @@ import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 
-const defaultNewProduct: Product = {
-  id: '',
+const defaultNewProduct: Omit<Product, 'id' | 'image' | 'dataAiHint'> = {
   name: "New Product",
   category: 'Food',
   price: 0,
@@ -59,18 +58,16 @@ const defaultNewProduct: Product = {
   status: 'active',
   district: "Kathmandu",
   description: "",
-  image: 'https://storage.googleapis.com/haatgo-store-images/placeholder.png',
-  dataAiHint: '',
   tags: [],
   bulkPrice: 0,
   bulkQuantity: 0,
 };
 
 export default function ProductsPage() {
-  const { products, setProducts } = useProducts();
+  const { products, setProducts, addProduct, updateProduct } = useProducts();
   const [open, setOpen] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
-  const [selectedProduct, setSelectedProduct] = React.useState<Product>(defaultNewProduct);
+  const [selectedProduct, setSelectedProduct] = React.useState<Product | Omit<Product, 'id' | 'image' | 'dataAiHint'>>(defaultNewProduct);
 
   const openAddDialog = () => {
     setIsEditing(false);
@@ -86,15 +83,9 @@ export default function ProductsPage() {
   
   const handleSave = () => {
     if (isEditing) {
-      setProducts(prevProducts => prevProducts.map(p => p.id === selectedProduct.id ? selectedProduct : p));
+      updateProduct(selectedProduct as Product);
     } else {
-      const newProductWithId: Product = {
-        ...selectedProduct,
-        id: `prod-${Date.now()}`,
-        image: "https://storage.googleapis.com/haatgo-store-images/placeholder.png",
-        dataAiHint: selectedProduct.name.toLowerCase().split(' ').slice(0, 2).join(' '),
-      };
-      setProducts(prevProducts => [...prevProducts, newProductWithId]);
+      addProduct(selectedProduct as Omit<Product, 'id' | 'image' | 'dataAiHint'>);
     }
     setOpen(false);
   }
@@ -117,12 +108,9 @@ export default function ProductsPage() {
     });
   }
 
-  const toggleProductStatus = (productId: string) => {
-    setProducts(prevProducts => prevProducts.map(p => 
-      p.id === productId 
-        ? { ...p, status: p.status === 'active' ? 'archived' : 'active' } 
-        : p
-    ));
+  const toggleProductStatus = (productToToggle: Product) => {
+    const updatedProduct = { ...productToToggle, status: productToToggle.status === 'active' ? 'archived' : 'active' };
+    updateProduct(updatedProduct);
   };
 
   return (
@@ -248,7 +236,7 @@ export default function ProductsPage() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => openEditDialog(product)}>Edit</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => toggleProductStatus(product.id)}>
+                            <DropdownMenuItem onClick={() => toggleProductStatus(product)}>
                               {product.status === 'active' ? 'Archive' : 'Activate'}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />

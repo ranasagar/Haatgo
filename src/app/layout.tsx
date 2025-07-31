@@ -16,6 +16,7 @@ import { RouteProvider } from '@/context/route-context';
 import { UserProvider } from '@/context/user-context';
 import { CartSheet } from '@/components/haatgo/cart-sheet';
 import { FloatingChatButtons } from '@/components/haatgo/floating-chat-buttons';
+import { ScrollToTop } from '@/components/haatgo/scroll-to-top';
 
 export const metadata: Metadata = {
   title: 'HaatGo',
@@ -55,6 +56,7 @@ export default function RootLayout({
                                 {children}
                               </CartSheet>
                               <FloatingChatButtons />
+                              <ScrollToTop />
                             </ReviewProvider>
                           </CartProvider>
                         </OrderProvider>
