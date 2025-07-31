@@ -113,9 +113,9 @@ export function CartSheet({ children }: CartSheetProps) {
                                 )}
                             </div>
                             <div className="flex items-center gap-2 mt-1">
-                                <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(product.id, product.quantityInCart - 1)}><Minus className="h-3 w-3" /></Button>
+                                <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(product.id, product.quantityInCart - 1)}><Minus className="h-4 w-4" /></Button>
                                 <span className="text-sm font-medium w-4 text-center">{product.quantityInCart}</span>
-                                <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(product.id, product.quantityInCart + 1)}><Plus className="h-3 w-3" /></Button>
+                                <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(product.id, product.quantityInCart + 1)}><Plus className="h-4 w-4" /></Button>
                             </div>
                         </div>
                         <Button
@@ -140,7 +140,7 @@ export function CartSheet({ children }: CartSheetProps) {
                     <span>Subtotal</span>
                     <span>रू {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
-                 <div className="flex justify-between text-green-600">
+                 <div className="flex justify-between text-green-600 font-semibold">
                     <span>Discount</span>
                     <span>- रू {totalDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
