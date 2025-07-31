@@ -17,10 +17,64 @@ import { Separator } from "@/components/ui/separator"
 import { useCart } from "@/context/cart-context"
 import { useAppSettings } from "@/context/app-settings-context"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import type { CartItem } from "@/context/cart-context"
 
 type CartSheetProps = {
   children: React.ReactNode;
 };
+
+const CartListItem = ({ item, getPriceInfo, updateQuantity, removeFromCart }: { item: CartItem, getPriceInfo: (item: CartItem) => any, updateQuantity: (id: string, q: number) => void, removeFromCart: (id: string) => void }) => {
+    const { originalPrice, effectivePrice, discountApplied } = getPriceInfo(item);
+    
+    return (
+        <li className="flex py-4">
+            <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-muted">
+                <Image
+                    src={item.image}
+                    alt={item.name}
+                    width={96}
+                    height={96}
+                    className="h-full w-full object-cover object-center"
+                    data-ai-hint={item.dataAiHint}
+                />
+            </div>
+
+            <div className="ml-4 flex flex-1 flex-col">
+                <div>
+                    <div className="flex justify-between text-base font-medium text-foreground">
+                        <h3>{item.name}</h3>
+                        <p className="ml-4">रू{effectivePrice.toLocaleString()}</p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="mt-1 text-sm text-muted-foreground">{item.category}</p>
+                      {discountApplied && (
+                          <p className="ml-4 text-sm text-muted-foreground line-through">रू{originalPrice.toLocaleString()}</p>
+                      )}
+                    </div>
+                </div>
+                <div className="flex flex-1 items-end justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantityInCart - 1)}><Minus className="h-4 w-4" /></Button>
+                        <span className="w-4 text-center font-medium">{item.quantityInCart}</span>
+                        <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantityInCart + 1)}><Plus className="h-4 w-4" /></Button>
+                    </div>
+
+                    <div className="flex">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="font-medium text-destructive hover:text-destructive/80"
+                            onClick={() => removeFromCart(item.id)}
+                        >
+                            Remove
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    )
+}
 
 export function CartSheet({ children }: CartSheetProps) {
   const { cart, removeFromCart, updateQuantity, clearCart, checkout } = useCart();
@@ -67,7 +121,6 @@ export function CartSheet({ children }: CartSheetProps) {
   const vatAmount = priceAfterDiscount * (settings.vatRate / 100);
   const grandTotal = priceAfterDiscount + vatAmount;
 
-
   const handleCheckout = () => {
     checkout();
   }
@@ -75,89 +128,63 @@ export function CartSheet({ children }: CartSheetProps) {
   return (
     <Sheet>
       {children}
-      <SheetContent className="flex w-full flex-col sm:max-w-md md:max-w-lg lg:max-w-xl">
-        <SheetHeader>
+      <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
+        <SheetHeader className="px-6">
           <SheetTitle className="font-headline text-2xl">Your Cart</SheetTitle>
           <SheetDescription>
             Review your items before checkout.
           </SheetDescription>
         </SheetHeader>
-        <Separator />
+        
         {cart.length === 0 ? (
-          <div className="flex-grow flex flex-col items-center justify-center text-center">
+          <div className="flex-grow flex flex-col items-center justify-center text-center px-6">
             <ShoppingCart className="h-16 w-16 text-muted-foreground mb-4" />
             <h3 className="font-headline text-xl font-semibold">Your cart is empty</h3>
             <p className="text-muted-foreground mt-2">Add items to get started.</p>
           </div>
         ) : (
-          <div className="flex min-h-0 flex-1 flex-col">
-            <ScrollArea className="-mx-6 flex-grow">
-                <ul className="space-y-4 px-6 py-4">
-                {cart.map((product) => {
-                    const { originalPrice, effectivePrice, discountApplied } = getPriceInfo(product);
-
-                    return (
-                        <li key={product.id} className="grid grid-cols-[auto,1fr,auto] items-start gap-4">
-                            <Image
-                                src={product.image}
-                                alt={product.name}
-                                width={80}
-                                height={80}
-                                className="rounded-md object-cover h-20 w-20"
-                                data-ai-hint={product.dataAiHint}
-                            />
-                            <div className="flex flex-col gap-1">
-                                <p className="font-semibold whitespace-normal break-words leading-tight">{product.name}</p>
-                                <div className="flex items-baseline gap-2">
-                                    <p className="text-sm font-bold text-primary">रू {effectivePrice.toLocaleString()}</p>
-                                    {discountApplied && (
-                                        <p className="text-xs text-muted-foreground line-through">रू {originalPrice.toLocaleString()}</p>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(product.id, product.quantityInCart - 1)}><Minus className="h-4 w-4" /></Button>
-                                    <span className="w-4 text-center text-sm font-medium">{product.quantityInCart}</span>
-                                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(product.id, product.quantityInCart + 1)}><Plus className="h-4 w-4" /></Button>
-                                </div>
-                            </div>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                onClick={() => removeFromCart(product.id)}
-                                aria-label="Remove from cart"
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </li>
-                    )
-                })}
-                </ul>
-            </ScrollArea>
-          </div>
+            <div className="mt-8 flex-1 overflow-y-auto">
+                <ScrollArea className="h-full">
+                    <ul role="list" className="divide-y divide-border px-6">
+                        {cart.map((item) => (
+                           <CartListItem 
+                                key={item.id}
+                                item={item}
+                                getPriceInfo={getPriceInfo}
+                                updateQuantity={updateQuantity}
+                                removeFromCart={removeFromCart}
+                           />
+                        ))}
+                    </ul>
+                </ScrollArea>
+            </div>
         )}
+        
         {cart.length > 0 && (
-          <SheetFooter className="flex-col gap-4 border-t pt-4">
+          <SheetFooter className="flex-col gap-4 border-t bg-background px-6 py-4">
             <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>रू {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="text-muted-foreground">रू {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                  <div className="flex justify-between font-semibold text-green-600">
-                    <span>Discount</span>
+                    <span className="text-green-600">Discount</span>
                     <span>- रू {totalDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                  <div className="flex justify-between">
-                    <span>VAT ({settings.vatRate}%)</span>
-                    <span>+ रू {vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="text-muted-foreground">VAT ({settings.vatRate}%)</span>
+                    <span className="text-muted-foreground">+ रू {vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
             </div>
             <Separator />
-            <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
-                <span>रू {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            <div className="flex justify-between text-base font-medium text-foreground">
+                <p>Total</p>
+                <p>रू {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+             <div className="mt-6 flex justify-center text-center text-sm text-muted-foreground">
+                <p>Shipping and taxes calculated at checkout.</p>
+            </div>
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               <SheetClose asChild>
                   <Button className="w-full font-bold" onClick={handleCheckout}>Proceed to Checkout</Button>
               </SheetClose>
