@@ -22,10 +22,12 @@ export default function Home() {
       <AppHeader />
       <StickyLivestreamBar />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="flex flex-col gap-6 lg:gap-8">
+        <div className="flex flex-col">
           <ProductMarquee />
-          <LiveIndicator />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="mt-4">
+            <LiveIndicator />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-4">
             <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
               <RouteTracker />
               <SendPackage />
