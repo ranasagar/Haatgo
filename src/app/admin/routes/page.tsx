@@ -2,7 +2,7 @@
 "use client";
 import * as React from "react";
 import { format } from "date-fns"
-import { File, ListFilter, MoreHorizontal, PlusCircle, CheckCircle, MapPin, Loader2, Sun, Cloud, Cloudy, CloudSun, CloudRain, CloudSnow, CloudLightning, Wind, Calendar as CalendarIcon, Repeat } from "lucide-react";
+import { File, ListFilter, MoreHorizontal, PlusCircle, CheckCircle, MapPin, Loader2, Sun, Cloud, Cloudy, CloudSun, CloudRain, CloudSnow, CloudLightning, Wind, Calendar as CalendarIcon, Repeat, ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -417,7 +417,9 @@ export default function RoutesPage() {
             </CardContent>
             <CardFooter>
               <div className="text-xs text-muted-foreground">
-                Showing <strong>1-{routes.length}</strong> of <strong>{routes.length}</strong> routes
+                {isClient && (
+                  <>Showing <strong>1-{routes.length}</strong> of <strong>{routes.length}</strong> routes</>
+                )}
               </div>
             </CardFooter>
           </Card>
@@ -484,8 +486,3 @@ export default function RoutesPage() {
     </>
   );
 }
-
-
-
-
-
