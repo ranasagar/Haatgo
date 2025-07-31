@@ -10,6 +10,7 @@ import { useParcels } from "@/context/parcel-context"
 import { useRoutes } from "@/context/route-context"
 import type { RouteStop } from "@/context/route-context"
 import { Button } from "../ui/button"
+import { format } from "date-fns"
 
 export function RouteTracker() {
   const { routes } = useRoutes();
@@ -34,7 +35,7 @@ export function RouteTracker() {
     } else {
         deliveries.forEach(d => {
             if (!allStopsForMap.find(s => s.lat === d.lat && s.lon === d.lon)) {
-                allStopsForMap.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, day: 'Day 1', time: '' });
+                allStopsForMap.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, date: new Date().toISOString().split('T')[0], time: '' });
             }
         });
 
@@ -107,7 +108,7 @@ export function RouteTracker() {
              {activeRoute && nextStop ? (
               <>
                 <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Next Stop: {nextStop.name}</h3>
-                <p className="text-sm">Arriving on {nextStop.day} at approx. {nextStop.time}</p>
+                <p className="text-sm">Arriving on {format(new Date(nextStop.date), "PPP")} at approx. {nextStop.time}</p>
               </>
             ) : activeRoute ? (
                  <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Route Completed!</h3>
@@ -145,7 +146,7 @@ export function RouteTracker() {
               </span>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
-                <span>{stop.day}, {stop.time}</span>
+                <span>{format(new Date(stop.date), "MMM d")}, {stop.time}</span>
               </div>
             </li>
           )) : (

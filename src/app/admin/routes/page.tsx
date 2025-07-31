@@ -1,7 +1,8 @@
 
 "use client";
 import * as React from "react";
-import { File, ListFilter, MoreHorizontal, PlusCircle, CheckCircle, MapPin, Loader2, Sun, Cloud, Cloudy, CloudSun, CloudRain, CloudSnow, CloudLightning, Wind } from "lucide-react";
+import { format } from "date-fns"
+import { File, ListFilter, MoreHorizontal, PlusCircle, CheckCircle, MapPin, Loader2, Sun, Cloud, Cloudy, CloudSun, CloudRain, CloudSnow, CloudLightning, Wind, Calendar as CalendarIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +39,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -46,12 +52,14 @@ import type { Route, Stop } from "@/context/route-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchForecast, type ForecastOutput } from "@/ai/flows/forecast-flow";
 import { useToast } from "@/hooks/use-toast";
+import { Calendar } from "@/components/ui/calendar";
 
-const defaultNewRoute: Partial<Route> = {
+const defaultNewRoute: Partial<Route> & { stops: ({ name: string, date: Date | undefined, time: string })[] } = {
     name: '',
-    startLocation: '',
-    endLocation: '',
-    stops: [{ name: '', day: 'Day 1', time: '' }],
+    stops: [
+        { name: '', date: new Date(), time: '09:00 AM' },
+        { name: '', date: new Date(), time: '02:00 PM' }
+    ],
 };
 
 const weatherIcons: { [key: string]: React.ReactNode } = {
@@ -122,6 +130,10 @@ export default function RoutesPage() {
     }
     
     const handleCheckWeather = async (stopName: string) => {
+        if (!stopName) {
+            toast({ title: "Please enter a location name first.", variant: "destructive"});
+            return;
+        }
         setLoadingWeatherFor(stopName);
         setWeatherData(null);
         try {
@@ -143,15 +155,22 @@ export default function RoutesPage() {
     const handleAddStop = () => {
         setNewRoute(prev => ({
             ...prev,
-            stops: [...(prev.stops || []), { name: '', day: `Day ${(prev.stops?.length || 0) + 1}`, time: '' }]
+            stops: [...(prev.stops || []), { name: '', date: new Date(), time: '09:00 AM' }]
         }));
     };
-
-    const handleStopChange = (index: number, field: 'name' | 'day' | 'time', value: string) => {
-        const updatedStops = [...(newRoute.stops || [])] as ({name: string, day: string, time: string})[];
+    
+    const handleStopChange = (index: number, field: 'name' | 'time', value: string) => {
+        const updatedStops = [...(newRoute.stops || [])];
         updatedStops[index] = { ...updatedStops[index], [field]: value };
         setNewRoute(prev => ({ ...prev, stops: updatedStops }));
     };
+
+    const handleDateChange = (index: number, date: Date | undefined) => {
+        const updatedStops = [...(newRoute.stops || [])];
+        updatedStops[index] = { ...updatedStops[index], date };
+        setNewRoute(prev => ({ ...prev, stops: updatedStops }));
+    };
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -159,25 +178,31 @@ export default function RoutesPage() {
     }
 
     const handleSaveRoute = () => {
-        const routeToAdd: Route = {
-            id: (routes.length + 1).toString(),
-            name: newRoute.name || '',
-            startLocation: newRoute.startLocation || '',
-            endLocation: newRoute.endLocation || '',
-            stops: (newRoute.stops || [])
-                .filter(s => s.name.trim() !== '' && s.time.trim() !== '' && s.day.trim() !== '')
-                .map(s => ({ ...s, passed: false })),
-            date: new Date().toISOString().split('T')[0], // Today's date
-        };
+        const routeStops = (newRoute.stops || [])
+            .filter(s => s.name.trim() !== '' && s.time.trim() !== '' && s.date)
+            .map(s => ({ 
+                name: s.name,
+                date: format(s.date!, "yyyy-MM-dd"),
+                time: s.time,
+                passed: false 
+            }));
 
-        if (routeToAdd.name && routeToAdd.startLocation && routeToAdd.endLocation && routeToAdd.stops.length > 0) {
+        if (newRoute.name && routeStops.length >= 2) {
+            const routeToAdd: Route = {
+                id: (routes.length + 1).toString(),
+                name: newRoute.name,
+                startLocation: routeStops[0].name,
+                endLocation: routeStops[routeStops.length - 1].name,
+                stops: routeStops.map(s => ({...s, lat: 27.7172, lon: 85.3240 })), // Dummy coords
+                date: new Date().toISOString().split('T')[0],
+            };
             setRoutes(prev => [...prev, routeToAdd]);
             setNewRoute(defaultNewRoute);
             setOpen(false);
         } else {
             toast({
                 title: "Incomplete Information",
-                description: "Please fill out all route details including name, start, end, and at least one stop.",
+                description: "Please fill out route name and at least two stops (a start and an end) with valid details.",
                 variant: "destructive"
             });
         }
@@ -197,25 +222,6 @@ export default function RoutesPage() {
             </TabsTrigger>
           </TabsList>
           <div className="ml-auto flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8 gap-1">
-                  <ListFilter className="h-3.5 w-3.5" />
-                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                    Filter
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem checked>
-                  Today
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem>This Week</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem>This Month</DropdownMenuCheckboxItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
             <Button size="sm" variant="outline" className="h-8 gap-1">
               <File className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -245,31 +251,40 @@ export default function RoutesPage() {
                     </Label>
                     <Input id="name" value={newRoute.name} onChange={handleInputChange} placeholder="e.g. East Nepal Route" className="col-span-3" />
                   </div>
-                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="startLocation" className="text-right">
-                      Start Location
-                    </Label>
-                    <Input id="startLocation" value={newRoute.startLocation} onChange={handleInputChange} placeholder="e.g. Kathmandu" className="col-span-3" />
-                  </div>
-                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="endLocation" className="text-right">
-                      End Location
-                    </Label>
-                    <Input id="endLocation" value={newRoute.endLocation} onChange={handleInputChange} placeholder="e.g. Ilam" className="col-span-3" />
-                  </div>
                   {newRoute.stops?.map((stop, index) => (
-                    <div key={index} className="grid grid-cols-1 gap-2 p-3 border rounded-lg bg-muted/50">
-                      <Label>Stop {index + 1}</Label>
-                      <div className="flex items-center gap-2">
-                          <Input value={stop.name} onChange={(e) => handleStopChange(index, 'name', e.target.value)} placeholder="e.g. Chisapani" />
-                          <Input value={stop.day} onChange={(e) => handleStopChange(index, 'day', e.target.value)} placeholder="e.g. Day 1" />
-                          <Input value={stop.time} onChange={(e) => handleStopChange(index, 'time', e.target.value)} placeholder="e.g. 9:00 AM" />
+                    <div key={index} className="grid grid-cols-1 gap-4 p-3 border rounded-lg bg-muted/50">
+                      <Label>{index === 0 ? "Start Location" : (index === newRoute.stops.length - 1 ? "End Location" : `Stop ${index + 1}`)}</Label>
+                      <div className="flex flex-col sm:flex-row items-center gap-2">
+                          <Input value={stop.name} onChange={(e) => handleStopChange(index, 'name', e.target.value)} placeholder="e.g. Kathmandu" />
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full sm:w-[240px] justify-start text-left font-normal",
+                                  !stop.date && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {stop.date ? format(stop.date, "PPP") : <span>Pick a date</span>}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={stop.date}
+                                onSelect={(date) => handleDateChange(index, date)}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <Input value={stop.time} onChange={(e) => handleStopChange(index, 'time', e.target.value)} placeholder="e.g. 9:00 AM" className="w-full sm:w-auto" />
                           <Button 
                               size="sm" 
                               variant="ghost" 
                               onClick={() => handleCheckWeather(stop.name)}
-                              disabled={loadingWeatherFor === stop.name || !stop.name}
-                              className="w-28"
+                              disabled={loadingWeatherFor === stop.name}
+                              className="w-full sm:w-28"
                           >
                                 {loadingWeatherFor === stop.name ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -394,7 +409,7 @@ export default function RoutesPage() {
                                             <MapPin className="h-5 w-5 mr-3 text-primary" />
                                         )}
                                         {stop.name}
-                                         <span className="ml-auto text-xs text-muted-foreground">{stop.day}, {stop.time}</span>
+                                         <span className="ml-auto text-xs text-muted-foreground">{format(new Date(stop.date), "MMM d")}, {stop.time}</span>
                                     </Button>
                                     <Button 
                                         size="sm" 
