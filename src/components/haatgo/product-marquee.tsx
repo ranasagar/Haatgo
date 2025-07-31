@@ -68,64 +68,69 @@ export function ProductMarquee() {
 
   return (
     <div className="w-full">
-        <div className="flex flex-nowrap gap-x-4 gap-y-2 justify-between items-center mb-2 px-2 text-xs text-muted-foreground">
-            <div className="hidden md:flex flex-nowrap gap-x-4 gap-y-1 items-center shrink-0">
-                {specialTags.map(tag => (
-                    <div key={tag} className="flex items-center gap-1.5">
-                        {tagIcons[tag]}
-                        <span className="hidden lg:inline">{tag}</span>
-                    </div>
-                ))}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2 px-2 gap-2">
+        {/* Date, Time, Weather */}
+        <div className="flex items-center justify-between md:justify-start gap-2 sm:gap-4 whitespace-nowrap text-xs text-muted-foreground order-1 md:order-2">
+          {currentDay ? (
+            <div className="hidden sm:flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-muted-foreground" />
+              <span className="font-semibold text-sm text-muted-foreground">{currentDay}</span>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4 ml-auto whitespace-nowrap">
-                 {currentDay ? (
-                     <div className="hidden sm:flex items-center gap-2">
-                        <Calendar className="h-5 w-5 text-muted-foreground" />
-                        <span className="font-semibold text-sm text-muted-foreground">{currentDay}</span>
-                    </div>
-                 ) : (
-                    <Skeleton className="h-5 w-20 hidden sm:block" />
-                 )}
-                 {weather ? (
-                    <div className="flex items-center gap-2">
-                        {weatherIcons[weather.icon] || <Sun className="h-5 w-5 text-yellow-500" />}
-                        <span className="font-semibold text-sm text-muted-foreground">{weather.temperature}°C, {weather.condition}</span>
-                    </div>
-                ) : (
-                    <Skeleton className="h-5 w-32" />
-                )}
-                 {currentTime ? (
-                    <div className="flex items-center gap-2">
-                        <Clock className="h-5 w-5 text-muted-foreground" />
-                        <span className="font-semibold text-sm text-muted-foreground">{currentTime}</span>
-                    </div>
-                ): (
-                    <Skeleton className="h-5 w-20" />
-                )}
+          ) : (
+            <Skeleton className="h-5 w-20 hidden sm:block" />
+          )}
+          {weather ? (
+            <div className="flex items-center gap-2">
+              {weatherIcons[weather.icon] || <Sun className="h-5 w-5 text-yellow-500" />}
+              <span className="font-semibold text-sm text-muted-foreground">{weather.temperature}°C, {weather.condition}</span>
             </div>
+          ) : (
+            <Skeleton className="h-5 w-32" />
+          )}
+          {currentTime ? (
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-muted-foreground" />
+              <span className="font-semibold text-sm text-muted-foreground">{currentTime}</span>
+            </div>
+          ) : (
+            <Skeleton className="h-5 w-20" />
+          )}
         </div>
-        <div className="relative flex w-full overflow-hidden rounded-lg bg-muted p-2 shadow-inner items-center">
-            <div className="flex-shrink-0 flex items-center pr-4 border-r border-border/50">
-                <Tag className="h-6 w-6 text-primary" />
-                <span className="font-headline font-semibold ml-2 text-primary hidden sm:inline">Special Offers</span>
+
+        {/* Legends */}
+        <div className="flex flex-wrap md:flex-nowrap gap-x-4 gap-y-1 items-center shrink-0 order-2 md:order-1 text-xs text-muted-foreground">
+          {specialTags.map(tag => (
+            <div key={tag} className="flex items-center gap-1.5">
+              {tagIcons[tag]}
+              <span>{tag}</span>
             </div>
-            <div className="flex-grow relative overflow-hidden h-6">
-                {marqueeContent.length > 0 && (
-                    <div className="absolute inset-0 flex items-center animate-marquee hover:[animation-play-state:paused] whitespace-nowrap">
-                    {marqueeContent.map((product, index) => (
-                        <Link 
-                        href={`/products/${product.id}`} 
-                        key={`${product.id}-${index}`} 
-                        className="flex items-center mx-4 hover:bg-background/50 p-1 rounded-md transition-colors"
-                        >
-                        {product.tags && tagIcons[product.tags.find(t => specialTags.includes(t))!] }
-                        <span className="ml-2 text-sm text-muted-foreground font-medium">{product.name}</span>
-                        </Link>
-                    ))}
-                    </div>
-                )}
-            </div>
+          ))}
         </div>
+      </div>
+
+      {/* Marquee */}
+      <div className="relative flex w-full overflow-hidden rounded-lg bg-muted p-2 shadow-inner items-center">
+        <div className="flex-shrink-0 flex items-center pr-4 border-r border-border/50">
+          <Tag className="h-6 w-6 text-primary" />
+          <span className="font-headline font-semibold ml-2 text-primary hidden sm:inline">Special Offers</span>
+        </div>
+        <div className="flex-grow relative overflow-hidden h-6">
+          {marqueeContent.length > 0 && (
+            <div className="absolute inset-0 flex items-center animate-marquee hover:[animation-play-state:paused] whitespace-nowrap">
+              {marqueeContent.map((product, index) => (
+                <Link
+                  href={`/products/${product.id}`}
+                  key={`${product.id}-${index}`}
+                  className="flex items-center mx-4 hover:bg-background/50 p-1 rounded-md transition-colors"
+                >
+                  {product.tags && tagIcons[product.tags.find(t => specialTags.includes(t))!]}
+                  <span className="ml-2 text-sm text-muted-foreground font-medium">{product.name}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
