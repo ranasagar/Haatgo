@@ -112,4 +112,11 @@ body {
   .animate-progress {
     animation: progress 2s linear infinite;
   }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
 }

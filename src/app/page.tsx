@@ -10,6 +10,7 @@ import { RouteTracker } from "@/components/haatgo/route-tracker";
 import { SendPackage } from "@/components/haatgo/send-package";
 import { useProducts } from "@/context/product-context";
 import { AppShell } from "@/components/haatgo/app-shell";
+import { RouteMarquee } from "@/components/haatgo/route-marquee";
 
 export default function Home() {
   const { products } = useProducts();
@@ -18,6 +19,7 @@ export default function Home() {
     <AppShell>
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         <div className="flex flex-col gap-6 lg:gap-8">
+          <RouteMarquee />
           <LiveIndicator />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
