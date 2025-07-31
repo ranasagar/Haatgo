@@ -231,7 +231,7 @@ export default function ProductsPage() {
                         रू{product.cost.toFixed(2)}
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        {product.quantity > 0 ? `${product.quantity} in stock` : 'Sold out'}
+                        {product.quantity > 0 ? `${product.quantity} ${product.measurement}(s) remaining` : 'Sold out'}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
