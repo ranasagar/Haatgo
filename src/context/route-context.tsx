@@ -45,6 +45,35 @@ const initialRoutes: Route[] = [
         ],
         date: "2024-07-25",
     },
+    {
+        id: "2",
+        name: "Pokhara Lakeside Loop",
+        startLocation: "Pokhara Airport",
+        endLocation: "Sarangkot",
+        isRoundTrip: false,
+        stops: [
+            { name: "Pokhara Airport", date: "2024-08-01", time: "10:00 AM", passed: false, lat: 28.2009, lon: 83.9824 },
+            { name: "Lakeside, Pokhara", date: "2024-08-01", time: "12:00 PM", passed: false, lat: 28.2163, lon: 83.9625 },
+            { name: "Pame Bazar", date: "2024-08-01", time: "03:00 PM", passed: false, lat: 28.2381, lon: 83.9185 },
+            { name: "Sarangkot", date: "2024-08-02", time: "09:00 AM", passed: false, lat: 28.2575, lon: 83.9547 },
+        ],
+        date: "2024-07-28",
+    },
+     {
+        id: "3",
+        name: "Terai Goods Run",
+        startLocation: "Birgunj",
+        endLocation: "Biratnagar",
+        isRoundTrip: false,
+        stops: [
+            { name: "Birgunj", date: "2024-08-10", time: "08:00 AM", passed: false, lat: 27.0167, lon: 84.8667 },
+            { name: "Hetauda", date: "2024-08-10", time: "11:00 AM", passed: false, lat: 27.4269, lon: 85.0334 },
+            { name: "Bardibas", date: "2024-08-10", time: "02:00 PM", passed: false, lat: 26.9, lon: 85.8833 },
+            { name: "Lahan", date: "2024-08-11", time: "09:30 AM", passed: false, lat: 26.7126, lon: 86.4839 },
+            { name: "Biratnagar", date: "2024-08-11", time: "01:00 PM", passed: false, lat: 26.4525, lon: 87.2718 },
+        ],
+        date: "2024-07-29",
+    },
 ];
 
 const RouteContext = createContext<RouteContextType | undefined>(undefined);
