@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useProducts } from "@/context/product-context";
-import { Tag, Sparkles, Star, TrendingUp, Clock, Sun, Cloud, Cloudy, CloudSun, CloudRain, CloudSnow, CloudLightning, Wind, Thermometer } from "lucide-react";
+import { Tag, Sparkles, Star, TrendingUp, Clock, Sun, Cloud, Cloudy, CloudSun, CloudRain, CloudSnow, CloudLightning, Wind, Thermometer, Calendar } from "lucide-react";
 import Link from "next/link";
 import { fetchWeather, type WeatherOutput } from "@/ai/flows/weather-flow";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,6 +33,7 @@ export function ProductMarquee() {
   const { products } = useProducts();
   const [weather, setWeather] = useState<WeatherOutput | null>(null);
   const [currentTime, setCurrentTime] = useState('');
+  const [currentDay, setCurrentDay] = useState('');
 
   useEffect(() => {
     const getWeather = async () => {
@@ -45,9 +46,14 @@ export function ProductMarquee() {
     }
     getWeather();
     
-    const timer = setInterval(() => {
-        setCurrentTime(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }));
-    }, 1000);
+    const updateDateTime = () => {
+        const now = new Date();
+        setCurrentTime(now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }));
+        setCurrentDay(now.toLocaleDateString('en-US', { weekday: 'long' }));
+    };
+
+    updateDateTime();
+    const timer = setInterval(updateDateTime, 1000 * 60);
 
     return () => clearInterval(timer);
   }, []);
@@ -63,7 +69,7 @@ export function ProductMarquee() {
   return (
     <div className="w-full">
         <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between items-center mb-2 px-2 text-xs text-muted-foreground">
-            <div className="flex flex-wrap gap-x-4 gap-y-1 items-center">
+            <div className="hidden sm:flex flex-wrap gap-x-4 gap-y-1 items-center">
                 {specialTags.map(tag => (
                     <div key={tag} className="flex items-center gap-1.5">
                         {tagIcons[tag]}
@@ -71,7 +77,15 @@ export function ProductMarquee() {
                     </div>
                 ))}
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 ml-auto">
+                 {currentDay ? (
+                     <div className="flex items-center gap-2">
+                        <Calendar className="h-5 w-5 text-muted-foreground" />
+                        <span className="font-semibold text-sm text-muted-foreground">{currentDay}</span>
+                    </div>
+                 ) : (
+                    <Skeleton className="h-5 w-20" />
+                 )}
                  {weather ? (
                     <div className="flex items-center gap-2">
                         {weatherIcons[weather.icon] || <Sun className="h-5 w-5 text-yellow-500" />}
@@ -115,3 +129,4 @@ export function ProductMarquee() {
     </div>
   );
 }
+
