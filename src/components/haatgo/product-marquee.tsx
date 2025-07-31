@@ -28,25 +28,35 @@ export function ProductMarquee() {
   const marqueeContent = [...specialProducts, ...specialProducts, ...specialProducts];
 
   return (
-    <div className="relative flex w-full overflow-hidden rounded-lg bg-muted p-2 shadow-inner">
-      <div className="flex-shrink-0 flex items-center pr-4">
-        <Tag className="h-6 w-6 text-primary" />
-        <span className="font-headline font-semibold ml-2 text-primary">Special Offers</span>
-      </div>
-      <div className="flex-grow relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center animate-marquee hover:[animation-play-state:paused] whitespace-nowrap">
-          {marqueeContent.map((product, index) => (
-            <Link 
-              href={`/products/${product.id}`} 
-              key={`${product.id}-${index}`} 
-              className="flex items-center mx-4 hover:bg-background/50 p-1 rounded-md transition-colors"
-            >
-              {product.tags && tagIcons[product.tags.find(t => specialTags.includes(t))!] }
-              <span className="ml-2 text-sm text-muted-foreground font-medium">{product.name}</span>
-            </Link>
-          ))}
+    <div className="w-full">
+        <div className="relative flex w-full overflow-hidden rounded-lg bg-muted p-2 shadow-inner">
+            <div className="flex-shrink-0 flex items-center pr-4">
+                <Tag className="h-6 w-6 text-primary" />
+                <span className="font-headline font-semibold ml-2 text-primary">Special Offers</span>
+            </div>
+            <div className="flex-grow relative overflow-hidden">
+                <div className="absolute inset-0 flex items-center animate-marquee hover:[animation-play-state:paused] whitespace-nowrap">
+                {marqueeContent.map((product, index) => (
+                    <Link 
+                    href={`/products/${product.id}`} 
+                    key={`${product.id}-${index}`} 
+                    className="flex items-center mx-4 hover:bg-background/50 p-1 rounded-md transition-colors"
+                    >
+                    {product.tags && tagIcons[product.tags.find(t => specialTags.includes(t))!] }
+                    <span className="ml-2 text-sm text-muted-foreground font-medium">{product.name}</span>
+                    </Link>
+                ))}
+                </div>
+            </div>
         </div>
-      </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center mt-2 px-2 text-xs text-muted-foreground">
+            {specialTags.map(tag => (
+                <div key={tag} className="flex items-center gap-1.5">
+                    {tagIcons[tag]}
+                    <span>{tag}</span>
+                </div>
+            ))}
+        </div>
     </div>
   );
 }
