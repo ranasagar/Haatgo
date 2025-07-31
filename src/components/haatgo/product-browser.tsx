@@ -37,9 +37,8 @@ export function ProductBrowser() {
     const categoryMatch = activeCategory === 'All' || product.category === activeCategory;
     const districtMatch = activeDistrict === 'All Districts' || product.district === activeDistrict;
     const tagMatch = activeTag === 'All Tags' || (product.tags && product.tags.includes(activeTag));
-    const statusMatch = product.status === 'active';
-    const soldOutMatch = product.quantity === 0;
-    return searchMatch && categoryMatch && districtMatch && tagMatch && statusMatch && soldOutMatch;
+    const statusMatch = product.status === 'archived' || product.quantity === 0;
+    return searchMatch && categoryMatch && districtMatch && tagMatch && statusMatch;
   });
 
   const availableProducts = filteredProducts.filter(p => p.quantity > 0);

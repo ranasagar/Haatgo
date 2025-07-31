@@ -27,16 +27,18 @@ export default function SetupGuidePage() {
             </AccordionTrigger>
             <AccordionContent className="pl-8">
               <p className="text-muted-foreground mb-2">
-                This application uses Firebase for user authentication. You must configure it first.
+                This application uses Firebase for user authentication. You must configure it first by adding your credentials to the `.env` file.
               </p>
               <ol className="list-decimal list-inside space-y-2">
-                <li>Go to the <a href="https://firebase.google.com/" target="_blank" rel="noopener noreferrer" className="underline">Firebase Console</a> and create a new project.</li>
-                <li>In your project, go to Project Settings and add a new Web App.</li>
-                <li>Copy the Firebase configuration object (firebaseConfig).</li>
+                <li>Go to the <a href="https://firebase.google.com/" target="_blank" rel="noopener noreferrer" className="underline">Firebase Console</a> and create a new project (or use an existing one).</li>
+                <li>In your project, go to <span className="font-bold">Project Settings</span> (click the gear icon) and scroll down to "Your apps".</li>
+                <li>Add a new <span className="font-bold">Web App</span> if you don't have one. Give it a nickname and register the app.</li>
+                <li>After registration, Firebase will show you a configuration object. It looks like `const firebaseConfig = { ... }`.</li>
                 <li>Open the <code className="bg-muted px-1 rounded-sm">.env</code> file in this project.</li>
-                <li>Paste your config values into the corresponding `NEXT_PUBLIC_FIREBASE_*` variables.</li>
-                <li>In the Firebase Console, navigate to "Authentication" under the "Build" section.</li>
-                <li>Enable the "Email/Password" sign-in provider.</li>
+                <li>Copy the values from the `firebaseConfig` object into the corresponding `NEXT_PUBLIC_FIREBASE_*` variables in the `.env` file.</li>
+                <li>Set the <code className="bg-muted px-1 rounded-sm">NEXT_PUBLIC_ADMIN_EMAIL</code> variable to the email address you want to use as the administrator.</li>
+                <li>In the Firebase Console, navigate to <span className="font-bold">Authentication</span> under the "Build" section in the left menu.</li>
+                <li>Go to the "Sign-in method" tab and enable the <span className="font-bold">Email/Password</span> provider.</li>
                 <li>Your app is now ready for user registration and login!</li>
               </ol>
             </AccordionContent>

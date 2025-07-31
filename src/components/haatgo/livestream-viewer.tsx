@@ -82,9 +82,10 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
         {isLive ? (
             <Video className="h-24 w-24 text-primary/30" />
         ) : (
-            <div className="text-center text-muted-foreground">
+            <div className="text-center text-muted-foreground z-10">
                 <WifiOff className="h-16 w-16 mx-auto text-muted-foreground/50" />
                 <p className="mt-2 font-semibold">{platform.charAt(0).toUpperCase() + platform.slice(1)} Livestream is Offline</p>
+                <p className="text-sm">Check our page for updates.</p>
             </div>
         )}
         <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
