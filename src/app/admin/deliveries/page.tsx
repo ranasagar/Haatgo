@@ -34,11 +34,13 @@ import { cn } from "@/lib/utils"
 import { sendOrderNotification } from "@/ai/flows/notification-flow"
 import { useToast } from "@/hooks/use-toast"
 import { useUserProfile } from "@/context/user-profile-context"
+import { useOrders } from "@/context/order-context"
 
 
 export default function DeliveriesPage() {
     const { deliveries, setDeliveries } = useDeliveries();
     const { profile } = useUserProfile();
+    const { orders, updateOrderStatus } = useOrders();
     const [mapUrl, setMapUrl] = React.useState('');
     const { toast } = useToast();
 
@@ -74,6 +76,15 @@ export default function DeliveriesPage() {
     const handleUpdateStatus = async (delivery: Delivery, status: Delivery['status']) => {
         setDeliveries(prev => prev.map(d => d.id === delivery.id ? {...d, status} : d));
         
+        let orderStatus: "Pending" | "Confirmed" | "On the Way" | "Delivered" = "On the Way";
+        if (status === 'Completed') {
+            orderStatus = 'Delivered';
+        } else if (status === 'Pending') {
+            orderStatus = 'Confirmed'; // A delivery can be pending while order is confirmed
+        }
+
+        updateOrderStatus(delivery.orderId, orderStatus);
+
         // Don't send notification if user has no whatsapp number configured
         if (!profile.whatsapp) {
           console.log(`User ${delivery.customerName} has no WhatsApp number configured. Skipping notification.`);
@@ -118,13 +129,17 @@ export default function DeliveriesPage() {
             </CardHeader>
             <CardContent>
                 <div className="relative rounded-lg overflow-hidden h-96">
-                {mapUrl && (
+                {mapUrl && deliveries.length > 0 ? (
                     <iframe
                     className="w-full h-full border-0 rounded-lg"
                     src={mapUrl}
                     title="Deliveries Map"
                     key={mapUrl}
                     ></iframe>
+                ) : (
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
+                    <p className="text-muted-foreground">No active deliveries to display on the map.</p>
+                  </div>
                 )}
                 </div>
             </CardContent>
@@ -152,7 +167,7 @@ export default function DeliveriesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {deliveries.map((delivery) => (
+              {deliveries.length > 0 ? deliveries.map((delivery) => (
                 <TableRow key={delivery.id}>
                   <TableCell className="font-medium">{delivery.orderId}</TableCell>
                   <TableCell>{delivery.customerName}</TableCell>
@@ -185,7 +200,11 @@ export default function DeliveriesPage() {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center h-24">No deliveries found.</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
