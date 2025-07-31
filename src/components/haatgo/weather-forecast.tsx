@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -48,7 +47,10 @@ export function WeatherForecast() {
           <div className="space-y-4">
             {[...Array(7)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between">
-                    <Skeleton className="h-5 w-24" />
+                    <div className="w-24">
+                        <Skeleton className="h-5 w-20 mb-1" />
+                        <Skeleton className="h-3 w-16" />
+                    </div>
                     <Skeleton className="h-6 w-6 rounded-full" />
                     <Skeleton className="h-5 w-16" />
                 </div>
@@ -58,8 +60,11 @@ export function WeatherForecast() {
           <ul className="space-y-4">
             {forecastData.forecast.map((day, index) => (
               <li key={index} className="flex items-center justify-between gap-4">
-                <span className="font-semibold text-sm w-20">{day.day}</span>
-                <span className="text-muted-foreground flex-grow text-sm">{day.condition}</span>
+                <div className="w-24">
+                    <p className="font-semibold text-sm">{day.day}</p>
+                    <p className="text-xs text-muted-foreground">{day.date}</p>
+                </div>
+                <span className="text-muted-foreground flex-grow text-sm text-center">{day.condition}</span>
                 {weatherIcons[day.icon] || <Sun className="h-6 w-6 text-yellow-500" />}
                 <span className="font-bold text-base w-12 text-right">{day.temp}°C</span>
               </li>

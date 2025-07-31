@@ -18,6 +18,7 @@ export type ForecastInput = z.infer<typeof ForecastInputSchema>;
 
 const DailyForecastSchema = z.object({
   day: z.string().describe("The day of the week (e.g., 'Monday')."),
+  date: z.string().describe("The date in 'Month Day' format (e.g., 'Jul 31')."),
   temp: z.number().describe('The average temperature in Celsius.'),
   condition: z.string().describe('A brief description of the weather condition.'),
   icon: z.enum(['Sun', 'CloudSun', 'Cloud', 'Cloudy', 'CloudRain', 'CloudSnow', 'CloudLightning', 'Wind']).describe('An icon name that best represents the condition.'),
@@ -41,11 +42,12 @@ const prompt = ai.definePrompt({
   Location: {{{location}}}
   
   - Start the forecast from today. Use realistic day names (e.g., Today, Tuesday, Wednesday...).
+  - Provide the date for each day in "Mon Day" format (e.g., "Jul 31").
   - Provide a mix of weather conditions for the week (e.g., sunny, partly cloudy, chance of rain).
   - Generate plausible temperatures in Celsius for each day.
   - Select the most appropriate icon for each day's condition from the available options.
   
-  Example for one day: { day: "Today", temp: 25, condition: "Partly Cloudy", icon: "CloudSun" }
+  Example for one day: { day: "Today", date: "Jul 31", temp: 25, condition: "Partly Cloudy", icon: "CloudSun" }
   
   Generate a complete 7-day forecast now for {{{location}}}.`,
 });
@@ -63,17 +65,33 @@ const forecastFlow = ai.defineFlow(
     } catch (error) {
       console.error("AI forecast fetch failed, using fallback:", error);
       // Fallback to a default forecast on error
-      return {
-        forecast: [
-          { day: 'Today', temp: 22, condition: 'Sunny', icon: 'Sun' },
-          { day: 'Tomorrow', temp: 23, condition: 'Partly Cloudy', icon: 'CloudSun' },
-          { day: 'Wednesday', temp: 21, condition: 'Light Rain', icon: 'CloudRain' },
-          { day: 'Thursday', temp: 24, condition: 'Sunny', icon: 'Sun' },
-          { day: 'Friday', temp: 25, condition: 'Partly Cloudy', icon: 'CloudSun' },
-          { day: 'Saturday', temp: 23, condition: 'Cloudy', icon: 'Cloudy' },
-          { day: 'Sunday', temp: 22, condition: 'Chance of Rain', icon: 'CloudRain' },
-        ]
-      };
+      const today = new Date();
+      const format = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const getDayName = (d: Date, index: number) => {
+        if (index === 0) return 'Today';
+        if (index === 1) return 'Tomorrow';
+        return d.toLocaleDateString('en-US', { weekday: 'long' });
+      }
+
+      const fallbackForecast = Array.from({ length: 7 }).map((_, i) => {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
+          const base = {
+              date: format(date),
+              day: getDayName(date, i),
+          };
+          switch(i) {
+              case 0: return {...base, temp: 22, condition: 'Sunny', icon: 'Sun' };
+              case 1: return {...base, temp: 23, condition: 'Partly Cloudy', icon: 'CloudSun' };
+              case 2: return {...base, temp: 21, condition: 'Light Rain', icon: 'CloudRain' };
+              case 3: return {...base, temp: 24, condition: 'Sunny', icon: 'Sun' };
+              case 4: return {...base, temp: 25, condition: 'Partly Cloudy', icon: 'CloudSun' };
+              case 5: return {...base, temp: 23, condition: 'Cloudy', icon: 'Cloudy' };
+              default: return {...base, temp: 22, condition: 'Chance of Rain', icon: 'CloudRain' };
+          }
+      });
+      
+      return { forecast: fallbackForecast };
     }
   }
 );
