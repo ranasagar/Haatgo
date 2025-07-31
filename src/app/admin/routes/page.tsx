@@ -15,11 +15,9 @@ import {
 } from "@/components/ui/card";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -48,7 +46,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useRoutes } from "@/context/route-context";
-import type { Route, Stop } from "@/context/route-context";
+import type { Route, RouteStop } from "@/context/route-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchForecast, type ForecastOutput } from "@/ai/flows/forecast-flow";
 import { useToast } from "@/hooks/use-toast";
@@ -112,10 +110,10 @@ export default function RoutesPage() {
     const [loadingWeatherFor, setLoadingWeatherFor] = React.useState<string | null>(null);
 
 
-    const handleToggleStop = (stopName: string) => {
+    const handleToggleStop = (stopName: string, stopIndex: number) => {
         if (selectedRoute) {
-            const updatedStops = selectedRoute.stops.map(stop =>
-                stop.name === stopName ? { ...stop, passed: !stop.passed } : stop
+            const updatedStops = selectedRoute.stops.map((stop, index) =>
+                stop.name === stopName && index === stopIndex ? { ...stop, passed: !stop.passed } : stop
             );
             const updatedRoute = { ...selectedRoute, stops: updatedStops };
             setSelectedRoute(updatedRoute);
@@ -438,7 +436,7 @@ export default function RoutesPage() {
                                      <Button
                                         variant="outline"
                                         className={cn("w-full justify-start", stop.passed && "line-through text-muted-foreground")}
-                                        onClick={() => handleToggleStop(stop.name)}
+                                        onClick={() => handleToggleStop(stop.name, index)}
                                     >
                                         {stop.passed ? (
                                             <CheckCircle className="h-5 w-5 mr-3 text-green-500" />
@@ -482,4 +480,5 @@ export default function RoutesPage() {
     </>
   );
 }
+
 

@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { MapPin, Clock, Truck, Package, Home, X, Flag, FlagTriangleRight, Repeat } from "lucide-react"
+import { MapPin, Clock, Truck, Package, Home, X, Flag, FlagTriangleRight, Repeat, CheckCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useDeliveries } from "@/context/delivery-context"
 import { useParcels } from "@/context/parcel-context"
@@ -140,14 +140,14 @@ export function RouteTracker() {
 
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground mb-4 px-2">
             <div className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-orange-500" /><span>Route Stop</span></div>
-            <div className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-green-500" /><span>Passed Stop</span></div>
+            <div className="flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-green-500" /><span>Passed Stop</span></div>
             <div className="flex items-center gap-1.5"><Home className="h-3 w-3 text-purple-500" /><span>Delivery</span></div>
             <div className="flex items-center gap-1.5"><Package className="h-3 w-3 text-blue-500" /><span>Parcel Hub</span></div>
         </div>
         <ul className="space-y-3">
           {routeStops.length > 0 ? routeStops.map((stop, index) => (
             <li key={`${stop.name}-${index}`} className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-md cursor-pointer" onClick={() => setSelectedStop(stop)}>
-              <MapPin className={cn("h-5 w-5", stop.passed ? 'text-green-500' : 'text-primary')} />
+              {stop.passed ? <CheckCircle className="h-5 w-5 text-green-500" /> : <MapPin className={cn("h-5 w-5 text-primary")} />}
               <span className={cn("flex-grow", stop.passed ? 'line-through text-muted-foreground' : 'font-medium')}>
                 {stop.name}
               </span>

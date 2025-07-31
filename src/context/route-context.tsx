@@ -3,14 +3,11 @@
 
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
-export type Stop = {
+export type RouteStop = {
     name: string;
     date: string;
     time: string;
-    passed?: boolean;
-};
-
-export type RouteStop = Stop & {
+    passed: boolean;
     lat: number;
     lon: number;
 };
@@ -35,7 +32,7 @@ const initialRoutes: Route[] = [
         id: "1",
         name: "Chisapani - Sankhejung",
         startLocation: "Chisapani Market",
-        endLocation: "Sankhejung Village",
+        endLocation: "Chisapani Market",
         isRoundTrip: true,
         stops: [
             { name: "Chisapani Market", date: "2024-07-25", time: "09:00 AM", passed: true, lat: 26.9833, lon: 87.1333 },
