@@ -34,7 +34,7 @@ export function RouteTracker() {
     } else {
         deliveries.forEach(d => {
             if (!allStopsForMap.find(s => s.lat === d.lat && s.lon === d.lon)) {
-                allStopsForMap.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, eta: '' });
+                allStopsForMap.push({ name: d.customerName, lat: d.lat, lon: d.lon, type: 'delivery', passed: false, day: 'Day 1', time: '' });
             }
         });
 
@@ -104,7 +104,7 @@ export function RouteTracker() {
              {activeRoute && nextStop ? (
               <>
                 <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Next Stop: {nextStop.name}</h3>
-                <p className="text-sm">Arriving at approx. {nextStop.eta}</p>
+                <p className="text-sm">Arriving on {nextStop.day} at approx. {nextStop.time}</p>
               </>
             ) : activeRoute ? (
                  <h3 className="font-bold font-headline text-lg flex items-center gap-2"><Truck /> Route Completed!</h3>
@@ -128,7 +128,7 @@ export function RouteTracker() {
               </span>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
-                <span>{stop.eta}</span>
+                <span>{stop.day}, {stop.time}</span>
               </div>
             </li>
           )) : (

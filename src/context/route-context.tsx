@@ -5,7 +5,8 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 export type Stop = {
     name: string;
-    eta: string;
+    day: string;
+    time: string;
     passed?: boolean;
 };
 
@@ -31,9 +32,9 @@ const initialRoutes: Route[] = [
         id: "1",
         name: "Chisapani - Sankhejung",
         stops: [
-            { name: "Chisapani Market", passed: true, eta: "09:00 AM", lat: 26.9833, lon: 87.1333 },
-            { name: "Bhedetar Junction", passed: false, eta: "11:30 AM", lat: 26.9167, lon: 87.3167 },
-            { name: "Sankhejung Village", passed: false, eta: "02:00 PM", lat: 27.0194, lon: 87.8044 },
+            { name: "Chisapani Market", day: "Day 1", time: "09:00 AM", passed: true, lat: 26.9833, lon: 87.1333 },
+            { name: "Bhedetar Junction", day: "Day 1", time: "11:30 AM", passed: false, lat: 26.9167, lon: 87.3167 },
+            { name: "Sankhejung Village", day: "Day 1", time: "02:00 PM", passed: false, lat: 27.0194, lon: 87.8044 },
         ],
         date: "2024-07-25",
     },

@@ -49,7 +49,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const defaultNewRoute = {
     name: '',
-    stops: [{ name: '', eta: '' }],
+    stops: [{ name: '', day: 'Day 1', time: '' }],
 };
 
 const weatherIcons: { [key: string]: React.ReactNode } = {
@@ -141,12 +141,12 @@ export default function RoutesPage() {
     const handleAddStop = () => {
         setNewRoute(prev => ({
             ...prev,
-            stops: [...prev.stops, { name: '', eta: '' }]
+            stops: [...prev.stops, { name: '', day: `Day ${prev.stops.length + 1}`, time: '' }]
         }));
     };
 
-    const handleStopChange = (index: number, field: 'name' | 'eta', value: string) => {
-        const updatedStops = [...newRoute.stops] as Stop[];
+    const handleStopChange = (index: number, field: 'name' | 'day' | 'time', value: string) => {
+        const updatedStops = [...newRoute.stops] as ({name: string, day: string, time: string})[];
         updatedStops[index] = { ...updatedStops[index], [field]: value };
         setNewRoute(prev => ({ ...prev, stops: updatedStops }));
     };
@@ -160,7 +160,7 @@ export default function RoutesPage() {
             id: (routes.length + 1).toString(),
             name: newRoute.name,
             stops: newRoute.stops
-                .filter(s => s.name.trim() !== '' && s.eta.trim() !== '')
+                .filter(s => s.name.trim() !== '' && s.time.trim() !== '' && s.day.trim() !== '')
                 .map(s => ({ ...s, passed: false })),
             date: new Date().toISOString().split('T')[0], // Today's date
         };
@@ -237,9 +237,10 @@ export default function RoutesPage() {
                   {newRoute.stops.map((stop, index) => (
                     <div key={index} className="grid grid-cols-1 gap-2">
                       <Label>Stop {index + 1}</Label>
-                      <div className="grid grid-cols-2 gap-2">
-                          <Input value={stop.name} onChange={(e) => handleStopChange(index, 'name', e.target.value)} placeholder="e.g. Chisapani Market" />
-                          <Input value={stop.eta} onChange={(e) => handleStopChange(index, 'eta', e.target.value)} placeholder="ETA (e.g. 9:00 AM)" />
+                      <div className="grid grid-cols-3 gap-2">
+                          <Input value={stop.name} onChange={(e) => handleStopChange(index, 'name', e.target.value)} placeholder="e.g. Chisapani" />
+                          <Input value={stop.day} onChange={(e) => handleStopChange(index, 'day', e.target.value)} placeholder="e.g. Day 1" />
+                          <Input value={stop.time} onChange={(e) => handleStopChange(index, 'time', e.target.value)} placeholder="e.g. 9:00 AM" />
                       </div>
                     </div>
                   ))}
@@ -266,9 +267,9 @@ export default function RoutesPage() {
                   <TableRow>
                     <TableHead>Route Name</TableHead>
                     <TableHead>Stops</TableHead>
-                     <TableHead>ETAs</TableHead>
+                     <TableHead>Schedule</TableHead>
                     <TableHead className="hidden md:table-cell">
-                      Date
+                      Date Created
                     </TableHead>
                     <TableHead>
                       <span className="sr-only">Actions</span>
@@ -285,7 +286,7 @@ export default function RoutesPage() {
                         {route.stops.map(s => s.name).join(', ')}
                         </TableCell>
                          <TableCell>
-                        {route.stops.map(s => s.eta).join(', ')}
+                        {route.stops.map(s => `${s.day}, ${s.time}`).join(' -> ')}
                         </TableCell>
                         <TableCell className="hidden md:table-cell">
                         {route.date}
@@ -348,7 +349,7 @@ export default function RoutesPage() {
                                             <MapPin className="h-5 w-5 mr-3 text-primary" />
                                         )}
                                         {stop.name}
-                                         <span className="ml-auto text-xs text-muted-foreground">{stop.eta}</span>
+                                         <span className="ml-auto text-xs text-muted-foreground">{stop.day}, {stop.time}</span>
                                     </Button>
                                     <Button 
                                         size="sm" 
