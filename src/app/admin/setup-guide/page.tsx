@@ -36,9 +36,10 @@ export default function SetupGuidePage() {
                 <li>After registration, Firebase will show you a configuration object. It looks like `const firebaseConfig = { ... }`.</li>
                 <li>Open the <code className="bg-muted px-1 rounded-sm">.env</code> file in this project.</li>
                 <li>Copy the values from the `firebaseConfig` object into the corresponding `NEXT_PUBLIC_FIREBASE_*` variables in the `.env` file.</li>
+                <li>Set the <code className="bg-muted px-1 rounded-sm">NEXT_PUBLIC_ADMIN_EMAIL</code> variable to the email address you want to use as the administrator.</li>
                 <li>In the Firebase Console, navigate to <span className="font-bold">Authentication</span> under the "Build" section in the left menu.</li>
                 <li>Go to the "Sign-in method" tab and enable the <span className="font-bold">Email/Password</span> provider.</li>
-                <li>Your app is now ready for user registration and login! The first registered user will have admin privileges.</li>
+                <li>Your app is now ready for user registration and login!</li>
               </ol>
             </AccordionContent>
           </AccordionItem>

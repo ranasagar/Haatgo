@@ -37,10 +37,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             
             if (user) {
                  const token = await user.getIdToken();
-                 Cookies.set('firebaseIdToken', token, { expires: 1 }); // expires in 1 day
-                 // First user to sign up is admin if ADMIN_EMAIL is not set
-                 // Otherwise, only the user with the ADMIN_EMAIL is admin
-                 const adminCheck = adminEmail ? user.email === adminEmail : (await auth.listUsers(1)).users.length === 1;
+                 Cookies.set('firebaseIdToken', token, { expires: 1 });
+                 // Only the user with the ADMIN_EMAIL is admin
+                 const adminCheck = !!adminEmail && user.email === adminEmail;
                  setIsAdmin(adminCheck);
             } else {
                 Cookies.remove('firebaseIdToken');
