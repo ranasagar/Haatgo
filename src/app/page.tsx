@@ -21,13 +21,12 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background">
       <AppHeader />
       <StickyLivestreamBar />
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="flex flex-col">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 pb-8">
           <ProductMarquee />
-          <div className="mt-4">
+          <div className="mt-0">
             <LiveIndicator />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-0">
             <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
               <RouteTracker />
               <SendPackage />
@@ -40,7 +39,6 @@ export default function Home() {
               <ProductBrowser />
             </div>
           </div>
-        </div>
       </main>
     </div>
   );
