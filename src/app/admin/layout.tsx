@@ -40,6 +40,7 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   const navItems = [
+    { href: "/", icon: Store, label: "Storefront" },
     { href: "/admin", icon: Home, label: "Dashboard" },
     { href: "/admin/products", icon: Package, label: "Products" },
     { href: "/admin/orders", icon: ShoppingCart, label: "Orders" },
