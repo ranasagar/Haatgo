@@ -9,7 +9,7 @@ import { Recommendations } from "@/components/haatgo/recommendations";
 import { RouteTracker } from "@/components/haatgo/route-tracker";
 import { SendPackage } from "@/components/haatgo/send-package";
 import { useProducts } from "@/context/product-context";
-import { RouteMarquee } from "@/components/haatgo/route-marquee";
+import { ProductMarquee } from "@/components/haatgo/product-marquee";
 import { AppHeader } from "@/components/haatgo/header";
 import { StickyLivestreamBar } from "@/components/haatgo/sticky-livestream-bar";
 
@@ -22,7 +22,7 @@ export default function Home() {
       <StickyLivestreamBar />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         <div className="flex flex-col gap-6 lg:gap-8">
-          <RouteMarquee />
+          <ProductMarquee />
           <LiveIndicator />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <aside className="lg:col-span-1 flex flex-col gap-6 lg:gap-8">
