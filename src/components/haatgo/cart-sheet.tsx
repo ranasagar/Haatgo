@@ -18,17 +18,14 @@ import { useCart } from "@/context/cart-context"
 import { useAppSettings } from "@/context/app-settings-context"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { CartItem } from "@/context/cart-context"
-
-type CartSheetProps = {
-  children: React.ReactNode;
-};
+import { cn } from "@/lib/utils"
 
 const CartListItem = ({ item, getPriceInfo, updateQuantity, removeFromCart }: { item: CartItem, getPriceInfo: (item: CartItem) => any, updateQuantity: (id: string, q: number) => void, removeFromCart: (id: string) => void }) => {
     const { originalPrice, effectivePrice, discountApplied } = getPriceInfo(item);
     
     return (
-        <li className="flex py-4">
-            <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-muted">
+        <li className="flex flex-col sm:grid sm:grid-cols-[auto_1fr_auto] sm:grid-rows-2 sm:items-center py-4 gap-x-4">
+             <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-muted sm:row-span-2">
                 <Image
                     src={item.image}
                     alt={item.name}
@@ -39,44 +36,40 @@ const CartListItem = ({ item, getPriceInfo, updateQuantity, removeFromCart }: { 
                 />
             </div>
 
-            <div className="ml-4 flex flex-1 flex-col">
+            <div className="flex justify-between mt-2 sm:mt-0">
                 <div>
-                    <div className="flex justify-between text-base font-medium text-foreground">
-                        <h3>{item.name}</h3>
-                        <p className="ml-4">रू{effectivePrice.toLocaleString()}</p>
-                    </div>
-                    <div className="flex justify-between">
-                      <p className="mt-1 text-sm text-muted-foreground">{item.category}</p>
-                      {discountApplied && (
-                          <p className="ml-4 text-sm text-muted-foreground line-through">रू{originalPrice.toLocaleString()}</p>
-                      )}
-                    </div>
+                    <h3 className="text-base font-medium text-foreground">{item.name}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{item.category}</p>
                 </div>
-                <div className="flex flex-1 items-end justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantityInCart - 1)}><Minus className="h-4 w-4" /></Button>
-                        <span className="w-4 text-center font-medium">{item.quantityInCart}</span>
-                        <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantityInCart + 1)}><Plus className="h-4 w-4" /></Button>
-                    </div>
+                 <div className="text-right ml-4">
+                    <p className="font-medium">रू{effectivePrice.toLocaleString()}</p>
+                    {discountApplied && (
+                        <p className="text-sm text-muted-foreground line-through">रू{originalPrice.toLocaleString()}</p>
+                    )}
+                </div>
+            </div>
 
-                    <div className="flex">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="font-medium text-destructive hover:text-destructive/80"
-                            onClick={() => removeFromCart(item.id)}
-                        >
-                            Remove
-                        </Button>
-                    </div>
+            <div className="flex items-center justify-between mt-4 sm:mt-0 sm:col-start-2">
+                 <div className="flex items-center gap-2">
+                    <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantityInCart - 1)}><Minus className="h-4 w-4" /></Button>
+                    <span className="w-4 text-center font-medium">{item.quantityInCart}</span>
+                    <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantityInCart + 1)}><Plus className="h-4 w-4" /></Button>
                 </div>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="font-medium text-destructive hover:text-destructive/80"
+                    onClick={() => removeFromCart(item.id)}
+                >
+                    Remove
+                </Button>
             </div>
         </li>
     )
 }
 
-export function CartSheet({ children }: CartSheetProps) {
+export function CartSheet({ children }: { children: React.ReactNode }) {
   const { cart, removeFromCart, updateQuantity, clearCart, checkout } = useCart();
   const { settings } = useAppSettings();
 
