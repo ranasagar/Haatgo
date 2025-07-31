@@ -13,6 +13,8 @@ import { Button } from '../ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { LivestreamData } from '@/ai/flows/livestream-fetcher';
 import { useAppSettings } from '@/context/app-settings-context';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/hooks/use-toast';
 
 type Comment = {
   id: number;
@@ -38,18 +40,27 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: boolean; streamData?: LivestreamData | null }) {
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState('');
-  const [isAdmin, setIsAdmin] = useState(true); // For demo: toggle to show/hide moderation
   const { settings } = useAppSettings();
+  const { user, isAdmin } = useAuth();
+  const { toast } = useToast();
 
   const isLive = streamData?.isLive || false;
 
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+        toast({
+            title: "Authentication Required",
+            description: "You must be logged in to send a message.",
+            variant: "destructive",
+        });
+        return;
+    }
     if (newComment.trim()) {
       const newCommentObj: Comment = {
         id: comments.length + 1,
-        author: "You",
-        avatar: "https://placehold.co/100x100.png",
+        author: user.displayName || user.email || 'Anonymous',
+        avatar: user.photoURL || "https://placehold.co/100x100.png",
         message: newComment,
       };
       setComments(prev => [...prev, newCommentObj]);
@@ -102,6 +113,52 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
         </div>
     </div>
   )
+  
+  const ChatBox = () => (
+      <div className="lg:col-span-1 flex flex-col bg-background rounded-br-lg rounded-bl-lg lg:rounded-bl-none lg:rounded-tr-lg">
+            <CardHeader>
+                <CardTitle className="font-headline text-xl">Live Chat</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-grow overflow-y-auto pr-2 h-0">
+                <div className="space-y-4">
+                    {comments.map((comment) => (
+                        <div key={comment.id} className="flex items-start gap-3 group">
+                            <Avatar className="h-8 w-8 border">
+                                <AvatarImage src={comment.avatar} alt={comment.author} />
+                                <AvatarFallback>{comment.author.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="bg-muted/60 rounded-lg px-3 py-2 text-sm flex-grow">
+                                <p className="font-semibold">{comment.author}</p>
+                                <p>{comment.message}</p>
+                            </div>
+                            {isAdmin && (
+                                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-600" onClick={() => handleDeleteComment(comment.id)} aria-label="Delete comment">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter className="pt-4 border-t">
+                <form onSubmit={handleCommentSubmit} className="flex w-full items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                        <AvatarImage src={user?.photoURL || "https://placehold.co/100x100.png"} alt="Your avatar" />
+                        <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || 'G'}</AvatarFallback>
+                    </Avatar>
+                    <Input 
+                        value={newComment} 
+                        onChange={(e) => setNewComment(e.target.value)} 
+                        placeholder={user ? "Add a comment..." : "Log in to chat"}
+                        disabled={!user}
+                        className="flex-grow" />
+                    <Button type="submit" size="icon" disabled={!newComment.trim() || !user}>
+                        <Send className="h-4 w-4" />
+                    </Button>
+                </form>
+            </CardFooter>
+        </div>
+  )
 
   const renderFacebookTab = () => (
     <div className="lg:col-span-2 bg-black flex items-center justify-center relative rounded-tl-lg rounded-tr-lg lg:rounded-tr-none lg:rounded-bl-lg">
@@ -142,45 +199,7 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
             <TabsContent value="tiktok" className="lg:col-span-2 h-full m-0">
               {renderTikTokTab()}
             </TabsContent>
-
-             <div className="lg:col-span-1 flex flex-col bg-background rounded-br-lg rounded-bl-lg lg:rounded-bl-none lg:rounded-tr-lg">
-                <CardHeader>
-                    <CardTitle className="font-headline text-xl">Live Chat</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow overflow-y-auto pr-2 h-0">
-                    <div className="space-y-4">
-                        {comments.map((comment) => (
-                            <div key={comment.id} className="flex items-start gap-3 group">
-                                <Avatar className="h-8 w-8 border">
-                                    <AvatarImage src={comment.avatar} alt={comment.author} />
-                                    <AvatarFallback>{comment.author.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="bg-muted/60 rounded-lg px-3 py-2 text-sm flex-grow">
-                                    <p className="font-semibold">{comment.author}</p>
-                                    <p>{comment.message}</p>
-                                </div>
-                                {isAdmin && (
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-600" onClick={() => handleDeleteComment(comment.id)} aria-label="Delete comment">
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </CardContent>
-                <CardFooter className="pt-4 border-t">
-                    <form onSubmit={handleCommentSubmit} className="flex w-full items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src="https://placehold.co/100x100.png" alt="Your avatar" />
-                            <AvatarFallback>U</AvatarFallback>
-                        </Avatar>
-                        <Input value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder="Add a comment..." className="flex-grow" />
-                        <Button type="submit" size="icon" disabled={!newComment.trim()}>
-                            <Send className="h-4 w-4" />
-                        </Button>
-                    </form>
-                </CardFooter>
-            </div>
+            <ChatBox />
         </div>
       </Tabs>
     );
@@ -255,17 +274,18 @@ export function LivestreamViewer({ isDialog = false, streamData }: { isDialog?: 
                 </CardContent>
                 <CardFooter className="pt-4 border-t">
                     <form onSubmit={handleCommentSubmit} className="flex w-full items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src="https://placehold.co/100x100.png" alt="Your avatar" />
-                            <AvatarFallback>U</AvatarFallback>
+                         <Avatar className="h-8 w-8">
+                            <AvatarImage src={user?.photoURL || "https://placehold.co/100x100.png"} alt="Your avatar" />
+                            <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || 'G'}</AvatarFallback>
                         </Avatar>
                         <Input 
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="Add a comment..." 
+                            placeholder={user ? "Add a comment..." : "Log in to chat"}
+                            disabled={!user}
                             className="flex-grow"
                         />
-                        <Button type="submit" size="icon" disabled={!newComment.trim()}>
+                        <Button type="submit" size="icon" disabled={!newComment.trim() || !user}>
                             <Send className="h-4 w-4" />
                         </Button>
                     </form>

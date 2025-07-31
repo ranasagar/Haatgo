@@ -2,7 +2,7 @@
 "use client"
 
 import Image from "next/image"
-import { X, ShoppingCart, Plus, Minus } from "lucide-react"
+import { X, ShoppingCart, Plus, Minus, LogIn } from "lucide-react"
 import {
   Sheet,
   SheetContent,
@@ -19,6 +19,8 @@ import { useAppSettings } from "@/context/app-settings-context"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { CartItem } from "@/context/cart-context"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/context/auth-context"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 const CartListItem = ({ item, getPriceInfo, updateQuantity, removeFromCart }: { item: CartItem, getPriceInfo: (item: CartItem) => any, updateQuantity: (id: string, q: number) => void, removeFromCart: (id: string) => void }) => {
     const { originalPrice, effectivePrice, discountApplied } = getPriceInfo(item);
@@ -76,6 +78,7 @@ const CartListItem = ({ item, getPriceInfo, updateQuantity, removeFromCart }: { 
 export function CartSheet({ children }: { children: React.ReactNode }) {
   const { cart, removeFromCart, updateQuantity, clearCart, checkout } = useCart();
   const { settings } = useAppSettings();
+  const { user } = useAuth();
 
   const getPriceInfo = (item: any) => {
       const originalPrice = item.price;
@@ -121,6 +124,16 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
   const handleCheckout = () => {
     checkout();
   }
+  
+  const CheckoutButton = () => (
+    <Button 
+        className="w-full font-bold" 
+        onClick={handleCheckout}
+        disabled={!user}
+    >
+        Proceed to Checkout
+    </Button>
+  );
 
   return (
     <Sheet>
@@ -185,7 +198,22 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
             </div>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               <SheetClose asChild>
-                  <Button className="w-full font-bold" onClick={handleCheckout}>Proceed to Checkout</Button>
+                {user ? (
+                    <CheckoutButton />
+                ) : (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <div className="w-full">
+                                    <CheckoutButton />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Please log in to place an order.</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
               </SheetClose>
               <Button variant="outline" className="w-full" onClick={clearCart}>Clear Cart</Button>
             </div>
